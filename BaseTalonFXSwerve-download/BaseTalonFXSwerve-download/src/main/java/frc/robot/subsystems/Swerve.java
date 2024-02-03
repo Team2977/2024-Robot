@@ -44,7 +44,7 @@ public class Swerve extends SubsystemBase {
 
           swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, getGyroYaw(), getModulePositions());
     
- 
+ /* 
          // Configure AutoBuilder last
     AutoBuilder.configureHolonomic(
             this::getPose, // Robot pose supplier
@@ -55,7 +55,7 @@ public class Swerve extends SubsystemBase {
                     new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
                     new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
                     Constants.Swerve.maxSpeed, // Max module speed, in m/s
-    /*change */                0.4, // Drive base radius in meters. Distance from robot center to furthest module. 
+    /*change */    /*            0.4, // Drive base radius in meters. Distance from robot center to furthest module. 
                     new ReplanningConfig() // Default path replanning config. See the API for the options here
             ),
             () -> {
@@ -70,7 +70,7 @@ public class Swerve extends SubsystemBase {
               return false;
             },
             this // Reference to this subsystem to set requirements
-    );
+    );*/
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
