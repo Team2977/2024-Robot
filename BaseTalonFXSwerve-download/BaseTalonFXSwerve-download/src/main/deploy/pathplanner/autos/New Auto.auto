@@ -1,0 +1,55 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.2186814117217974,
+      "y": 7.098351746561043
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Part 1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoSpeakerOn"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "indexerSHOOT"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoIntakeIn"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Part 2"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
