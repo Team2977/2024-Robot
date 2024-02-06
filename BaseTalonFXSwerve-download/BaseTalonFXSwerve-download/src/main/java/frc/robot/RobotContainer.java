@@ -27,7 +27,17 @@ public class RobotContainer {
     /* Controllers */
     private final Joystick driver = new Joystick(0);
     public final static Joystick gamepad2 =  new Joystick(1);
-
+    if (isReal()) {
+        // Instantiate IO implementations to talk to real hardware
+        driveTrain = new DriveTrain(DriveTrainIOReal());
+        elevator = new Elevator(ElevatorIOReal());
+        intake = new Intake(IntakeIOReal());
+    } else {
+        // Use anonymous classes to create "dummy" IO implementations
+        driveTrain = new DriveTrain(DriveTrainIO() {});
+        elevator = new Elevator(ElevatorIO() {});
+        intake = new Intake(IntakeIO() {});
+    }
     
 
     /* Drive Controls */
