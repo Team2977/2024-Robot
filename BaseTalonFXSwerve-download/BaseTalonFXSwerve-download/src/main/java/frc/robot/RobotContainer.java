@@ -1,11 +1,11 @@
 package frc.robot;
 
+import org.photonvision.PhotonCamera;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.shuffleboard.SendableCameraWrapper;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -13,8 +13,10 @@ import frc.robot.autos.*;
 import frc.robot.commands.*;
 import frc.robot.commands.DriveBase.TeleopSwerve;
 import frc.robot.commands.DriveBase.toggleSpeed;
+import frc.robot.commands.Intake.indexerSHOOT;
 import frc.robot.commands.Intake.intakeIn;
 import frc.robot.commands.Intake.intakeOut;
+import frc.robot.commands.Intake.shooterSpeaker;
 import frc.robot.subsystems.*;
 
 /**
@@ -26,8 +28,8 @@ import frc.robot.subsystems.*;
 public class RobotContainer {
     /* Controllers */
     private final Joystick driver = new Joystick(0);
-    public final static Joystick gamepad2 =  new Joystick(1);
-
+    public static final Joystick gamepad2 =  new Joystick(1);
+    public static final PhotonCamera photonCamera = new PhotonCamera("frontCamera");
     
 
     /* Drive Controls */
@@ -47,7 +49,10 @@ public class RobotContainer {
     private final JoystickButton driverIntakeIn = new JoystickButton(driver, 2);
     private final JoystickButton driverIntakeOut = new JoystickButton(driver, 1);
 
-
+    private final JoystickButton GX = new JoystickButton(gamepad2, 3);
+    private final JoystickButton GLB = new JoystickButton(gamepad2, XboxController.Button.kLeftBumper.value);
+    private final JoystickButton GA = new JoystickButton(gamepad2, 1);
+    
    /*  private final JoystickButton rightBummber = new JoystickButton(driver, 8);
     private final JoystickButton zeroGyro = new JoystickButton(driver, 4);
     private final JoystickButton robotCentric = new JoystickButton(driver, 7);
@@ -56,8 +61,11 @@ public class RobotContainer {
 
 
     /* Subsystems */
-    private final Swerve s_Swerve = new Swerve();
+    public static final Swerve s_Swerve = new Swerve();
     public static final intake INTAKE = new intake();
+    public static final poseEstimator poseESTIMATOR = new poseEstimator(photonCamera, s_Swerve);
+    public static final chaseTag CHASETAG = new chaseTag(photonCamera, s_Swerve, poseESTIMATOR::getCurrentPose);
+   // public static final turnToTarget TURNTOTARGET =  new turnToTarget(s_Swerve, photonCamera);
 
 
         SendableChooser<Command> chooser = new SendableChooser<>();
@@ -117,7 +125,10 @@ public class RobotContainer {
         rightBummber.onTrue(new toggleSpeed());
         driverIntakeIn.onTrue(new intakeIn());
         driverIntakeOut.onTrue(new intakeOut());
-
+       
+        GX.whileTrue(new shooterSpeaker());
+        GLB.whileTrue(new indexerSHOOT());
+        GA.onTrue(new turnToTarget(s_Swerve, photonCamera));
     }
 
     /**

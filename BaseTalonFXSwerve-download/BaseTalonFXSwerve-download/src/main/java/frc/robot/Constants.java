@@ -1,14 +1,23 @@
 package frc.robot;
 
-import javax.swing.text.StyledEditorKit.BoldAction;
+
 
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import frc.lib.util.COTSTalonFXSwerveConstants;
@@ -36,8 +45,26 @@ public final class Constants {
     public static final double intakeInSpeed = 1;
     public static final double indexerOutSpeed = -1;
 
+/*===============================================================================================================================*/
+public static class Vision {
+        public static final String kCameraName = "photonvision";
+        // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
+        public static final Transform3d kRobotToCam =
+                new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
 
+        // The layout of the AprilTags on the field
+        public static final AprilTagFieldLayout kTagLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
+        //public static final AprilTagFieldLayout kTagLayout =
+          //      AprilTagFields.kDefaultField.loadAprilTagLayoutField();
+
+        // The standard deviations of our vision estimated poses, which affect correction rate
+        // (Fake values. Experiment and determine estimation noise on an actual robot.)
+        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
+        public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
+    }
+/*===============================================================================================================================*/
+    
 
     public static final class Swerve {
         public static final int pigeonID = 61;
@@ -46,8 +73,8 @@ public final class Constants {
         COTSTalonFXSwerveConstants.SDS.MK4i.Falcon500(COTSTalonFXSwerveConstants.SDS.MK4i.driveRatios.L1);
 
         /* Drivetrain Constants */
-        public static final double trackWidth = Units.inchesToMeters(26.5); //TODO: This must be tuned to specific robot
-        public static final double wheelBase = Units.inchesToMeters(22); //TODO: This must be tuned to specific robot
+        public static final double trackWidth = Units.inchesToMeters(21.5); //TODO: This must be tuned to specific robot
+        public static final double wheelBase = Units.inchesToMeters(26.6); //TODO: This must be tuned to specific robot
         public static final double wheelCircumference = chosenModule.wheelCircumference;
 
         /* Swerve Kinematics 
@@ -107,9 +134,9 @@ public final class Constants {
 
         /* Swerve Profiling Values */
         /** Meters per Second */
-        public static final double maxSpeed = 12.4; //TODO: This must be tuned to specific robot
+        public static final double maxSpeed = Units.feetToMeters(13); //TODO: This must be tuned to specific robot
         /** Radians per Second */
-        public static final double maxAngularVelocity = 10.0; //TODO: This must be tuned to specific robot
+        public static final double maxAngularVelocity = 8; //TODO: This must be tuned to specific robot
 
         /* Neutral Modes */
         public static final NeutralModeValue angleNeutralMode = NeutralModeValue.Coast;
