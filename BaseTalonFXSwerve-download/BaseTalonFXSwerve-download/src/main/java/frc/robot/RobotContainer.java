@@ -27,9 +27,10 @@ import frc.robot.subsystems.*;
  */
 public class RobotContainer {
     /* Controllers */
-    private final Joystick driver = new Joystick(0);
+    public static final Joystick driver = new Joystick(0);
     public static final Joystick gamepad2 =  new Joystick(1);
     public static final PhotonCamera photonCamera = new PhotonCamera("frontCamera");
+    
     
 
     /* Drive Controls */
@@ -48,10 +49,13 @@ public class RobotContainer {
     private final JoystickButton rightBummber = new JoystickButton(driver, 6);
     private final JoystickButton driverIntakeIn = new JoystickButton(driver, 2);
     private final JoystickButton driverIntakeOut = new JoystickButton(driver, 1);
+    //change today
+    private final JoystickButton driverAim = new JoystickButton(driver, 8);
 
     private final JoystickButton GX = new JoystickButton(gamepad2, 3);
     private final JoystickButton GLB = new JoystickButton(gamepad2, XboxController.Button.kLeftBumper.value);
     private final JoystickButton GA = new JoystickButton(gamepad2, 1);
+    private final JoystickButton GB = new JoystickButton(gamepad2, 2);
     
    /*  private final JoystickButton rightBummber = new JoystickButton(driver, 8);
     private final JoystickButton zeroGyro = new JoystickButton(driver, 4);
@@ -65,6 +69,8 @@ public class RobotContainer {
     public static final intake INTAKE = new intake();
     public static final poseEstimator poseESTIMATOR = new poseEstimator(photonCamera, s_Swerve);
     public static final chaseTag CHASETAG = new chaseTag(photonCamera, s_Swerve, poseESTIMATOR::getCurrentPose);
+    public static final twoDTarget TWODTARGET = new twoDTarget(photonCamera);
+    
    // public static final turnToTarget TURNTOTARGET =  new turnToTarget(s_Swerve, photonCamera);
 
 
@@ -125,10 +131,15 @@ public class RobotContainer {
         rightBummber.onTrue(new toggleSpeed());
         driverIntakeIn.onTrue(new intakeIn());
         driverIntakeOut.onTrue(new intakeOut());
+       // driverAim.onTrue(new HolonomicTargetCommand(s_Swerve, photonCamera, poseESTIMATOR::getCurrentPose, driver.getRawAxis(translationAxis)/Constants.driveSpeed, driver.getRawAxis(strafeAxis)/Constants.driveSpeed));
+       // driverAim.whileTrue(new aimAndRev(INTAKE, photonCamera, s_Swerve));
+
        
         GX.whileTrue(new shooterSpeaker());
         GLB.whileTrue(new indexerSHOOT());
-        GA.onTrue(new turnToTarget(s_Swerve, photonCamera));
+        GA.onTrue(new HolonomicTargetCommand(s_Swerve, photonCamera, poseESTIMATOR::getCurrentPose));
+        GB.whileTrue(new chaseTag(photonCamera, s_Swerve, poseESTIMATOR::getCurrentPose));
+      //  GA.whileTrue(new HolonomicTargetCommand(s_Swerve, photonCamera, poseESTIMATOR::getCurrentPose, driver.getRawAxis(translationAxis), driver.getRawAxis(strafeAxis)));
     }
 
     /**

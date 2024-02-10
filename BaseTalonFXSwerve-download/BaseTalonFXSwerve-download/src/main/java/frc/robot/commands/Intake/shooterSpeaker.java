@@ -22,6 +22,7 @@ public class shooterSpeaker extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+   // intake.shooterSlave.set(Constants.speakerSpeed);
     intake.shooter.set(Constants.speakerSpeed);
   }
 
@@ -29,6 +30,7 @@ public class shooterSpeaker extends Command {
   @Override
   public void end(boolean interrupted) {
     intake.shooter.set(0);
+    //intake.shooterSlave.set(0);
   }
 
   // Returns true when the command should end.

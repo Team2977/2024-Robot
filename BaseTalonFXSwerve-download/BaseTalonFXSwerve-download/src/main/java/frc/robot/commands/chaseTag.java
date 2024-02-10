@@ -41,7 +41,7 @@ public class chaseTag extends Command {
   private static final int TagToChase = 4;
   private static final Transform3d TagToGoal = 
                 new Transform3d(
-                                  new Translation3d(1, 0, 0),
+                                  new Translation3d(2, 0, 0),
                                   new Rotation3d(0, 0, 0/*Math.PI*/));
 
   private final ProfiledPIDController xController = new ProfiledPIDController(Constants.Swerve.driveKP, Constants.Swerve.driveKI, Constants.Swerve.driveKD, X_CONSTRAINTS);
@@ -122,7 +122,7 @@ public class chaseTag extends Command {
     
     if (lastTarget == null) {
       // No target has been visible
-      this.swerve.drive(new Translation2d(0,0), 0, true, true);
+      this.swerve.drive(new Translation2d(0,0), 0, false, true);
     } else {
       // Drive to the target
       var xSpeed = xController.calculate(robotPose.getX());
@@ -151,8 +151,7 @@ public class chaseTag extends Command {
         true
         );
     }
-      SmartDashboard.putNumber("6poseX", poseProvider.get().getX());
-      SmartDashboard.putNumber("6poseY", poseProvider.get().getY());
+      
   
   }
 

@@ -11,7 +11,9 @@ import frc.robot.subsystems.intake;
 
 public class intakeOut extends Command {
   /** Creates a new intakeOut. */
-  public intakeOut() {addRequirements(RobotContainer.INTAKE);}
+  public intakeOut() {
+    addRequirements(RobotContainer.INTAKE);
+  }
 
   // Called when the command is initially scheduled.
   @Override

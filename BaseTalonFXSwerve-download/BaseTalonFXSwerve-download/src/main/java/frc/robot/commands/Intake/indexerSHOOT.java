@@ -16,11 +16,11 @@ public class indexerSHOOT extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {intake.indexer.set(Constants.indexerShootSpeed);}
+  public void initialize() {intake.indexer.set(-1);}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {intake.indexer.set(-1);}
 
   // Called once the command ends or is interrupted.
   @Override

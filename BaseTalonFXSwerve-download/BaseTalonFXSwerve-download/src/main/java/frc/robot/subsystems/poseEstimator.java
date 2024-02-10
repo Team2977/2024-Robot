@@ -87,7 +87,7 @@ public class poseEstimator extends SubsystemBase {
     try {
       layout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
       var alliance = DriverStation.getAlliance();
-      layout.setOrigin(alliance.get() == Alliance.Blue ?
+      layout.setOrigin(alliance.get() == Alliance.Red ?
           OriginPosition.kBlueAllianceWallRightSide : OriginPosition.kRedAllianceWallRightSide);
     } catch(IOException e) {
       DriverStation.reportError("Failed to load AprilTagFieldLayout", e.getStackTrace());
@@ -107,8 +107,9 @@ public class poseEstimator extends SubsystemBase {
 
        
     
-    //tab.addString("Pose", this::getFomattedPose).withPosition(0, 0).withSize(2, 0);
+    tab.addString("Pose", this::getFomattedPose).withPosition(0, 0).withSize(2, 0);
     tab.add("Field", field2d).withPosition(2, 0).withSize(6, 4);
+    
   }
 
   @Override

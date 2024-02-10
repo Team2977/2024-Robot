@@ -9,10 +9,15 @@ package frc.robot;
 
 
 
-import java.lang.annotation.Target;
+
 
 import org.photonvision.targeting.PhotonTrackedTarget;
-import org.photonvision.targeting.proto.TargetCornerProto;
+
+import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.net.PortForwarder;
@@ -22,6 +27,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.intake;
 
 
 /**
@@ -41,8 +47,7 @@ public class Robot extends TimedRobot {
   public static DutyCycleEncoder shoulderPos = new DutyCycleEncoder(0);
   
   final double GOAL_RANGE_METERS = Units.feetToMeters(3);
-  private double yaw;
-  private PhotonTrackedTarget lastTarget;
+  
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -55,10 +60,36 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
     Constants.driveSpeed = 1;
     Constants.turnSpeed = 1;
-    //Vision = new vision();
-   PortForwarder.add(5800, "10.29.77.11", 5800);
-    //get camera name
-   
+
+
+
+    TalonFXConfiguration cfg = new TalonFXConfiguration();
+
+    /* Configure current limits */
+    MotionMagicConfigs mm = cfg.MotionMagic;
+    mm.MotionMagicCruiseVelocity = 1; // 5 rotations per second cruise
+    mm.MotionMagicAcceleration = 10; // Take approximately 0.5 seconds to reach max vel
+    // Take approximately 0.2 seconds to reach max accel 
+    mm.MotionMagicJerk = 50;
+
+    Slot0Configs slot0 = cfg.Slot0;
+    slot0.kP = 0;
+    slot0.kI = 0;
+    slot0.kD = 0;
+    slot0.kV = 0;
+    slot0.kS = 0; // Approximately 0.25V to get the mechanism moving
+
+    FeedbackConfigs fdb = cfg.Feedback;
+    fdb.SensorToMechanismRatio = 12.8;
+
+    StatusCode status = StatusCode.StatusCodeNotInitialized;
+    for(int i = 0; i < 5; ++i) {
+      status = intake.shoulder.getConfigurator().apply(cfg);
+      if (status.isOK()) break;
+    }
+    if (!status.isOK()) {
+      System.out.println("Could not configure device. Error: " + status.toString());
+    }
 
   }
 
@@ -138,35 +169,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     
-    SmartDashboard.putData("encoder", shoulderPos);
-    
-    /* 
-    var phoResu = RobotContainer.photonCamera.getLatestResult();
-    if(phoResu.hasTargets()) {
-      var targetOpt = phoResu.getTargets().stream()
-          .filter(t -> t.getFiducialId() == 4)
-          .filter(t -> !t.equals(lastTarget) && t.getPoseAmbiguity() <= .2 && t.getPoseAmbiguity() != -1)
-          .findFirst();
-        yaw = targetOpt.get().getYaw();
-      // targetOpt = phoResu.getTargets().stream().filter();
-    } */
-
-    SmartDashboard.putNumber("RposeX", RobotContainer.s_Swerve.swerveOdometry.getEstimatedPosition().getX());
-    SmartDashboard.putNumber("RposeY", RobotContainer.s_Swerve.swerveOdometry.getEstimatedPosition().getY());
-    SmartDashboard.putNumber("yaw", yaw);
-    //SmartDashboard.putNumber("Robot x", this.Vision.getEstimatedGlobalPose().get());
-   
-
-    //intake.shoulder.set(RobotContainer.gamepad2.getRawAxis(1)/10);
-
-    
-    SmartDashboard.putNumber("7poseX", RobotContainer.poseESTIMATOR.getCurrentPose().getX());
-    SmartDashboard.putNumber("7poseY", RobotContainer.poseESTIMATOR.getCurrentPose().getY());
-    
-
-    
-    
-    //SmartDashboard.putNumber("tag #", );
+    SmartDashboard.putData("encoder", shoulderPos); 
 
   }
 
