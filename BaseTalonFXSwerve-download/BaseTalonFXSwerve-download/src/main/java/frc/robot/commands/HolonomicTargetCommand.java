@@ -3,13 +3,17 @@ package frc.robot.commands;
 import java.util.List;
 import java.util.function.Supplier;
 
+
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
@@ -22,44 +26,43 @@ public class HolonomicTargetCommand extends Command {
   private final Swerve swerve;
   private final PhotonCamera photoncamera;
   private final Supplier<Pose2d> poseProvider;
-  private double translationAxis;
-  private double strafeAxis;
-  private int wantedApriltag;
-  private boolean endCommand;
+
   private List<PhotonTrackedTarget> targets;
   private int targetID;
   
+  private final TrapezoidProfile.Constraints omegConstraints = new Constraints(Units.feetToMeters(8), Units.feetToMeters(6));
 
   private final PIDController pidControllerX = new PIDController(0.5, 0.1, 0);
   private final PIDController pidControllerY = new PIDController(0.2, 0.05, 0);
-  private final PIDController pidControllerOmega = new PIDController(.4, 0.1, 0);
+  private final ProfiledPIDController pidControllerOmega = new ProfiledPIDController(.7, 0.4, 0, omegConstraints);
+  
+  
 
-  public HolonomicTargetCommand(Swerve swerve, PhotonCamera photoncamera, Supplier<Pose2d> poseProvider/*  , double translationAxis, double strafeAxis*/) {
+  public HolonomicTargetCommand(Swerve swerve, PhotonCamera photoncamera, Supplier<Pose2d> poseProvider) {
     this.swerve = swerve;
     this.photoncamera = photoncamera;
     this.poseProvider = poseProvider;
-   // this.translationAxis = translationAxis;
-    //this.strafeAxis = strafeAxis;
+   
 
     addRequirements(swerve);
   }
 
   @Override
   public void initialize() {
-    endCommand = false;
     super.initialize();
     pidControllerX.reset();
     pidControllerY.reset();
-    pidControllerOmega.reset();
+    pidControllerOmega.reset(poseProvider.get().getRotation().getRadians());
 
-    pidControllerX.setSetpoint(Units.inchesToMeters(100)); // Move forward/backwork to keep 36 inches from the target
+    pidControllerX.setSetpoint(Units.inchesToMeters(100)); // Move forward/backwork to keep 100 inches from the target
     pidControllerX.setTolerance(Units.inchesToMeters(5));
 
     pidControllerY.setSetpoint(0); // Move side to side to keep target centered
     pidControllerX.setTolerance(Units.inchesToMeters(2.5));
 
-    pidControllerOmega.setSetpoint(Units.degreesToRadians(175)); // Rotate the keep perpendicular with the target
+    pidControllerOmega.setGoal(Math.PI); // Rotate the keep perpendicular with the target
     pidControllerOmega.setTolerance(Units.degreesToRadians(2));
+    pidControllerOmega.enableContinuousInput(Math.PI, -Math.PI);
 
     SmartDashboard.putBoolean("targeting on", true);
   }
@@ -78,7 +81,9 @@ public class HolonomicTargetCommand extends Command {
     //int targetListSize = targets.size();
 
     //checks to see if there is a list of apriltags to check. if no targets are visable, end command
-      if (targets.isEmpty()) {endCommand = true;}
+      if (targets.isEmpty()) {
+        SmartDashboard.putBoolean("done", true);
+      }
 
     //target ID integer
     //targetID = targets.get(targetListSize).getFiducialId();
@@ -93,9 +98,7 @@ public class HolonomicTargetCommand extends Command {
         
       
 
-      //targetListSize starts at 1. targets.get(int) starts at 0.
-    //var cameraToTarget = foundTargets.get().getBestCameraToTarget();
-    
+      
       
 
       // X - distance from camera in meters
@@ -125,14 +128,15 @@ public class HolonomicTargetCommand extends Command {
       
       // Handle distance to target
       var distanceFromTarget = cameraToTarget.getX();
-      var xSpeed = pidControllerX.calculate(distanceFromTarget);
+      
+       var xSpeed = pidControllerX.calculate(distanceFromTarget);
       if (pidControllerX.atSetpoint()) {
         xSpeed = 0;
       }
 
       // Handle alignment side-to-side
       var targetY = cameraToTarget.getY();
-      var ySpeed = pidControllerY.calculate(targetY);
+       var ySpeed = pidControllerY.calculate(targetY);
       if (pidControllerY.atSetpoint()) {
         ySpeed = 0;
       }
@@ -143,18 +147,31 @@ public class HolonomicTargetCommand extends Command {
       if (pidControllerOmega.atSetpoint()) {
         omegaSpeed = 0;
       }
-      swerve.drive(new Translation2d(xSpeed, ySpeed), -omegaSpeed, false, true);
-    //  swerve.drive(new Translation2d(translationAxis, strafeAxis).times(Constants.Swerve.maxSpeed), omegaSpeed, false, true);
-    //  swerve.drive(new Translation2d(-RobotContainer.driver.getRawAxis(1), -RobotContainer.driver.getRawAxis(0)), 0, true, false);
+
+
+      
+
+
+
+      
+      swerve.drive(
+        new Translation2d(xSpeed, ySpeed).times(Constants.Swerve.maxSpeed), 
+        (omegaSpeed / Constants.driveSpeed) * Constants.Swerve.maxAngularVelocity, 
+        true, 
+        true);
+      
+      SmartDashboard.putNumber("omega speed", (omegaSpeed * Constants.Swerve.maxSpeed)/Constants.driveSpeed);
+    
+    
       
     }  else {
-      swerve.drive(new Translation2d(), 0, true, true);
+     
     }
-    //if (pidControllerOmega.atSetpoint()) {endCommand = true;}
-    if (pidControllerX.atSetpoint() && pidControllerY.atSetpoint() && pidControllerOmega.atSetpoint()) {
-      endCommand = true;
+    if (pidControllerOmega.atSetpoint()) {
+      SmartDashboard.putBoolean("done", true);
+      
     }
-    
+   
 
   } 
 
@@ -162,16 +179,17 @@ public class HolonomicTargetCommand extends Command {
 }
 
   
-
   @Override
   public void end(boolean interrupted) {
     SmartDashboard.putBoolean("targeting on", false);
     swerve.drive(new Translation2d(), 0, true, false);
+    RobotContainer.driver.setRumble(RumbleType.kLeftRumble, 0);
+    SmartDashboard.putBoolean("done", false);
   }
 
   @Override
     public boolean isFinished() {
       //return super.isFinished();
-      return endCommand;
+      return false;
     }
 }

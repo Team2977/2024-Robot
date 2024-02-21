@@ -5,15 +5,16 @@
 package frc.robot.autos;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.intake;
 
-public class autoSpeakerOn extends Command {
-  /** Creates a new autoSpeaker. */
-  public autoSpeakerOn() {
+public class hoverMode extends Command {
+  private intake intake;
+  /** Creates a new hoverMode. */
+  public hoverMode() {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(RobotContainer.INTAKE);
+    this.intake = RobotContainer.INTAKE;
+    addRequirements();
   }
 
   // Called when the command is initially scheduled.
@@ -23,16 +24,17 @@ public class autoSpeakerOn extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Constants.wantedShoulderAngle = 10.5;
-    intake.shooter.set(Constants.speakerSpeed);
-    intake.shooterSlave.set(-Constants.speakerSpeed);
-    
+    intake.rightIntake.set(1);
+    intake.leftIntake.set(-1);
+    //intake.shooter.set(-1);
+    //intake.shooterSlave.set(1);
+    //intake.indexer.set(-0.5);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-
+     
   }
 
   // Returns true when the command should end.

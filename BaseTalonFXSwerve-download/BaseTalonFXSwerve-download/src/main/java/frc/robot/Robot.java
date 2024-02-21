@@ -10,24 +10,21 @@ package frc.robot;
 
 
 
+import java.util.Optional;
 
-import org.photonvision.targeting.PhotonTrackedTarget;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.configs.FeedbackConfigs;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.net.PortForwarder;
-
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.UpperAssembly.moveShoulder;
 import frc.robot.subsystems.intake;
+
 
 
 /**
@@ -40,13 +37,14 @@ public class Robot extends TimedRobot {
   public static final CTREConfigs ctreConfigs = new CTREConfigs();
  // private vision Vision;
   private Command m_autonomousCommand;
-
-  
-
   private RobotContainer m_robotContainer;
-  public static DutyCycleEncoder shoulderPos = new DutyCycleEncoder(0);
+  
   
   final double GOAL_RANGE_METERS = Units.feetToMeters(3);
+
+  public static double xSpeed;
+  public static double ySpeed;
+  public static Optional<Alliance> alliance = DriverStation.getAlliance();
   
 
   /**
@@ -60,36 +58,11 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
     Constants.driveSpeed = 1;
     Constants.turnSpeed = 1;
-
-
-
-    TalonFXConfiguration cfg = new TalonFXConfiguration();
-
-    /* Configure current limits */
-    MotionMagicConfigs mm = cfg.MotionMagic;
-    mm.MotionMagicCruiseVelocity = 1; // 5 rotations per second cruise
-    mm.MotionMagicAcceleration = 10; // Take approximately 0.5 seconds to reach max vel
-    // Take approximately 0.2 seconds to reach max accel 
-    mm.MotionMagicJerk = 50;
-
-    Slot0Configs slot0 = cfg.Slot0;
-    slot0.kP = 0;
-    slot0.kI = 0;
-    slot0.kD = 0;
-    slot0.kV = 0;
-    slot0.kS = 0; // Approximately 0.25V to get the mechanism moving
-
-    FeedbackConfigs fdb = cfg.Feedback;
-    fdb.SensorToMechanismRatio = 12.8;
-
-    StatusCode status = StatusCode.StatusCodeNotInitialized;
-    for(int i = 0; i < 5; ++i) {
-      status = intake.shoulder.getConfigurator().apply(cfg);
-      if (status.isOK()) break;
-    }
-    if (!status.isOK()) {
-      System.out.println("Could not configure device. Error: " + status.toString());
-    }
+    Constants.wantedShoulderAngle = 0;
+    
+    moveShoulder.shoulderPID.reset();
+    intake.shoulder.setNeutralMode(NeutralModeValue.Brake);
+    
 
   }
 
@@ -108,31 +81,14 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
-   /*  var result = camera.getLatestResult();
-
-    if (result.hasTargets()) {
-      var target = result.getBestTarget();
-      var yaw = target.getYaw();
-      var pitch = target.getPitch();
-      var camTotarget = target.getBestCameraToTarget();
-    }*/
-
-    /*  // Correct pose estimate with vision measurements
-     var visionEst = Vision.getEstimatedGlobalPose();
-     visionEst.ifPresent(
-             est -> {
-                 var estPose = est.estimatedPose.toPose2d();
-                 // Change our trust in the measurement based on the tags we can see
-                 var estStdDevs = Vision.getEstimationStdDevs(estPose);
-
-                 RobotContainer.s_Swerve.addVisionMeasurement(
-                         est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
-             });*/
+   
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    intake.shoulder.setNeutralMode(NeutralModeValue.Coast);
+  }
 
   @Override
   public void disabledPeriodic() {}
@@ -140,6 +96,18 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    var alliance = DriverStation.getAlliance();
+
+    if (alliance.isPresent() && alliance.get() == Alliance.Red) {
+      Constants.invert = 1;
+      Constants.onRedTeam = true;
+      Constants.wantedApriltag = 4;
+    } else {
+      Constants.invert = -1;
+      Constants.onRedTeam = false;
+      Constants.wantedApriltag = 7;
+    }
+  
     Constants.autoDriveMode = true;
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
@@ -163,14 +131,34 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     Constants.autoDriveMode = false;
+    intake.rightIntake.set(0);
+    intake.leftIntake.set(0);
+    intake.shooter.set(0);
+    intake.shooterSlave.set(0);
+    intake.indexer.set(0);
+    
+
+    var alliance = DriverStation.getAlliance();
+
+    if (alliance.isPresent() && alliance.get() == Alliance.Red) {
+      Constants.invert = 1;
+      Constants.onRedTeam = true;
+      Constants.wantedApriltag = 4;
+    } else {
+      Constants.invert = -1;
+      Constants.onRedTeam = false;
+      Constants.wantedApriltag = 7;
+    }
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    
-    SmartDashboard.putData("encoder", shoulderPos); 
+    //this gets the x and y values for the command "turnToTarget"
+    xSpeed = MathUtil.applyDeadband(RobotContainer.driver.getRawAxis(1) / Constants.driveSpeed * Constants.invert, Constants.stickDeadband);
+    ySpeed = MathUtil.applyDeadband(RobotContainer.driver.getRawAxis(0) / Constants.driveSpeed * Constants.invert, Constants.stickDeadband);
 
+    SmartDashboard.putBoolean("on red team", Constants.onRedTeam);
   }
 
   @Override

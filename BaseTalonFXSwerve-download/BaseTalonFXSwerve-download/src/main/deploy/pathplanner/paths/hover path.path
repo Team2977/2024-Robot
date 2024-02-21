@@ -3,48 +3,59 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.79769185179396,
-        "y": 7.156822518773243
+        "x": 1.1017398672973981,
+        "y": 1.508545923074753
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8267774427286747,
-        "y": 6.794303731057604
+        "x": 2.1017398672973986,
+        "y": 1.008545923074753
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.1659079215594326,
-        "y": 6.735832958845405
+        "x": 8.176703304973561,
+        "y": 0.9940031276073951
       },
       "prevControl": {
-        "x": 0.8770078030816604,
-        "y": 7.101190472744616
+        "x": 7.591995582851565,
+        "y": 0.5730135676795559
       },
       "nextControl": {
-        "x": 3.651065535749305,
-        "y": 6.314843398917567
+        "x": 8.68996477426052,
+        "y": 1.3635513854940082
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.686447589419395,
-        "y": 5.578111669043852
+        "x": 8.176703304973561,
+        "y": 7.273764063197643
       },
       "prevControl": {
-        "x": 1.436447589419395,
-        "y": 7.078111669043853
+        "x": 8.363809776052586,
+        "y": 8.373014580787002
       },
       "nextControl": null,
-      "isLocked": true,
-      "linkedName": "part1End"
+      "isLocked": false,
+      "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.7,
+      "rotationDegrees": -88.40496856500383,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 1.2,
+      "rotationDegrees": -49.39757231934566,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -55,7 +66,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 178.21008939175397,
+    "rotation": -52.25319461272528,
     "rotateFast": false
   },
   "reversed": false,

@@ -4,9 +4,8 @@
 
 package frc.robot.autos;
 
-import edu.wpi.first.hal.simulation.ConstBufferCallback;
+
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.intake;
 
@@ -23,9 +22,9 @@ public class autoIntakeIn extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intake.rightIntake.set(Constants.intakeInSpeed);
-    intake.leftIntake.set(Constants.intakeInSpeed);
-    intake.indexer.set(Constants.indexerIntake);
+    intake.rightIntake.set(-0.6);
+    intake.leftIntake.set(0.6);
+    //intake.indexer.set(0.1);
   }
 
   // Called once the command ends or is interrupted.

@@ -2,33 +2,50 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.autos;
+package frc.robot.commands;
 
+import java.util.Optional;
+
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
-import frc.robot.subsystems.intake;
 
-public class autoSpeakerOff extends Command {
-  /** Creates a new autoSpeakerOff. */
-  public autoSpeakerOff() {
+public class changeAlliance extends Command {
+  
+  /** Creates a new changeAlliance. */
+  public changeAlliance() {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(RobotContainer.INTAKE);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    Constants.wantedShoulderAngle = 0;
-    intake.shooter.set(0);
+      Constants.onRedTeam = !Constants.onRedTeam;
+/* 
+
+Optional<Alliance> ally = DriverStation.getAlliance();
+if (ally.isPresent()) {
+    if (ally.get() == Alliance.Red) {
+        //<RED ACTION>
+        Constants.wantedApriltag = 4;
+    }
+    if (ally.get() == Alliance.Blue) {
+      //  <BLUE ACTION>
+      Constants.wantedApriltag = 7;
+    }
+}
+else {
+    //<NO COLOR YET ACTION>
+}
+*/
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-      Constants.wantedShoulderAngle = 0;
-    intake.shooter.set(0);
-    intake.shooterSlave.set(0);
+
   }
 
   // Called once the command ends or is interrupted.
@@ -38,6 +55,6 @@ public class autoSpeakerOff extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }

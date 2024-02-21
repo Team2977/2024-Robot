@@ -19,11 +19,11 @@ public class toggleSpeed extends Command {
   public void initialize() {
 
     if (Constants.fastmode == false) {
-      Constants.driveSpeed = 2;
-      Constants.turnSpeed = 2;
+      Constants.driveSpeed = 3;
+      Constants.turnSpeed = 3;
     } else {
-      Constants.driveSpeed = 4;
-      Constants.turnSpeed = 4;
+      Constants.driveSpeed = 1;
+      Constants.turnSpeed = 1;
     }
   }
 

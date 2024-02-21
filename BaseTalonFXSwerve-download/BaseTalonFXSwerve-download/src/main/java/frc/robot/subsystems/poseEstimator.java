@@ -10,11 +10,9 @@ import java.io.IOException;
 
 import java.util.Optional;
 
-
-
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
-
+import org.photonvision.PhotonUtils;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
@@ -44,8 +42,9 @@ public class poseEstimator extends SubsystemBase {
 
   private final PhotonCamera photonCamera;
   private final Swerve swerve;
-  private final AprilTagFieldLayout aprilTagFieldLayout;
+  public AprilTagFieldLayout aprilTagFieldLayout;
   private PhotonPoseEstimator photonEstimator;
+  private boolean driverStationSet;
 
   
 
@@ -67,28 +66,40 @@ public class poseEstimator extends SubsystemBase {
    */
   private static final Vector<N3> localMesurementStdDevs = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(10));
 
-  private final SwerveDrivePoseEstimator poseEstimator;
+  public final SwerveDrivePoseEstimator poseEstimator;
 
-  private final Field2d field2d = new Field2d();
+  public final Field2d field2d = new Field2d();
+  
 
   private double previousPipelineTimestamp = 0;
-
+  
 
   public poseEstimator(PhotonCamera photonCamera, Swerve swerve) {
     this.photonCamera = photonCamera;
     this.swerve = swerve;
     AprilTagFieldLayout layout;
+    driverStationSet = false;
 
-    /*photonEstimator =
-                new PhotonPoseEstimator(
-                        kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, photonCamera, kRobotToCam);
-        photonEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-*/
+  
     try {
       layout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
+      //layout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
       var alliance = DriverStation.getAlliance();
-      layout.setOrigin(alliance.get() == Alliance.Red ?
-          OriginPosition.kBlueAllianceWallRightSide : OriginPosition.kRedAllianceWallRightSide);
+      var d = DriverStation.isDSAttached();
+     //layout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
+     // layout.setOrigin(OriginPosition.kRedAllianceWallRightSide);
+     // layout.setOrigin(alliance.get() == Alliance.Blue ?
+       //   OriginPosition.kBlueAllianceWallRightSide : OriginPosition.kRedAllianceWallRightSide);
+ 
+      if (alliance.get() != Alliance.Red) {
+        layout.setOrigin(OriginPosition.kRedAllianceWallRightSide);
+        Constants.onRedTeam = true;
+      } else {
+        layout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
+        Constants.onRedTeam = false;
+      }
+
+          
     } catch(IOException e) {
       DriverStation.reportError("Failed to load AprilTagFieldLayout", e.getStackTrace());
       layout = null;
@@ -115,7 +126,23 @@ public class poseEstimator extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-      
+    /*  AprilTagFieldLayout layout;
+
+      if(driverStationSet == false && DriverStation.isDSAttached() == true){
+       try {
+      layout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
+      var alliance = DriverStation.getAlliance();
+      layout.setOrigin(alliance.get() == Alliance.Blue ?
+          OriginPosition.kBlueAllianceWallRightSide : OriginPosition.kRedAllianceWallRightSide);
+          
+    } catch(IOException e) {
+      DriverStation.reportError("Failed to load AprilTagFieldLayout", e.getStackTrace());
+      layout = null;
+    }
+    this.aprilTagFieldLayout = layout;
+        driverStationSet = true;
+      }*/
+
     // Update pose estimator with the best visible target
       var pipelineResult = photonCamera.getLatestResult();
       var resultTimestamp = pipelineResult.getTimestampSeconds();
@@ -132,6 +159,7 @@ public class poseEstimator extends SubsystemBase {
   
           var visionMeasurement = camPose.transformBy(Constants.Vision.kRobotToCam);
           poseEstimator.addVisionMeasurement(visionMeasurement.toPose2d(), resultTimestamp);
+          
   }
 
 }
@@ -142,8 +170,12 @@ public class poseEstimator extends SubsystemBase {
 
     field2d.setRobotPose(getCurrentPose());
     SmartDashboard.putData("pose", field2d);
-    SmartDashboard.putNumber("5poseX", field2d.getRobotPose().getX());
-    SmartDashboard.putNumber("5poseY", field2d.getRobotPose().getY());
+    SmartDashboard.putNumber("distance to target", getTargetDistance(4));  
+    SmartDashboard.putNumber("target yaw radians", getTargetYaw(4));
+
+
+  
+
 
 
   this.swerve.addVisionMeasurement(poseEstimator.getEstimatedPosition(), resultTimestamp);
@@ -161,9 +193,24 @@ public class poseEstimator extends SubsystemBase {
       pose.getRotation().getDegrees());
       }
 
-    public Pose2d getCurrentPose() {
+   public Pose2d getCurrentPose() {
       return poseEstimator.getEstimatedPosition();
       }
+
+  public double getTargetYaw(int wantedTagID){
+      var targetYaw = PhotonUtils.getYawToPose(getCurrentPose(), aprilTagFieldLayout.getTagPose(wantedTagID).get().toPose2d()).getRadians();
+        return targetYaw;
+      }
+
+  public double getTargetDistance(int wantedTagID) {
+        var targetDistance = PhotonUtils.getDistanceToPose(getCurrentPose(), aprilTagFieldLayout.getTagPose(wantedTagID).get().toPose2d());
+        return targetDistance;
+      }
+
+  public Pose2d getTargetPose2d(int wantedApriltag) {
+    return aprilTagFieldLayout.getTagPose(wantedApriltag).get().toPose2d();
+  }
+  
 
         /**
    * Resets the current pose to the specified pose. This should ONLY be called

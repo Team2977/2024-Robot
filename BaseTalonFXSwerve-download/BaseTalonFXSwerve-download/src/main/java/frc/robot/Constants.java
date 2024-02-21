@@ -28,6 +28,11 @@ public final class Constants {
     public static  double driveSpeed;
     public static  double turnSpeed;
     public static boolean fastmode = false;
+    public static double wantedShoulderAngle;
+    public static double shoulderSpeed;
+    public static int wantedApriltag = 7;
+    public static boolean onRedTeam;
+    public static int invert;
 
     //auto mode constants
     public static boolean autoDriveMode = false;
@@ -38,9 +43,9 @@ public final class Constants {
     public static boolean intakeInActive = false;
     public static boolean intakeOutActive = false;
 
-    public static final double speakerSpeed = 0;
+    public static final double speakerSpeed = 1;
     public static final double ampSpeed = 0;
-    public static final double indexerShootSpeed = -0.5;
+    public static double indexerShootSpeed;
     public static final double indexerIntake = 0.5;
     public static final double intakeInSpeed = 1;
     public static final double indexerOutSpeed = -1;
@@ -50,7 +55,7 @@ public static class Vision {
         public static final String kCameraName = "photonvision";
         // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
         public static final Transform3d kRobotToCam =
-                new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
+                new Transform3d(new Translation3d(Units.inchesToMeters(-17), Units.inchesToMeters(-11), Units.inchesToMeters(5)), new Rotation3d(0, Units.degreesToRadians(-20), 0));
 
         // The layout of the AprilTags on the field
         public static final AprilTagFieldLayout kTagLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();

@@ -2,16 +2,15 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.autos;
+package frc.robot.commands.UpperAssembly;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.intake;
 
-public class autoSpeakerOn extends Command {
-  /** Creates a new autoSpeaker. */
-  public autoSpeakerOn() {
+public class indexerIn extends Command {
+  /** Creates a new indexerIn. */
+  public indexerIn() {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(RobotContainer.INTAKE);
   }
@@ -23,16 +22,13 @@ public class autoSpeakerOn extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Constants.wantedShoulderAngle = 10.5;
-    intake.shooter.set(Constants.speakerSpeed);
-    intake.shooterSlave.set(-Constants.speakerSpeed);
-    
+    intake.indexer.set(0.2);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-
+    intake.indexer.set(0);
   }
 
   // Returns true when the command should end.

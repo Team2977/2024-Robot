@@ -4,40 +4,48 @@
 
 package frc.robot.autos;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.intake;
+import frc.robot.subsystems.Swerve;
 
-public class autoSpeakerOn extends Command {
-  /** Creates a new autoSpeaker. */
-  public autoSpeakerOn() {
+public class autoBackUp extends Command {
+  private Swerve swerve;
+  private boolean endCommand;
+  /** Creates a new autoBackUp. */
+  public autoBackUp() {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(RobotContainer.INTAKE);
+    this.swerve = RobotContainer.s_Swerve;
+    addRequirements(RobotContainer.s_Swerve);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    endCommand = false;
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Constants.wantedShoulderAngle = 10.5;
-    intake.shooter.set(Constants.speakerSpeed);
-    intake.shooterSlave.set(-Constants.speakerSpeed);
-    
+    var result = RobotContainer.photonCamera.getLatestResult();
+    if (result.hasTargets()) {
+      swerve.drive(new Translation2d(), 0, true, true);
+      endCommand = true;
+    } else {
+      swerve.drive(new Translation2d(-2, 0), 0, false, true);
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-
+    swerve.drive(new Translation2d(), 0, true, true);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return endCommand;
   }
 }
