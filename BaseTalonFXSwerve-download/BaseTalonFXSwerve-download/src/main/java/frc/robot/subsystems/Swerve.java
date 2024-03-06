@@ -4,6 +4,7 @@ import frc.robot.SwerveModule;
 //import frc.robot.vision;
 
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -11,8 +12,10 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
+import com.pathplanner.lib.pathfinding.Pathfinder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -38,7 +41,7 @@ public class Swerve extends SubsystemBase {
         gyro = new Pigeon2(Constants.Swerve.pigeonID, "driveBase");
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(0);
-       
+        this.poseEstimator = RobotContainer.poseESTIMATOR;
         
 
         mSwerveMods = new SwerveModule[] {
@@ -68,14 +71,14 @@ public class Swerve extends SubsystemBase {
          // Configure AutoBuilder last
     AutoBuilder.configureHolonomic(
             this::getPose, // Robot pose supplier
-            this::setPose, // Method to reset odometry (will be called if your auto has a starting pose)
+            this::autoResetPose, // Method to reset odometry (will be called if your auto has a starting pose)
             () -> Constants.Swerve.swerveKinematics.toChassisSpeeds(getModuleStates()), // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
             this::runVelocity, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
             new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
                     new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
                     new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
                     Constants.Swerve.maxSpeed, // Max module speed, in m/s
-    /*change */               edu.wpi.first.math.util.Units.inchesToMeters(25), // Drive base radius in meters. Distance from robot center to furthest module. 
+                    edu.wpi.first.math.util.Units.inchesToMeters(25), // Drive base radius in meters. Distance from robot center to furthest module. 
                     new ReplanningConfig() // Default path replanning config. See the API for the options here
             ),
             () -> {
@@ -91,6 +94,8 @@ public class Swerve extends SubsystemBase {
             },
             this // Reference to this subsystem to set requirements
     );
+
+    
   }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
@@ -185,23 +190,20 @@ public class Swerve extends SubsystemBase {
     }
  
     public void runVelocity(ChassisSpeeds speeds) {
-
         this.setChassisSpeeds(speeds, true, true);
-
-        
-
     }    
 
 
     public void autoResetPose(Pose2d pose2d) {
-        //try this
-      poseEstimator.field2d.setRobotPose(pose2d);
-        }
-
-
-
-
-
+    //try this
+        //poseEstimator.field2d.setRobotPose(pose2d);
+        //poseEstimator.setCurrentPose(PathPlannerAuto.getStaringPoseFromAutoFile(SmartDashboard.getData("Auto Mode").toString()));
+        //this.setPose(PathPlannerAuto.getStaringPoseFromAutoFile("Blue 3 note"));
+        //this.setPose(new Pose2d(new Translation2d(1.52, 5.67), new Rotation2d(Units.degreesToRadians(180))));
+        
+        //poseEstimator.setCurrentPose(new Pose2d(new Translation2d(1.52, 5.67), new Rotation2d(Units.degreesToRadians(180))));
+        
+    }
 
     /*========================================================================================================= */
 
@@ -227,7 +229,7 @@ public class Swerve extends SubsystemBase {
        
        
         swerveOdometry.update(getGyroYaw(), getModulePositions());
-
+/* 
         for(SwerveModule mod : mSwerveMods){
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Angle", mod.getPosition().angle.getDegrees());
@@ -236,7 +238,7 @@ public class Swerve extends SubsystemBase {
 
         SmartDashboard.putNumber("poseX", this.getPose().getX());
         SmartDashboard.putNumber("poseY", this.getPose().getY());
-        
+      */  
         
       
     }

@@ -5,6 +5,7 @@
 package frc.robot.autos;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.intake;
 
@@ -25,7 +26,11 @@ public class hoverMode extends Command {
   @Override
   public void execute() {
     intake.rightIntake.set(1);
-    intake.leftIntake.set(-1);
+    intake.leftIntake.set(1);
+    
+    intake.indexer.set(Constants.indexerOutSpeed);
+    intake.shooter.set(0.15);
+    intake.shooterSlave.set(-0.05);
     //intake.shooter.set(-1);
     //intake.shooterSlave.set(1);
     //intake.indexer.set(-0.5);

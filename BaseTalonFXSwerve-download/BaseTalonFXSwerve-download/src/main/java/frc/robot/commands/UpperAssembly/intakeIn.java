@@ -12,7 +12,9 @@ import frc.robot.subsystems.intake;
 
 public class intakeIn extends Command {
   /** Creates a new intakeIn. */
-  public intakeIn() {addRequirements(RobotContainer.INTAKE);}
+  public intakeIn() {
+    addRequirements(RobotContainer.INTAKE);
+  }
 
   // Called when the command is initially scheduled.
   @Override
@@ -24,8 +26,9 @@ public class intakeIn extends Command {
   @Override
   public void execute() {
       
-      intake.rightIntake.set(-1);
+      intake.rightIntake.set(1);
       intake.leftIntake.set(1);
+      //intake.indexer.set(-0.2);
 
      
    
@@ -38,6 +41,7 @@ public class intakeIn extends Command {
 
     intake.rightIntake.set(0);
       intake.leftIntake.set(0);
+      intake.indexer.set(0);
   }
 
   // Returns true when the command should end.

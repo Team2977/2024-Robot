@@ -2,30 +2,30 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 14.924230418261407,
-      "y": 5.566417514601411
+      "x": 0.9614100139881189,
+      "y": 4.057871591526659
     },
-    "rotation": 0
+    "rotation": 122.15229514128231
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "test path"
+            "name": "autoShoot"
           }
         },
         {
-          "type": "wait",
+          "type": "path",
           "data": {
-            "waitTime": 10.0
+            "pathName": "Fast Hover path v2"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "Hover modes",
   "choreoAuto": false
 }

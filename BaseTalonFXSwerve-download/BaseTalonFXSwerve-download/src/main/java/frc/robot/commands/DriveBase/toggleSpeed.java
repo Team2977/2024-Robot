@@ -18,7 +18,7 @@ public class toggleSpeed extends Command {
   @Override
   public void initialize() {
 
-    if (Constants.fastmode == false) {
+    if (Constants.slowMode == true) {
       Constants.driveSpeed = 3;
       Constants.turnSpeed = 3;
     } else {
@@ -29,13 +29,13 @@ public class toggleSpeed extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() { SmartDashboard.putBoolean("fastmode", Constants.fastmode);}
+  public void execute() { SmartDashboard.putBoolean("fastmode", Constants.slowMode);}
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    Constants.fastmode = !Constants.fastmode;
-    SmartDashboard.putBoolean("fastmode", Constants.fastmode);
+    Constants.slowMode = !Constants.slowMode;
+    SmartDashboard.putBoolean("fastmode", Constants.slowMode);
   }
 
   // Returns true when the command should end.

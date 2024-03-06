@@ -2,21 +2,15 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.79769185179396,
-      "y": 7.156822518773243
+      "x": 1.2420697206066778,
+      "y": 7.086657592118603
     },
-    "rotation": 0
+    "rotation": -113.19859051364814
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Blue 3 note Part 1"
-          }
-        },
         {
           "type": "named",
           "data": {
@@ -24,7 +18,7 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "race",
           "data": {
             "commands": [
               {
@@ -36,7 +30,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Blue 3 note Part 2"
+                  "pathName": "3 note Part 1 v2"
                 }
               }
             ]

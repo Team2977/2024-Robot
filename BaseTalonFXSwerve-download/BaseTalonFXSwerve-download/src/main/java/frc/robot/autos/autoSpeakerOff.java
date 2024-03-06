@@ -19,25 +19,30 @@ public class autoSpeakerOff extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    Constants.wantedShoulderAngle = 0;
-    intake.shooter.set(0);
+    
+    
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
       Constants.wantedShoulderAngle = 0;
-    intake.shooter.set(0);
-    intake.shooterSlave.set(0);
+      //Constants.speakerSpeed = 0;
+      //intake.shooter.setControl(intake.vDC.withVelocity(0));
+      //intake.shooterSlave.setControl(intake.vDC.withVelocity(0));
+
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    Constants.wantedShoulderAngle = 0;
+      //Constants.speakerSpeed = 0;
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }

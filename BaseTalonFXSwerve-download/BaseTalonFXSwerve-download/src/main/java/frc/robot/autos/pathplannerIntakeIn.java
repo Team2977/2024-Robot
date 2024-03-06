@@ -5,15 +5,13 @@ import frc.robot.subsystems.Swerve;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 
-public class autoMoveBack extends SequentialCommandGroup {
+public class pathplannerIntakeIn extends SequentialCommandGroup {
 private Swerve swerve;
 
-    public autoMoveBack(Swerve s_Swerve){
+    public pathplannerIntakeIn(Swerve s_Swerve){
         this.swerve = s_Swerve;
         addCommands(
-             new autoBackUp()
-             
-            
+             new autoIntakeIn().withTimeout(3)
         );
         
     }

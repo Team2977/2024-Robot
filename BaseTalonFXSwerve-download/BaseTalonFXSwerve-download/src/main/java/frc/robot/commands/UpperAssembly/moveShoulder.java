@@ -25,36 +25,29 @@ public class moveShoulder extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    /* 
-    shoulderPID.setSetpoint(-30);
-    shoulderPID.setTolerance(2);*/
-    SmartDashboard.putBoolean("shoulermoving", true);
+   
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-  /*   var currentAngle = frc.robot.subsystems.intake.shoulderEncoder.getDistance();
-    var shoulderSpeed = shoulderPID.calculate(currentAngle);
-    if (shoulderPID.atSetpoint()){
-    //Constants.shoulderSpeed = 0;
-    }
-   */
-    Constants.wantedShoulderAngle = 10.5;
-    intake.shooter.set(0.9);
-    intake.shooterSlave.set(0.9);
-  
+ 
+    Constants.wantedShoulderAngle = 11.7;
+    
+    frc.robot.subsystems.intake.shooter.setControl(intake.vDC.withVelocity(96));
+    frc.robot.subsystems.intake.shooterSlave.setControl(intake.vDC.withVelocity(96));
     
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    SmartDashboard.putBoolean("shoulermoving", false);
+    
     Constants.wantedShoulderAngle = 0;
+    frc.robot.subsystems.intake.shooter.setControl(intake.vDC.withVelocity(0));
+    frc.robot.subsystems.intake.shooterSlave.setControl(intake.vDC.withVelocity(0));
     intake.shooter.set(0);
     intake.shooterSlave.set(0);
-
   }
 
   // Returns true when the command should end.

@@ -2,35 +2,23 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.2303755661642377,
-      "y": 3.519940487174422
+      "x": 1.0900457128549583,
+      "y": 4.198201444835939
     },
-    "rotation": 113.30489053920313
+    "rotation": 131.18592516570968
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "Blue 3 note Part 1"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "autoShoot"
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.5
-          }
-        },
-        {
-          "type": "parallel",
+          "type": "race",
           "data": {
             "commands": [
               {
@@ -42,16 +30,10 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Blue 3 note Part 2"
+                  "pathName": "3 note source Part 1"
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.0
           }
         },
         {
@@ -61,13 +43,7 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.0
-          }
-        },
-        {
-          "type": "parallel",
+          "type": "race",
           "data": {
             "commands": [
               {
@@ -79,21 +55,15 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Blue 3 note Part 3"
+                  "pathName": "3 note source part 2"
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "autoShoot"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "3 note auto",
   "choreoAuto": false
 }

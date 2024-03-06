@@ -6,6 +6,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "autoShoot"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -27,6 +33,6 @@
       ]
     }
   },
-  "folder": null,
+  "folder": "Hover modes",
   "choreoAuto": false
 }

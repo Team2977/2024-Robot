@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.2537638750491173,
-      "y": 3.8473768115627407
+      "x": 1.2069872572793579,
+      "y": 1.9880062552147901
     },
-    "rotation": 126.1193408494798
+    "rotation": -87.95459151111278
   },
   "command": {
     "type": "sequential",
@@ -14,12 +14,12 @@
         {
           "type": "path",
           "data": {
-            "pathName": "move then shoot 1"
+            "pathName": "no shoot hover path"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "Hover modes",
   "choreoAuto": false
 }

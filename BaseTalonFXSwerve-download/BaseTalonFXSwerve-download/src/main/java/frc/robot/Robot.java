@@ -12,6 +12,7 @@ package frc.robot;
 
 import java.util.Optional;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
@@ -53,15 +54,22 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    SignalLogger.stop();
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
     Constants.driveSpeed = 1;
     Constants.turnSpeed = 1;
     Constants.wantedShoulderAngle = 0;
+    Constants.flywheelSpeed = 0;
+    Constants.slowMode = true;
+    Constants.wantedClimberPose = 0;
     
     moveShoulder.shoulderPID.reset();
     intake.shoulder.setNeutralMode(NeutralModeValue.Brake);
+    intake.leftHook.setPosition(0);
+    intake.rightHook.setPosition(0);
+
     
 
   }
@@ -96,6 +104,7 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+        SignalLogger.stop();
     var alliance = DriverStation.getAlliance();
 
     if (alliance.isPresent() && alliance.get() == Alliance.Red) {
@@ -107,7 +116,8 @@ public class Robot extends TimedRobot {
       Constants.onRedTeam = false;
       Constants.wantedApriltag = 7;
     }
-  
+    intake.leftHook.setNeutralMode(NeutralModeValue.Brake);
+    intake.rightHook.setNeutralMode(NeutralModeValue.Brake);
     Constants.autoDriveMode = true;
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
@@ -139,7 +149,6 @@ public class Robot extends TimedRobot {
     
 
     var alliance = DriverStation.getAlliance();
-
     if (alliance.isPresent() && alliance.get() == Alliance.Red) {
       Constants.invert = 1;
       Constants.onRedTeam = true;
@@ -149,6 +158,9 @@ public class Robot extends TimedRobot {
       Constants.onRedTeam = false;
       Constants.wantedApriltag = 7;
     }
+        SignalLogger.stop();
+    intake.leftHook.setNeutralMode(NeutralModeValue.Brake);
+    intake.rightHook.setNeutralMode(NeutralModeValue.Brake);
   }
 
   /** This function is called periodically during operator control. */
@@ -159,6 +171,7 @@ public class Robot extends TimedRobot {
     ySpeed = MathUtil.applyDeadband(RobotContainer.driver.getRawAxis(0) / Constants.driveSpeed * Constants.invert, Constants.stickDeadband);
 
     SmartDashboard.putBoolean("on red team", Constants.onRedTeam);
+    SmartDashboard.putString("auto mode for path", SmartDashboard.getData("Auto Mode").toString());
   }
 
   @Override
@@ -169,5 +182,8 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    intake.leftHook.setNeutralMode(NeutralModeValue.Coast);
+    intake.rightHook.setNeutralMode(NeutralModeValue.Coast);
+  }
 }

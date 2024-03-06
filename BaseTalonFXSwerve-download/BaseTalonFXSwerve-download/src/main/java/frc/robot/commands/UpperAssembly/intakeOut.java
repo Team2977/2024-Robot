@@ -25,7 +25,7 @@ public class intakeOut extends Command {
   @Override
   public void execute() {
    
-      intake.rightIntake.set(0.6);
+      intake.rightIntake.set(-0.6);
       intake.leftIntake.set(-0.6);
       
    

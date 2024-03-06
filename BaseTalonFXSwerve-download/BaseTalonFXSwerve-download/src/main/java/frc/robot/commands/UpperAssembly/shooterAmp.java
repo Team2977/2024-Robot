@@ -22,11 +22,22 @@ public class shooterAmp extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {intake.shooter.set(Constants.ampSpeed);}
+  public void execute() {
+    Constants.wantedShoulderAngle = 10;
+    intake.shooter.setControl(intake.vDC.withVelocity(Constants.ampSpeed));
+    intake.shooterSlave.setControl(intake.vDC.withVelocity(Constants.ampSpeed));
+  }
 
   // Called once the command ends or is interrupted.
   @Override
-public void end(boolean interrupted) {/*intake.indexer.set(0);*/}
+public void end(boolean interrupted) {
+  /* 
+  Constants.wantedShoulderAngle = 2;
+    intake.shooter.setControl(intake.vDC.withVelocity(0));
+    intake.shooterSlave.setControl(intake.vDC.withVelocity(0));
+    intake.shooter.set(0);
+    intake.shooterSlave.set(0);*/
+}
 
   // Returns true when the command should end.
   @Override
