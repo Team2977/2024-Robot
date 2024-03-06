@@ -5,25 +5,40 @@
 package frc.robot.autos;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.intake;
 
 public class autoSpeakerOff extends Command {
   /** Creates a new autoSpeakerOff. */
   public autoSpeakerOff() {
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(RobotContainer.INTAKE);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {intake.shooter.set(0);}
+  public void initialize() {
+    
+    
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+      Constants.wantedShoulderAngle = 0;
+      //Constants.speakerSpeed = 0;
+      //intake.shooter.setControl(intake.vDC.withVelocity(0));
+      //intake.shooterSlave.setControl(intake.vDC.withVelocity(0));
+
+  }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    Constants.wantedShoulderAngle = 0;
+      //Constants.speakerSpeed = 0;
+  }
 
   // Returns true when the command should end.
   @Override

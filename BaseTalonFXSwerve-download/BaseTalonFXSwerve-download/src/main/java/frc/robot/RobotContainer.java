@@ -1,5 +1,14 @@
 package frc.robot;
 
+
+import org.photonvision.PhotonCamera;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
+import edu.wpi.first.math.geometry.Pose2d;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -13,9 +22,17 @@ import frc.robot.autos.*;
 import frc.robot.commands.*;
 import frc.robot.commands.DriveBase.TeleopSwerve;
 import frc.robot.commands.DriveBase.toggleSpeed;
-import frc.robot.commands.Intake.intakeIn;
-import frc.robot.commands.Intake.intakeOut;
+import frc.robot.commands.UpperAssembly.indexerIn;
+import frc.robot.commands.UpperAssembly.indexerSHOOT;
+import frc.robot.commands.UpperAssembly.intakeIn;
+import frc.robot.commands.UpperAssembly.intakeOut;
+import frc.robot.commands.UpperAssembly.moveShoulder;
+import frc.robot.commands.UpperAssembly.shootLow;
+import frc.robot.commands.UpperAssembly.shooterAmp;
+import frc.robot.commands.UpperAssembly.shoulderDown;
+
 import frc.robot.subsystems.*;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -25,38 +42,45 @@ import frc.robot.subsystems.*;
  */
 public class RobotContainer {
     /* Controllers */
-    private final Joystick driver = new Joystick(0);
-    public final static Joystick gamepad2 =  new Joystick(1);
-    if (isReal()) {
-        // Instantiate IO implementations to talk to real hardware
-        driveTrain = new DriveTrain(DriveTrainIOReal());
-        elevator = new Elevator(ElevatorIOReal());
-        intake = new Intake(IntakeIOReal());
-    } else {
-        // Use anonymous classes to create "dummy" IO implementations
-        driveTrain = new DriveTrain(DriveTrainIO() {});
-        elevator = new Elevator(ElevatorIO() {});
-        intake = new Intake(IntakeIO() {});
-    }
+    public static final Joystick driver = new Joystick(0);
+    public static final Joystick gamepad2 =  new Joystick(1);
+    public static final PhotonCamera photonCamera = new PhotonCamera("frontCamera");
+    public static final PhotonCamera backCamera = new PhotonCamera("backCamera");
+    
+    public final SendableChooser<Command> chooser;
+
     
 
     /* Drive Controls */
-    private final int translationAxis = XboxController.Axis.kLeftY.value;
-    private final int strafeAxis = XboxController.Axis.kLeftX.value;
-    private final int rotationAxis = XboxController.Axis.kRightX.value;
-  /*   private final int translationAxis = 1;
+    private final int translationAxis = 1;
     private final int strafeAxis = 0;
     private final int rotationAxis = 3;
-*/
+
 
     /* Driver Buttons */
-    private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
-    private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
-    private final JoystickButton driverX = new JoystickButton(driver, 3);
-    private final JoystickButton rightBummber = new JoystickButton(driver, 6);
-    private final JoystickButton driverIntakeIn = new JoystickButton(driver, 2);
-    private final JoystickButton driverIntakeOut = new JoystickButton(driver, 1);
+    private final JoystickButton zeroGyro = new JoystickButton(driver, 4);  //Y
+    private final JoystickButton robotCentric = new JoystickButton(driver, 7);
+    private final JoystickButton driverY = new JoystickButton(driver, 5); //reset modules to absolute
+    private final JoystickButton rightBummber = new JoystickButton(driver, 8); 
+    private final JoystickButton driverIntakeIn = new JoystickButton(driver, 1); //A button
+    private final JoystickButton driverIntakeOut = new JoystickButton(driver, 2); //B button
+    private final JoystickButton driverRightPaddle = new JoystickButton(driver, 3);//aim at speaker
+    private final JoystickButton driverLeftPaddle =  new JoystickButton(driver, 6);
+    private final JoystickButton driverLeftTrigger = new JoystickButton(driver, 9);
+    private final JoystickButton driverRightTrigger = new JoystickButton(driver, 10);
+    private final JoystickButton driverStart = new JoystickButton(driver, 12);
 
+
+    private final JoystickButton GA = new JoystickButton(gamepad2, 1);
+    private final JoystickButton GB = new JoystickButton(gamepad2, 2);
+    private final JoystickButton GX = new JoystickButton(gamepad2, 3);
+    private final JoystickButton GY = new JoystickButton(gamepad2, 4);
+    private final JoystickButton GLeftBumper = new JoystickButton(gamepad2, 5);
+    private final JoystickButton GRightBumper = new JoystickButton(gamepad2, 6);
+ /*   private final JoystickButton GLB = new JoystickButton(gamepad2, XboxController.Button.kLeftBumper.value);
+    private final JoystickButton GA = new JoystickButton(gamepad2, 1);
+    private final JoystickButton GB = new JoystickButton(gamepad2, 2);
+ */   
 
    /*  private final JoystickButton rightBummber = new JoystickButton(driver, 8);
     private final JoystickButton zeroGyro = new JoystickButton(driver, 4);
@@ -68,41 +92,52 @@ public class RobotContainer {
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     public static final intake INTAKE = new intake();
+    public static final poseEstimator poseESTIMATOR = new poseEstimator(photonCamera, backCamera, s_Swerve);
+    public static final automaticAiming AUTOMATIC_AIMING = new automaticAiming(poseESTIMATOR, INTAKE, s_Swerve);
+    public static final chaseTag CHASETAG = new chaseTag(photonCamera, s_Swerve, poseESTIMATOR::getCurrentPose);
 
-
-        SendableChooser<Command> chooser = new SendableChooser<>();
-        private final Command autointakeCommand = new autoIntakeIn();
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-        if (Constants.autoDriveMode == false) {
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                 s_Swerve, 
-                () -> driver.getRawAxis(translationAxis)/Constants.driveSpeed, 
-                () -> driver.getRawAxis(strafeAxis)/Constants.driveSpeed, 
-                () -> driver.getRawAxis(rotationAxis)/Constants.turnSpeed, 
+                () -> driver.getRawAxis(translationAxis)/Constants.driveSpeed * Constants.invert, 
+                () -> driver.getRawAxis(strafeAxis)/Constants.driveSpeed * Constants.invert, 
+                () -> -driver.getRawAxis(rotationAxis)/Constants.turnSpeed /* Constants.invert*/, 
                 () -> robotCentric.getAsBoolean()
             )
         );
-            } else {
-                s_Swerve.setDefaultCommand(
-            new TeleopSwerve(
-                s_Swerve, 
-                () -> Constants.autoTranslation/Constants.driveSpeed, 
-                () -> Constants.autoStrafe/Constants.driveSpeed, 
-                () -> Constants.autoRotation/Constants.turnSpeed, 
-                () -> robotCentric.getAsBoolean()
-            )
-        );
-            }
+           
+
+            NamedCommands.registerCommand("autoSpeakerOn", new autoSpeakerOn(INTAKE, photonCamera, s_Swerve, poseESTIMATOR));
+            NamedCommands.registerCommand("intakeIn", new intakeIn());
+            NamedCommands.registerCommand("intakeOut", new intakeOut());
+            NamedCommands.registerCommand("autoShoot", new autoshoot());
+            NamedCommands.registerCommand("indexerSHOOT", new indexerSHOOT());
+            NamedCommands.registerCommand("autoShoot", new autoshoot());
+            NamedCommands.registerCommand("setRobotPose", new setRobotPose());
+            NamedCommands.registerCommand("autoINTAKEv2", new pathplannerIntakeIn(s_Swerve));
+            NamedCommands.registerCommand("autoBackUp", new autoBackUp());
+            NamedCommands.registerCommand("setRobotPose", new setRobotPose());
+            NamedCommands.registerCommand("autoIntakeIn", new autoIntakeIn());
+            NamedCommands.registerCommand("hoverMode", new hoverMode());
+            NamedCommands.registerCommand("aimAndRev", new aimAndRev(INTAKE, photonCamera, s_Swerve, /*poseESTIMATOR::getCurrentPose,*/ poseESTIMATOR));
 
 
         
-
+        chooser = AutoBuilder.buildAutoChooser(); // Default auto will be `Commands.none()`
+        chooser.addOption("move", new PathPlannerAuto("testAuto"));
+        chooser.addOption("test", new exampleAuto(s_Swerve));
+        chooser.addOption("blue test auto", new PathPlannerAuto("bluetestauto"));
+        chooser.addOption("hover mode", new PathPlannerAuto("hover mode"));
+        chooser.addOption("blue 3 note", new PathPlannerAuto("Blue 3 note"));
+       // chooser.addOption("blue 3 note", new PathPlannerAuto("Blue 3 note auto"));
+        chooser.addOption("Blue 3 note v2", new PathPlannerAuto("Blue 3 note v2"));
+        chooser.addOption("shoot 1 don't move", new PathPlannerAuto("1 note auto"));
         
-        chooser.addOption("autointake", autointakeCommand);
+        SmartDashboard.putData("Auto Mode", chooser);
 
 
 
@@ -121,12 +156,41 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         /* Driver Buttons */
-        zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
-        driverX.onTrue(new InstantCommand(() -> s_Swerve.resetModulesToAbsolute()));
-       
+        driverY.onTrue(new InstantCommand(() -> s_Swerve.resetModulesToAbsolute()));
+        zeroGyro.onTrue(new InstantCommand(() -> poseESTIMATOR.setCurrentPose(new Pose2d())));
+        //driverStart.onTrue(new changeAlliance());
         rightBummber.onTrue(new toggleSpeed());
+
+        //intake control
         driverIntakeIn.onTrue(new intakeIn());
         driverIntakeOut.onTrue(new intakeOut());
+        driverRightPaddle.whileTrue(new indexerIn());
+
+        //aim, and after relese, put shoulder down
+        driverLeftTrigger.whileTrue(new aimAndRev(INTAKE, photonCamera, s_Swerve, poseESTIMATOR));
+        driverLeftTrigger.onFalse(new shoulderDown());
+        driverLeftPaddle.onTrue(new shoulderDown());
+        //driverStart.whileFalse(new aimAndRev(INTAKE, photonCamera, s_Swerve, poseESTIMATOR));
+        //shoot
+        driverRightTrigger.whileTrue(new indexerSHOOT());
+        
+      
+        //Operator controls
+        GA.whileTrue(new aimAndRev(INTAKE, photonCamera, s_Swerve, poseESTIMATOR));
+        GA.onFalse(new shoulderDown());
+        GLeftBumper.whileTrue(new indexerIn());
+
+        //GX.onTrue(new climberUp());
+        //GB.onTrue(new climberDown());
+        
+        GY.whileTrue(new shootLow());
+        //GB.whileTrue(new hoverMode());
+        GX.whileTrue(new moveShoulder(INTAKE));
+        GX.onFalse(new shoulderDown());
+       
+        GRightBumper.whileTrue(new shooterAmp());
+        GRightBumper.onFalse(new shoulderDown());
+        
 
     }
 
@@ -137,6 +201,6 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
-        return new exampleAuto(s_Swerve);
+        return chooser.getSelected();
     }
 }

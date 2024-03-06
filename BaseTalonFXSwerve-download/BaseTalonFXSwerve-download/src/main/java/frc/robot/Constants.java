@@ -27,7 +27,16 @@ public final class Constants {
     public static final double stickDeadband = 0.1;
     public static  double driveSpeed;
     public static  double turnSpeed;
-    public static boolean fastmode = false;
+    public static boolean slowMode = true;
+    public static double wantedShoulderAngle;
+    public static double wantedClimberPose;
+    public static double shoulderSpeed;
+    public static int wantedApriltag = 7;
+    public static boolean onRedTeam;
+    public static int invert;
+    public static double flywheelSpeed;
+    public static boolean hasNote;
+    public static boolean targetingOn;
 
     //auto mode constants
     public static boolean autoDriveMode = false;
@@ -37,22 +46,27 @@ public final class Constants {
 
     public static boolean intakeInActive = false;
     public static boolean intakeOutActive = false;
-
-    public static final double speakerSpeed = 0;
-    public static final double ampSpeed = 0;
-    public static final double indexerShootSpeed = -0.5;
+    //not auto mode constants
+    public static double speakerSpeed = 96;
+    public static final double ampSpeed = 30;
+    public static double indexerShootSpeed;
     public static final double indexerIntake = 0.5;
-    public static final double intakeInSpeed = 1;
-    public static final double indexerOutSpeed = -1;
+    public static final double intakeInSpeed = -0.1;
+    public static final double indexerOutSpeed = 0.9;
+    public static final double climberMaxPose = 10;
 
 /*===============================================================================================================================*/
 public static class Vision {
         public static final String kCameraName = "photonvision";
-        // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
+        // Cam mounted facing forward, 17 inches forward of center, 11 inches left of center, 8 inches up from ground, and rotated 20 degrees upward 
         public static final Transform3d kRobotToCam =
-                new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
-
-        // The layout of the AprilTags on the field
+                new Transform3d(new Translation3d(Units.inchesToMeters(-17), Units.inchesToMeters(-11), Units.inchesToMeters(8)), new Rotation3d(0, Units.degreesToRadians(-20), 0));
+        
+                // Cam mouned facing backwards, 17 inches back of center, 11 inches right of center, 5 inches up from groud, rotated 20 degrees up, and rotated 180 degrees to face backwards
+        public static final Transform3d robotToBackCam = 
+                new Transform3d(new Translation3d(Units.inchesToMeters(17), Units.inchesToMeters(11), Units.inchesToMeters(8)), new Rotation3d(0, Units.degreesToRadians(-20), Units.degreesToRadians(180)));
+        
+                // The layout of the AprilTags on the field
         public static final AprilTagFieldLayout kTagLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
         //public static final AprilTagFieldLayout kTagLayout =

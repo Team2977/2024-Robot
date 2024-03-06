@@ -2,16 +2,20 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.Intake;
+package frc.robot.autos;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.intake;
 
-public class shooterAmp extends Command {
-  /** Creates a new shooterAmp. */
-  public shooterAmp() {addRequirements(RobotContainer.INTAKE);}
+public class setRobotPose extends Command {
+  /** Creates a new setRobotPose. */
+  public setRobotPose() {
+    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(RobotContainer.s_Swerve);
+  }
 
   // Called when the command is initially scheduled.
   @Override
@@ -19,15 +23,18 @@ public class shooterAmp extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {intake.shooter.set(Constants.ampSpeed);}
+  public void execute() {
+    RobotContainer.s_Swerve.setPose(new Pose2d(new Translation2d(1.59, 5.58), new Rotation2d(180)));
+    
+  }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {intake.indexer.set(0);}
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }

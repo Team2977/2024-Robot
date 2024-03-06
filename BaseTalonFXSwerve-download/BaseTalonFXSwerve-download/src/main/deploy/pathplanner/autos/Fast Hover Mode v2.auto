@@ -1,0 +1,31 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.9614100139881189,
+      "y": 4.057871591526659
+    },
+    "rotation": 122.15229514128231
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "autoShoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Fast Hover path v2"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Hover modes",
+  "choreoAuto": false
+}

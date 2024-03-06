@@ -6,14 +6,31 @@ package frc.robot;
 
 import javax.swing.text.StyleContext.SmallAttributeSet;
 
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
+
+
+
+
+
+
+import java.util.Optional;
+
+import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.commands.smartdashboard;
+
+import frc.robot.commands.UpperAssembly.moveShoulder;
 import frc.robot.subsystems.intake;
+
+
 
 
 /**
@@ -25,11 +42,19 @@ import frc.robot.subsystems.intake;
 public class Robot extends LoggedRobot {
   public static final CTREConfigs ctreConfigs = new CTREConfigs();
 
+ // private vision Vision;
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-  public static DutyCycleEncoder shoulderPos = new DutyCycleEncoder(0);
   
+  
+
+  final double GOAL_RANGE_METERS = Units.feetToMeters(3);
+
+  public static double xSpeed;
+  public static double ySpeed;
+  public static Optional<Alliance> alliance = DriverStation.getAlliance();
+
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -37,24 +62,25 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotInit() {
+    SignalLogger.stop();
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
     Constants.driveSpeed = 1;
     Constants.turnSpeed = 1;
-    
-   Logger.recordMetadata("ProjectName", "MyProject"); // Set a metadata value
 
-if (isReal()) {
-    Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
-    Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-    new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
-} else {
-    setUseTiming(false); // Run as fast as possible
-    String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
-    Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
-    Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
-}
+    Constants.wantedShoulderAngle = 0;
+    Constants.flywheelSpeed = 0;
+    Constants.slowMode = true;
+    Constants.wantedClimberPose = 0;
+    
+    moveShoulder.shoulderPID.reset();
+    intake.shoulder.setNeutralMode(NeutralModeValue.Brake);
+    intake.leftHook.setPosition(0);
+    intake.rightHook.setPosition(0);
+
+    
+
 
 // Logger.disableDeterministicTimestamps() // See "Deterministic Timestamps" in the "Understanding Data Flow" page
 Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.
@@ -74,11 +100,17 @@ Logger.start(); // Start logging! No more data receivers, replay sources, or met
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+
+   
+
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    intake.shoulder.setNeutralMode(NeutralModeValue.Coast);
+  }
 
   @Override
   public void disabledPeriodic() {}
@@ -86,6 +118,20 @@ Logger.start(); // Start logging! No more data receivers, replay sources, or met
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+        SignalLogger.stop();
+    var alliance = DriverStation.getAlliance();
+
+    if (alliance.isPresent() && alliance.get() == Alliance.Red) {
+      Constants.invert = 1;
+      Constants.onRedTeam = true;
+      Constants.wantedApriltag = 4;
+    } else {
+      Constants.invert = -1;
+      Constants.onRedTeam = false;
+      Constants.wantedApriltag = 7;
+    }
+    intake.leftHook.setNeutralMode(NeutralModeValue.Brake);
+    intake.rightHook.setNeutralMode(NeutralModeValue.Brake);
     Constants.autoDriveMode = true;
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
@@ -109,14 +155,39 @@ Logger.start(); // Start logging! No more data receivers, replay sources, or met
       m_autonomousCommand.cancel();
     }
     Constants.autoDriveMode = false;
+    intake.rightIntake.set(0);
+    intake.leftIntake.set(0);
+    intake.shooter.set(0);
+    intake.shooterSlave.set(0);
+    intake.indexer.set(0);
+    
+
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isPresent() && alliance.get() == Alliance.Red) {
+      Constants.invert = 1;
+      Constants.onRedTeam = true;
+      Constants.wantedApriltag = 4;
+    } else {
+      Constants.invert = -1;
+      Constants.onRedTeam = false;
+      Constants.wantedApriltag = 7;
+    }
+        SignalLogger.stop();
+    intake.leftHook.setNeutralMode(NeutralModeValue.Brake);
+    intake.rightHook.setNeutralMode(NeutralModeValue.Brake);
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    SmartDashboard.putData("encoder", shoulderPos);
 
-    //intake.shoulder.set(RobotContainer.gamepad2.getRawAxis(1)/10);
+    //this gets the x and y values for the command "turnToTarget"
+    xSpeed = MathUtil.applyDeadband(RobotContainer.driver.getRawAxis(1) / Constants.driveSpeed * Constants.invert, Constants.stickDeadband);
+    ySpeed = MathUtil.applyDeadband(RobotContainer.driver.getRawAxis(0) / Constants.driveSpeed * Constants.invert, Constants.stickDeadband);
+
+    SmartDashboard.putBoolean("on red team", Constants.onRedTeam);
+    SmartDashboard.putString("auto mode for path", SmartDashboard.getData("Auto Mode").toString());
+
   }
 
   @Override
@@ -127,5 +198,8 @@ Logger.start(); // Start logging! No more data receivers, replay sources, or met
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    intake.leftHook.setNeutralMode(NeutralModeValue.Coast);
+    intake.rightHook.setNeutralMode(NeutralModeValue.Coast);
+  }
 }

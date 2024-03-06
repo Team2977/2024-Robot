@@ -3,69 +3,69 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.5928943538798759,
-        "y": 5.578111669043852
+        "x": 0.9614100139881189,
+        "y": 4.057871591526659
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.63367409925703,
-        "y": 5.578111669043852
+        "x": 1.9614100139881194,
+        "y": 3.557871591526659
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.9377221147604686,
-        "y": 5.578111669043852
+        "x": 8.270256540513081,
+        "y": 0.7718141932010376
       },
       "prevControl": {
-        "x": 1.523576512384646,
-        "y": 5.56424749647154
+        "x": 7.290274378581676,
+        "y": 0.4000968214339547
       },
       "nextControl": {
-        "x": 4.130525867889341,
-        "y": 5.589805823486292
+        "x": 8.948517498174597,
+        "y": 1.029085590934715
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.686447589419395,
-        "y": 5.578111669043852
+        "x": 8.38719808493748,
+        "y": 7.402399762064483
       },
       "prevControl": {
-        "x": 3.2300759758214665,
-        "y": 5.55472336015897
+        "x": 8.936823343732158,
+        "y": 5.659970750140932
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "part1End"
+      "linkedName": "Fast Hover path v2"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.6,
-      "rotationDegrees": 90.0,
-      "rotateFast": true
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": -125.0187419470197,
+      "rotateFast": false
     }
   ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 4.0,
     "maxAcceleration": 3.0,
-    "maxAngularVelocity": 540.0,
+    "maxAngularVelocity": 500.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -179.30972280213504,
+    "rotation": -161.56505117707798,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Fast hoover mode",
   "previewStartingState": null,
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }
