@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import javax.swing.text.StyleContext.SmallAttributeSet;
+
 
 
 
@@ -18,13 +20,16 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+
 import frc.robot.commands.UpperAssembly.moveShoulder;
 import frc.robot.subsystems.intake;
+
 
 
 
@@ -34,19 +39,22 @@ import frc.robot.subsystems.intake;
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot {
   public static final CTREConfigs ctreConfigs = new CTREConfigs();
+
  // private vision Vision;
   private Command m_autonomousCommand;
+
   private RobotContainer m_robotContainer;
   
   
+
   final double GOAL_RANGE_METERS = Units.feetToMeters(3);
 
   public static double xSpeed;
   public static double ySpeed;
   public static Optional<Alliance> alliance = DriverStation.getAlliance();
-  
+
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -60,6 +68,7 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
     Constants.driveSpeed = 1;
     Constants.turnSpeed = 1;
+
     Constants.wantedShoulderAngle = 0;
     Constants.flywheelSpeed = 0;
     Constants.slowMode = true;
@@ -72,6 +81,9 @@ public class Robot extends TimedRobot {
 
     
 
+
+// Logger.disableDeterministicTimestamps() // See "Deterministic Timestamps" in the "Understanding Data Flow" page
+Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.
   }
 
   /**
@@ -89,7 +101,9 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
+
    
+
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -166,12 +180,14 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+
     //this gets the x and y values for the command "turnToTarget"
     xSpeed = MathUtil.applyDeadband(RobotContainer.driver.getRawAxis(1) / Constants.driveSpeed * Constants.invert, Constants.stickDeadband);
     ySpeed = MathUtil.applyDeadband(RobotContainer.driver.getRawAxis(0) / Constants.driveSpeed * Constants.invert, Constants.stickDeadband);
 
     SmartDashboard.putBoolean("on red team", Constants.onRedTeam);
     SmartDashboard.putString("auto mode for path", SmartDashboard.getData("Auto Mode").toString());
+
   }
 
   @Override
