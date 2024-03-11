@@ -4,6 +4,7 @@
 
 package frc.robot.commands.UpperAssembly;
 
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
@@ -23,20 +24,19 @@ public class shooterAmp extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Constants.wantedShoulderAngle = 10;
-    intake.shooter.setControl(intake.vDC.withVelocity(Constants.ampSpeed));
-    intake.shooterSlave.setControl(intake.vDC.withVelocity(Constants.ampSpeed));
+  //shoulder 8.8 speed 0.8
+    Constants.wantedShoulderAngle = 12.5;
+    intake.shooter.set(0.3);
+    intake.shooterSlave.set(0.2);
   }
 
   // Called once the command ends or is interrupted.
   @Override
 public void end(boolean interrupted) {
-  /* 
-  Constants.wantedShoulderAngle = 2;
-    intake.shooter.setControl(intake.vDC.withVelocity(0));
-    intake.shooterSlave.setControl(intake.vDC.withVelocity(0));
-    intake.shooter.set(0);
-    intake.shooterSlave.set(0);*/
+   
+  Constants.wantedShoulderAngle = 1;
+   
+    intake.disableFlywheels();
 }
 
   // Returns true when the command should end.

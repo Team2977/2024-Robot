@@ -3,6 +3,7 @@ package frc.robot.commands.DriveBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.automaticAiming;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -39,8 +40,8 @@ public class TeleopSwerve extends Command {
          strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband);
         
 
-        if (Constants.targetingOn){
-            rotationVal = RobotContainer.AUTOMATIC_AIMING.rotationValue;
+        if (Constants.targetingOn == true){
+            rotationVal = Constants.robotRotationSpeed;
         } else {
             rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
         }

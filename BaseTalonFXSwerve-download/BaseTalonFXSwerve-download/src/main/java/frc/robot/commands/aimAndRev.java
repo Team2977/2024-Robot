@@ -4,15 +4,8 @@
 
 package frc.robot.commands;
 
-
-import java.security.cert.TrustAnchor;
-import java.util.function.Supplier;
-
 import org.photonvision.PhotonCamera;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
@@ -20,35 +13,28 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.commands.UpperAssembly.shoulderDown;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.intake;
 import frc.robot.subsystems.poseEstimator;
 
 public class aimAndRev extends Command {
-  private final intake intake;
+  private final intake INTAKE;
   private final Swerve swerve;
   private final PhotonCamera photoncamera;  
-  private int wantedApriltag;
  // private final Supplier<Pose2d> poseProvider;
   private final poseEstimator poseSubsystem;
   private double angleOffset;
-  private boolean endCommand;
-
-
-  //private final TrapezoidProfile.Constraints omegConstraints = new Constraints(Units.feetToMeters(8), Units.feetToMeters(8));
-  private final TrapezoidProfile.Constraints omegConstraints = new Constraints(Units.degreesToRadians(500), Units.degreesToRadians(500));
-
   
-//  private final PIDController pidControllerX = new PIDController(0.5, 0.1, 0);
-  //private final PIDController pidControllerY = new PIDController(0.2, 0.05, 0);
-  private final ProfiledPIDController pidControllerOmega = new ProfiledPIDController(1.5, 0, 0.01, omegConstraints);
+
+
+  private final TrapezoidProfile.Constraints omegConstraints = new Constraints(Units.degreesToRadians(500), Units.degreesToRadians(500));
+  private final ProfiledPIDController pidControllerOmega = new ProfiledPIDController(0.8, 0, 0, omegConstraints);
 
 
 
-  public aimAndRev(intake intake, PhotonCamera photonCamera, Swerve swerve, /*Supplier<Pose2d> poseProvider,*/ poseEstimator poseEstimator) {
-    this.intake = intake;
+  public aimAndRev(intake intake, PhotonCamera photonCamera, Swerve swerve, poseEstimator poseEstimator) {
+    this.INTAKE = intake;
     this.photoncamera = photonCamera;
     this.swerve = swerve;
    // this.poseProvider = poseProvider;
@@ -60,15 +46,10 @@ public class aimAndRev extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    endCommand = false;
-    super.initialize();
-   // pidControllerX.reset();
-    //pidControllerY.reset();
     pidControllerOmega.reset(poseSubsystem.field2d.getRobotPose().getRotation().getRadians());
-    
     pidControllerOmega.setTolerance(Units.degreesToRadians(1));
     pidControllerOmega.enableContinuousInput(Math.PI, -Math.PI);
-    
+    Constants.targetingOn = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -76,29 +57,29 @@ public class aimAndRev extends Command {
   public void execute() {
 
     var targetDistance = poseSubsystem.getTargetDistance(Constants.wantedApriltag);
-    
     var wantedAngle = poseSubsystem.getAngleToSpeaker();
 
   /*   //more them 4 meters away
   if (targetDistance > 4) {
     angleOffset = Units.degreesToRadians(0);
   } else { angleOffset = Units.degreesToRadians(5);}*/
-  angleOffset = 0;
+  //angleOffset = 0;
     
 
-  if(targetDistance <= 3.5) {
+  //if(targetDistance <= 3.5) {
     
-   var omegaSpeed = pidControllerOmega.calculate(swerve.getHeading().getRadians()/* - angleOffset*/, wantedAngle);
+   var omegaSpeed = pidControllerOmega.calculate(swerve.getHeading().getRadians(), wantedAngle);
     if (pidControllerOmega.atGoal()) {
       omegaSpeed = 0;
     }
-    
-    swerve.drive(
+    Constants.robotRotationSpeed = omegaSpeed;
+   
+    /*swerve.drive(
                   new Translation2d(Robot.xSpeed, Robot.ySpeed).times(Constants.Swerve.maxSpeed), 
                   (omegaSpeed / Constants.turnSpeed) * Constants.Swerve.maxAngularVelocity, 
                   true, 
                   true
-                  );
+                  );*/
 
 
     //first equation. the fallback 
@@ -121,11 +102,9 @@ public class aimAndRev extends Command {
                                    - (0.148 * Math.pow(targetDistance, 4))
                                    - 0.4;  
 
-    frc.robot.subsystems.intake.shooter.setControl(frc.robot.subsystems.intake.vDC.withVelocity(96));
-    frc.robot.subsystems.intake.shooterSlave.setControl(frc.robot.subsystems.intake.vDC.withVelocity(96));
-  } else {
-    endCommand = true;
-  }
+
+   frc.robot.subsystems.intake.setFlywheelSpeed(96);
+  //} 
 
    
    SmartDashboard.putNumber("dis to tar", targetDistance);
@@ -137,17 +116,12 @@ public class aimAndRev extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    swerve.drive(new Translation2d(), 0, true, true);
-
-    
-    frc.robot.subsystems.intake.shooter.setControl(frc.robot.subsystems.intake.vDC.withVelocity(0));
-    frc.robot.subsystems.intake.shooterSlave.setControl(frc.robot.subsystems.intake.vDC.withVelocity(0));
-    
-    frc.robot.subsystems.intake.shooter.set(0);
-    frc.robot.subsystems.intake.shooterSlave.set(0);
-
-    Constants.wantedShoulderAngle = -2;
+    //swerve.drive(new Translation2d(), 0, true, true);
+    frc.robot.subsystems.intake.disableFlywheels();
+    Constants.flywheelSpeed = 0;
+    Constants.wantedShoulderAngle = 1;
     new InstantCommand(() -> new shoulderDown());
+    Constants.targetingOn = false;
     
   }
 

@@ -23,23 +23,15 @@ public class shootLow extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //intake.shooter.setControl(intake.vDC.withVelocity(5));
-    //intake.shooterSlave.setControl(intake.vDC.withVelocity(5));
-    intake.shooter.set(0.3);
-    intake.shooterSlave.set(0.3);
+    intake.setFlywheelSpeed(96);
     
-    intake.indexer.set(Constants.indexerOutSpeed);
-    Constants.flywheelSpeed = 5;
+    
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    //intake.shooter.setControl(intake.vDC.withVelocity(0));
-    //intake.shooterSlave.setControl(intake.vDC.withVelocity(0));
-    intake.shooter.set(0);
-    intake.shooterSlave.set(0);
-    intake.indexer.set(0);
+    intake.disableFlywheels();
     
   }
 

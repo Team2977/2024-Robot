@@ -20,6 +20,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.util.COTSTalonFXSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
 
@@ -34,9 +35,16 @@ public final class Constants {
     public static int wantedApriltag = 7;
     public static boolean onRedTeam;
     public static int invert;
+
+
+    //shooting stuff
     public static double flywheelSpeed;
+    public static boolean shoot;
     public static boolean hasNote;
     public static boolean targetingOn;
+    public static double robotRotationSpeed;
+    
+    
 
     //auto mode constants
     public static boolean autoDriveMode = false;
@@ -150,7 +158,7 @@ public static class Vision {
         /** Meters per Second */
         public static final double maxSpeed = Units.feetToMeters(13); //TODO: This must be tuned to specific robot
         /** Radians per Second */
-        public static final double maxAngularVelocity = 8; //TODO: This must be tuned to specific robot
+        public static final double maxAngularVelocity = Units.degreesToRadians(500); //TODO: This must be tuned to specific robot
 
         /* Neutral Modes */
         public static final NeutralModeValue angleNeutralMode = NeutralModeValue.Coast;

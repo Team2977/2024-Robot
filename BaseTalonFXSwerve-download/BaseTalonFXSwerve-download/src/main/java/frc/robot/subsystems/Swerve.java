@@ -20,11 +20,15 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -36,13 +40,18 @@ public class Swerve extends SubsystemBase {
     private ChassisSpeeds targetChassisSpeeds = new ChassisSpeeds();
     private poseEstimator poseEstimator;
    
-    
+    private final TrapezoidProfile.Constraints omegConstraints = new Constraints(Units.degreesToRadians(500), Units.degreesToRadians(720));
+    public final ProfiledPIDController pidControllerOmega = new ProfiledPIDController(0.8, 0, 0, omegConstraints);
+
+
     public Swerve() {
         gyro = new Pigeon2(Constants.Swerve.pigeonID, "driveBase");
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(0);
         this.poseEstimator = RobotContainer.poseESTIMATOR;
         
+        pidControllerOmega.setTolerance(Units.degreesToRadians(1));
+        pidControllerOmega.enableContinuousInput(Math.PI, -Math.PI);
 
         mSwerveMods = new SwerveModule[] {
             new SwerveModule(0, Constants.Swerve.Mod0.constants),
@@ -97,6 +106,23 @@ public class Swerve extends SubsystemBase {
 
     
   }
+
+            public double omegaSpeed() {
+                var wantedAngle = poseEstimator.getAngleToSpeaker();
+                var omegaSpeed = pidControllerOmega.calculate(this.getHeading().getRadians() - Units.degreesToRadians(1), wantedAngle);
+                if (pidControllerOmega.atGoal()) {
+                    omegaSpeed = 0;
+                }
+                var rotationValue = (omegaSpeed / Constants.turnSpeed);
+                
+                return rotationValue;
+            }
+            
+            public void resetOmegaPID() {
+                pidControllerOmega.reset(poseEstimator.field2d.getRobotPose().getRotation().getRadians());
+            }
+
+            
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
         SwerveModuleState[] swerveModuleStates =

@@ -61,8 +61,9 @@ public class RobotContainer {
     private final JoystickButton driverIntakeOut = new JoystickButton(driver, 2); //B button
     private final JoystickButton driverRightPaddle = new JoystickButton(driver, 3);//aim at speaker
     private final JoystickButton driverLeftPaddle =  new JoystickButton(driver, 6);
-    private final JoystickButton driverLeftTrigger = new JoystickButton(driver, 9);
+    public static final JoystickButton driverLeftTrigger = new JoystickButton(driver, 9);
     private final JoystickButton driverRightTrigger = new JoystickButton(driver, 10);
+    private final JoystickButton driverSelect = new JoystickButton(driver, 11);
     private final JoystickButton driverStart = new JoystickButton(driver, 12);
 
     private final JoystickButton GA = new JoystickButton(gamepad2, 1);
@@ -102,7 +103,7 @@ public class RobotContainer {
             )
         );
            
-
+            
             NamedCommands.registerCommand("autoSpeakerOn", new autoSpeakerOn(INTAKE, photonCamera, s_Swerve, poseESTIMATOR));
             NamedCommands.registerCommand("intakeIn", new intakeIn());
             NamedCommands.registerCommand("intakeOut", new intakeOut());
@@ -120,17 +121,28 @@ public class RobotContainer {
 
         
         chooser = AutoBuilder.buildAutoChooser(); // Default auto will be `Commands.none()`
-        chooser.addOption("move", new PathPlannerAuto("testAuto"));
-        chooser.addOption("test", new exampleAuto(s_Swerve));
-        chooser.addOption("blue test auto", new PathPlannerAuto("bluetestauto"));
+        //3 note autos
+        chooser.addOption("3 note amp side", new PathPlannerAuto("3 note amp side"));
+        chooser.addOption("3 note source side", new PathPlannerAuto("3 note source side"));
+        chooser.addOption("3 note source far", new PathPlannerAuto("3 note source far"));
+        //2 note autos
+        chooser.addOption("2 note amp", new PathPlannerAuto("2 note amp"));
+        chooser.addOption("2 note podium", new PathPlannerAuto("2 note podium"));
+        chooser.addOption("shoot and move 2", new PathPlannerAuto("shoot and move 2"));
+        //shoot only
+        chooser.addOption("1 note auto", new PathPlannerAuto("1 note auto"));
+        //shoot and move 1
+        chooser.addOption("shoot and move 1", new PathPlannerAuto("shoot and move 1"));
+        //4 note auto
+        chooser.addOption("4 note amp side", new PathPlannerAuto("4 note amp side"));
+        chooser.addOption("4 note source side", new PathPlannerAuto("4 note source side"));
+        //Hover modes
         chooser.addOption("hover mode", new PathPlannerAuto("hover mode"));
-        chooser.addOption("blue 3 note", new PathPlannerAuto("Blue 3 note"));
-       // chooser.addOption("blue 3 note", new PathPlannerAuto("Blue 3 note auto"));
-        chooser.addOption("Blue 3 note v2", new PathPlannerAuto("Blue 3 note v2"));
-        chooser.addOption("shoot 1 don't move", new PathPlannerAuto("1 note auto"));
+        
+
         
         SmartDashboard.putData("Auto Mode", chooser);
-
+        
 
 
 
@@ -159,12 +171,19 @@ public class RobotContainer {
         driverRightPaddle.whileTrue(new indexerIn());
 
         //aim, and after relese, put shoulder down
-        driverLeftTrigger.whileTrue(new aimAndRev(INTAKE, photonCamera, s_Swerve, poseESTIMATOR));
-        driverLeftTrigger.onFalse(new shoulderDown());
+        //driverLeftTrigger.whileTrue(new aimAndRev(INTAKE, photonCamera, s_Swerve, poseESTIMATOR));
+        //driverLeftTrigger.onFalse(new shoulderDown());
         driverLeftPaddle.onTrue(new shoulderDown());
         //driverStart.whileFalse(new aimAndRev(INTAKE, photonCamera, s_Swerve, poseESTIMATOR));
+        //driverLeftTrigger.whileTrue(new shooterAmp());
+        //driverLeftTrigger.onFalse(new shoulderDown());
+        driverStart.whileTrue(new shootOverStage(INTAKE, poseESTIMATOR, s_Swerve));
+        driverStart.onFalse(new shoulderDown());
+        driverSelect.whileTrue(new shootLow());
+
         //shoot
         driverRightTrigger.whileTrue(new indexerSHOOT());
+        
         
       
         //Operator controls

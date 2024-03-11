@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.645409375131713,
-        "y": 5.774573463676842
+        "x": 2.446567628177991,
+        "y": 4.899850711382335
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.7446187712888244,
-        "y": 4.420390379242297
+        "x": 3.545777024335102,
+        "y": 3.5456676269477905
       },
       "isLocked": false,
       "linkedName": "4 note amp part 3"
@@ -60,7 +60,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 4.0,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 500.0,
     "maxAngularAcceleration": 720.0
   },

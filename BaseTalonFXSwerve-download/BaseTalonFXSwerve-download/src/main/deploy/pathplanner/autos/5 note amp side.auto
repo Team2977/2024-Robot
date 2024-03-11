@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.2420697206066778,
-      "y": 7.086657592118603
+      "x": 1.2186814117217974,
+      "y": 7.051575128791284
     },
-    "rotation": -115.49755149333781
+    "rotation": -117.37770277133168
   },
   "command": {
     "type": "sequential",
@@ -18,7 +18,7 @@
           }
         },
         {
-          "type": "race",
+          "type": "deadline",
           "data": {
             "commands": [
               {
@@ -37,25 +37,19 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.5
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "autoShoot"
           }
         },
         {
-          "type": "race",
+          "type": "deadline",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "3 note Part 2 v2"
+                  "pathName": "4 note amp part 2"
                 }
               },
               {
@@ -68,9 +62,28 @@
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 0.5
+            "name": "autoShoot"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "4 note amp part 3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "autoIntakeIn"
+                }
+              }
+            ]
           }
         },
         {
@@ -80,13 +93,13 @@
           }
         },
         {
-          "type": "race",
+          "type": "deadline",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "4 note amp part 3"
+                  "pathName": "4 note amp part 4"
                 }
               },
               {

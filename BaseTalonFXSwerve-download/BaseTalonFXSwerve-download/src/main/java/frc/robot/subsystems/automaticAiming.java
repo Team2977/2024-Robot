@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
@@ -22,11 +23,11 @@ public class automaticAiming extends SubsystemBase {
   private final poseEstimator poseSubsystem;
   private final intake intake;
   private final Swerve swerve;
-  public static double rotationValue;
 
-  //private final TrapezoidProfile.Constraints omegConstraints = new Constraints(Units.feetToMeters(8), Units.feetToMeters(8));
-  private final TrapezoidProfile.Constraints omegConstraints = new Constraints(Units.degreesToRadians(500), Units.degreesToRadians(500));
-  public final ProfiledPIDController pidControllerOmega = new ProfiledPIDController(0.1, 0, 0, omegConstraints);
+
+ 
+ // private final TrapezoidProfile.Constraints omegConstraints = new Constraints(Units.degreesToRadians(500), Units.degreesToRadians(720));
+  //public final ProfiledPIDController pidControllerOmega = new ProfiledPIDController(0.8, 0, 0, omegConstraints);
 
   /** Creates a new automaticAiming. */
   public automaticAiming(poseEstimator poseEstimator, intake intake, Swerve swerve) {
@@ -35,60 +36,45 @@ public class automaticAiming extends SubsystemBase {
   this.intake = intake;
   this.swerve = swerve;
 
-  pidControllerOmega.reset(poseSubsystem.field2d.getRobotPose().getRotation().getRadians());
+  //pidControllerOmega.reset(poseSubsystem.field2d.getRobotPose().getRotation().getRadians());
     
-  pidControllerOmega.setTolerance(Units.degreesToRadians(1));
-  pidControllerOmega.enableContinuousInput(Math.PI, -Math.PI);
+  //pidControllerOmega.setTolerance(Units.degreesToRadians(1));
+  //pidControllerOmega.enableContinuousInput(Math.PI, -Math.PI);
   }
+
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    
+      
     var targetDistance = poseSubsystem.getTargetDistance(Constants.wantedApriltag);
-    var wantedAngle = poseSubsystem.getAngleToSpeaker();
+    
     
    
-    if(targetDistance <= 4 && RobotContainer.gamepad2.getRawButton(2) == false) {
-    Constants.targetingOn = true;
-    new InstantCommand(() -> new indexerIn());
+    if(targetDistance <= 4 && RobotContainer.driverLeftTrigger.getAsBoolean() == false && Constants.autoDriveMode == false) {
+        
+        Constants.targetingOn = true;
+        new InstantCommand(() -> new indexerIn());
+         swerve.omegaSpeed();
 
-
-      var omegaSpeed = pidControllerOmega.calculate(swerve.getHeading().getRadians() - Units.degreesToRadians(1), wantedAngle);
-    if (pidControllerOmega.atGoal()) {
-      omegaSpeed = 0;
-    }
-      rotationValue = (omegaSpeed / Constants.turnSpeed);
-    /*swerve.drive(
-                  new Translation2d(Robot.xSpeed, Robot.ySpeed).times(Constants.Swerve.maxSpeed), 
-                  (omegaSpeed / Constants.turnSpeed) * Constants.Swerve.maxAngularVelocity, 
-                  true, 
-                  true
-                  );*/
-
-    Constants.wantedShoulderAngle = 7.63
+     Constants.wantedShoulderAngle = 7.63
                                    + (10.7 * targetDistance) 
                                    - (7.48 * Math.pow(targetDistance, 2)) 
                                    + (1.8 * Math.pow(targetDistance, 3)) 
                                    - (0.148 * Math.pow(targetDistance, 4))
                                    - 0.4;  
 
-    frc.robot.subsystems.intake.shooter.setControl(intake.vDC.withVelocity(96));
-    frc.robot.subsystems.intake.shooterSlave.setControl(intake.vDC.withVelocity(96));
-
+    intake.setFlywheelSpeed(96);
+  
       SmartDashboard.putNumber("dis to tar", targetDistance);
 
 
-    } else {
+    } else if (Constants.autoDriveMode == false) {
       Constants.targetingOn = false;
-      //swerve.drive(new Translation2d(), 0, true, true);
-      Constants.wantedShoulderAngle = -1;
-      intake.shooter.setControl(intake.vDC.withVelocity(0));
-      intake.shooterSlave.setControl(intake.vDC.withVelocity(0));
-      intake.shooter.set(0);
-      intake.shooterSlave.set(0);
+      Constants.wantedShoulderAngle = 1;
+      intake.disableFlywheels();
       new InstantCommand(() -> new shoulderDown());
-    
+      new InstantCommand(() -> new Swerve().resetOmegaPID());
     }
 
 

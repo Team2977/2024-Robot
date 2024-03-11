@@ -5,12 +5,6 @@
 package frc.robot.subsystems;
 
 
-
-import com.ctre.phoenix.led.Animation;
-import com.ctre.phoenix.led.CANdle;
-import com.ctre.phoenix.led.CANdle.LEDStripType;
-import com.ctre.phoenix.led.CANdle.VBatOutputMode;
-import com.ctre.phoenix.led.CANdleConfiguration;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.HardwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -29,8 +23,9 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
@@ -48,18 +43,20 @@ public class intake extends SubsystemBase {
   //shooting flywheel
   public static final TalonFX shooter = new TalonFX(5);
   public static final TalonFX shooterSlave = new TalonFX(4);
-  //motor that moves the shooter up and down. also the encoder for that motor
+  //motor that moves the shooter up and down
   public static final TalonFX shoulder = new TalonFX(51);
   //climber
   public static final TalonFX leftHook = new TalonFX(6);
   public static final TalonFX rightHook = new TalonFX(7);
   
 
-  
   private PositionDutyCycle mmDC = new PositionDutyCycle(0);
   public static VelocityDutyCycle vDC = new VelocityDutyCycle(0);
   
-  
+  //limit switch that doesn't exist. for testing trigger
+  private final DigitalInput digitalInput = new DigitalInput(1);
+  @SuppressWarnings("checkstyle:MemberName")
+  public final Trigger hasCargo = new Trigger(digitalInput::get);
 
   public intake() {
     
@@ -174,7 +171,20 @@ public class intake extends SubsystemBase {
     
   }
 
-  
+  public static void setFlywheelSpeed(double speed) {
+    shooter.setControl(vDC.withVelocity(speed));
+    shooterSlave.setControl(vDC.withVelocity(speed));
+  }
+
+  public static void disableFlywheels() {
+    shooter.setControl(vDC.withVelocity(0));
+    shooterSlave.setControl(vDC.withVelocity(0));
+    shooter.set(0);
+    shooterSlave.set(0);
+  }
+
+
+
   @Override
   public void periodic() {    
     indexer.set(Constants.indexerShootSpeed);
@@ -184,9 +194,8 @@ public class intake extends SubsystemBase {
     leftHook.set(climberControls);
     rightHook.set(climberControls);
     
+
     
-   //shooter.setControl(vDC.withVelocity(Constants.flywheelSpeed));
-   //shooterSlave.setControl(vDC.withVelocity(Constants.flywheelSpeed));
      
      // SmartDashboard.putNumber("shoulder Pos", shoulder.getPosition().getValueAsDouble());
       //SmartDashboard.putNumber("left motor", shooterSlave.getVelocity().getValueAsDouble());
@@ -194,12 +203,11 @@ public class intake extends SubsystemBase {
     
      
      //runs during auto
-    if (Constants.autoDriveMode == true) {
+     if (Constants.autoDriveMode == true) {
       shooter.setControl(vDC.withVelocity(Constants.speakerSpeed));
       shooterSlave.setControl(vDC.withVelocity(Constants.speakerSpeed));
       //rightIntake.set(1);
       //leftIntake.set(1);
-
     }
       
 

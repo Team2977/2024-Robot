@@ -12,13 +12,13 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "race",
           "data": {
             "commands": [
               {
                 "type": "named",
                 "data": {
-                  "name": "autoINTAKEv2"
+                  "name": "autoIntakeIn"
                 }
               },
               {
@@ -45,6 +45,6 @@
       ]
     }
   },
-  "folder": null,
+  "folder": "2 note",
   "choreoAuto": false
 }

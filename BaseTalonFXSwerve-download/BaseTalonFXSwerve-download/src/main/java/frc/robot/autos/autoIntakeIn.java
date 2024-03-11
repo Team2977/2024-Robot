@@ -4,7 +4,6 @@
 
 package frc.robot.autos;
 
-
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.intake;
@@ -25,14 +24,15 @@ public class autoIntakeIn extends Command {
     intake.rightIntake.set(1);
     intake.leftIntake.set(1);
     intake.indexer.set(-0.1);
+    
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-     intake.rightIntake.set(0);
-    intake.leftIntake.set(0);
-    intake.indexer.set(0);
+    //intake.rightIntake.set(0);
+    //intake.leftIntake.set(0);
+    //intake.indexer.set(0);
   }
 
   // Returns true when the command should end.

@@ -137,7 +137,7 @@ public class poseEstimator extends SubsystemBase {
   }
 
 }
-/* 
+ 
     //BACK CAMERA
     // Update pose estimator with the best visible target for the back camera
       var backPipelineResult = backCamera.getLatestResult();
@@ -159,7 +159,7 @@ public class poseEstimator extends SubsystemBase {
         }
       }
 
-*/
+
 
 
     // Update pose estimator with drivetrain sensors
@@ -240,7 +240,40 @@ public class poseEstimator extends SubsystemBase {
   }
   return(targetAngle);
 }
-  
+  public double getAngleToTarget(double targetX, double targetY) {
+    var alliance = DriverStation.getAlliance();
+    //double targetX;
+    //double targetY;
+    double currentX;
+    double currentY;
+    double targetAngle;
+    currentX = getCurrentPose().getX();
+    currentY = getCurrentPose().getY();
+    if (alliance.isPresent() && alliance.get() == Alliance.Red){
+        targetX = 16.58;
+        targetY = 5.55;
+        if(targetY-currentY>0){
+            targetAngle = Units.degreesToRadians(90) - Math.atan((targetX-currentX)/(targetY-currentY));
+        } else if(targetY-currentY<0){
+            targetAngle = Units.degreesToRadians(-90) + Math.atan((targetX-currentX)/(currentY-targetY));
+        } else {
+            targetAngle = Units.degreesToRadians(0);
+        }
+    // On Blue alliance
+  } else {
+        targetX = 0;
+        targetY = 5.55;
+         if(targetY-currentY>0){
+            targetAngle = Units.degreesToRadians(90) + Math.atan((currentX-targetX)/(targetY-currentY));
+        } else if(targetY-currentY<0){
+            targetAngle = Units.degreesToRadians(-90) - Math.atan((currentX-targetX)/(currentY-targetY));
+        } else {
+            targetAngle = Math.PI;
+        }
+    // targetY same as red
+  }
+  return(targetAngle);
+  }
 
         /**
    * Resets the current pose to the specified pose. This should ONLY be called

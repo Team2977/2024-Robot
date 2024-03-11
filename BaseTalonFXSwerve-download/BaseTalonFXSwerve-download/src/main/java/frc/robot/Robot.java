@@ -24,7 +24,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.UpperAssembly.moveShoulder;
+import frc.robot.subsystems.automaticAiming;
 import frc.robot.subsystems.intake;
+import frc.robot.subsystems.poseEstimator;
 
 
 
@@ -39,7 +41,8 @@ public class Robot extends TimedRobot {
  // private vision Vision;
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
-  
+  private final poseEstimator poseSubsystem = RobotContainer.poseESTIMATOR;
+  private final automaticAiming automaticAiming = RobotContainer.AUTOMATIC_AIMING;
   
   final double GOAL_RANGE_METERS = Units.feetToMeters(3);
 
@@ -58,12 +61,14 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    
     Constants.driveSpeed = 1;
     Constants.turnSpeed = 1;
     Constants.wantedShoulderAngle = 0;
     Constants.flywheelSpeed = 0;
     Constants.slowMode = true;
     Constants.wantedClimberPose = 0;
+    Constants.shoot = false;
     
     moveShoulder.shoulderPID.reset();
     intake.shoulder.setNeutralMode(NeutralModeValue.Brake);
@@ -146,6 +151,7 @@ public class Robot extends TimedRobot {
     intake.shooter.set(0);
     intake.shooterSlave.set(0);
     intake.indexer.set(0);
+    intake.disableFlywheels();
     
 
     var alliance = DriverStation.getAlliance();
@@ -169,9 +175,18 @@ public class Robot extends TimedRobot {
     //this gets the x and y values for the command "turnToTarget"
     xSpeed = MathUtil.applyDeadband(RobotContainer.driver.getRawAxis(1) / Constants.driveSpeed * Constants.invert, Constants.stickDeadband);
     ySpeed = MathUtil.applyDeadband(RobotContainer.driver.getRawAxis(0) / Constants.driveSpeed * Constants.invert, Constants.stickDeadband);
-
+    /* 
+    double targetdis = poseSubsystem.getTargetDistance(Constants.wantedApriltag);
+    if(targetdis <= 4) {
+      automaticAiming.targeting();
+    } else if (targetdis > 4) {
+      new InstantCommand(() -> automaticAiming.stopTargeting());
+    }
+*/
     SmartDashboard.putBoolean("on red team", Constants.onRedTeam);
     SmartDashboard.putString("auto mode for path", SmartDashboard.getData("Auto Mode").toString());
+    SmartDashboard.putNumber("target x", poseSubsystem.aprilTagFieldLayout.getTagPose(7).get().getX());
+    SmartDashboard.putNumber("target 7", poseSubsystem.aprilTagFieldLayout.getTagPose(7).get().getY());
   }
 
   @Override

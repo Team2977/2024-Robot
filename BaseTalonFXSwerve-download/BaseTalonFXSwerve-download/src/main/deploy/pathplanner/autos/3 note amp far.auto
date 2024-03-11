@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.2420697206066778,
-      "y": 7.086657592118603
+      "x": 1.2186814117217974,
+      "y": 7.051575128791284
     },
-    "rotation": -114.59011716619604
+    "rotation": -116.56505117707798
   },
   "command": {
     "type": "sequential",
@@ -22,15 +22,15 @@
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "autoIntakeIn"
+                  "pathName": "4 note amp part 1"
                 }
               },
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "3 note Part 1 v2"
+                  "name": "autoIntakeIn"
                 }
               }
             ]
@@ -53,24 +53,18 @@
           "data": {
             "commands": [
               {
+                "type": "path",
+                "data": {
+                  "pathName": "3 note amp far part 2"
+                }
+              },
+              {
                 "type": "named",
                 "data": {
                   "name": "autoIntakeIn"
                 }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "3 note Part 2 v2"
-                }
               }
             ]
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.5
           }
         },
         {

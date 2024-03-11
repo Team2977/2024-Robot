@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 2.9509363693678092,
-        "y": 7.086657592118603
+        "x": 2.9143338058755885,
+        "y": 6.969716047694203
       },
       "prevControl": {
-        "x": 2.5665493729321898,
-        "y": 7.432804563614601
+        "x": 2.4465676281779913,
+        "y": 6.9346335843668845
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,7 +31,7 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 0.25,
-      "rotationDegrees": -99.24655935332683,
+      "rotationDegrees": -91.96309708821028,
       "rotateFast": true
     }
   ],
@@ -45,11 +45,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -126.10183885493022,
+    "rotation": -91.68468431789631,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "3 note v2",
+  "folder": "3 note amp",
   "previewStartingState": {
     "rotation": -119.35775354279126,
     "velocity": 0

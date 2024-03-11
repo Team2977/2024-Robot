@@ -5,7 +5,7 @@
       "x": 1.1134340217398382,
       "y": 3.85907096600518
     },
-    "rotation": 126.67434966957312
+    "rotation": 122.82854179141253
   },
   "command": {
     "type": "sequential",
@@ -18,19 +18,44 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "race",
           "data": {
             "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "move then shoot 2"
+                }
+              },
               {
                 "type": "named",
                 "data": {
                   "name": "autoIntakeIn"
                 }
-              },
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoShoot"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "move then shoot 2"
+                  "pathName": "3 note speaker part 2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "autoIntakeIn"
                 }
               }
             ]
@@ -45,6 +70,6 @@
       ]
     }
   },
-  "folder": "2 note",
+  "folder": "3 note auto",
   "choreoAuto": false
 }

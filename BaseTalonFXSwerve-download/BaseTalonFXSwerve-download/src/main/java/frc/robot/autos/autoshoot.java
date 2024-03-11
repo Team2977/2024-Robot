@@ -20,8 +20,8 @@ public class autoshoot extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
       //new aimAndRev(RobotContainer.INTAKE, RobotContainer.photonCamera, RobotContainer.s_Swerve, RobotContainer.poseESTIMATOR).withTimeout(2),
-      new autoSpeakerOn(RobotContainer.INTAKE, RobotContainer.photonCamera, RobotContainer.s_Swerve, RobotContainer.poseESTIMATOR).withTimeout(1),
-      new indexerSHOOT().withTimeout(0.3),
+      new autoSpeakerOn(RobotContainer.INTAKE, RobotContainer.photonCamera, RobotContainer.s_Swerve, RobotContainer.poseESTIMATOR).withTimeout(1.5),
+      new indexerSHOOT().withTimeout(0.5),
       new autoSpeakerOff().withTimeout(0.1),
       new autoShoulderDown().withTimeout(0.1)
       //new shoulderDown().withTimeout(1)

@@ -34,9 +34,9 @@ public class moveShoulder extends Command {
  
     Constants.wantedShoulderAngle = 11.7;
     
-    frc.robot.subsystems.intake.shooter.setControl(intake.vDC.withVelocity(96));
-    frc.robot.subsystems.intake.shooterSlave.setControl(intake.vDC.withVelocity(96));
-    
+    //frc.robot.subsystems.intake.shooter.setControl(intake.vDC.withVelocity(96));
+    //frc.robot.subsystems.intake.shooterSlave.setControl(intake.vDC.withVelocity(96));
+    intake.setFlywheelSpeed(96);
   }
 
   // Called once the command ends or is interrupted.
@@ -44,10 +44,11 @@ public class moveShoulder extends Command {
   public void end(boolean interrupted) {
     
     Constants.wantedShoulderAngle = 0;
-    frc.robot.subsystems.intake.shooter.setControl(intake.vDC.withVelocity(0));
-    frc.robot.subsystems.intake.shooterSlave.setControl(intake.vDC.withVelocity(0));
-    intake.shooter.set(0);
-    intake.shooterSlave.set(0);
+    intake.disableFlywheels();
+    //frc.robot.subsystems.intake.shooter.setControl(intake.vDC.withVelocity(0));
+    //frc.robot.subsystems.intake.shooterSlave.setControl(intake.vDC.withVelocity(0));
+    //intake.shooter.set(0);
+    //intake.shooterSlave.set(0);
   }
 
   // Returns true when the command should end.
