@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import javax.swing.text.StyleContext.SmallAttributeSet;
+
 
 
 
@@ -18,11 +20,13 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+
 import frc.robot.commands.UpperAssembly.moveShoulder;
 import frc.robot.subsystems.automaticAiming;
 import frc.robot.subsystems.intake;
@@ -38,8 +42,10 @@ import frc.robot.subsystems.poseEstimator;
  */
 public class Robot extends TimedRobot {
   public static final CTREConfigs ctreConfigs = new CTREConfigs();
+
  // private vision Vision;
   private Command m_autonomousCommand;
+
   private RobotContainer m_robotContainer;
   private final poseEstimator poseSubsystem = RobotContainer.poseESTIMATOR;
   private final automaticAiming automaticAiming = RobotContainer.AUTOMATIC_AIMING;
@@ -49,7 +55,7 @@ public class Robot extends TimedRobot {
   public static double xSpeed;
   public static double ySpeed;
   public static Optional<Alliance> alliance = DriverStation.getAlliance();
-  
+
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -64,6 +70,7 @@ public class Robot extends TimedRobot {
     
     Constants.driveSpeed = 1;
     Constants.turnSpeed = 1;
+
     Constants.wantedShoulderAngle = 0;
     Constants.flywheelSpeed = 0;
     Constants.slowMode = true;
@@ -76,6 +83,7 @@ public class Robot extends TimedRobot {
     intake.rightHook.setPosition(0);
 
     
+
 
   }
 
@@ -94,7 +102,9 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
+
    
+
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -172,6 +182,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+
     //this gets the x and y values for the command "turnToTarget"
     xSpeed = MathUtil.applyDeadband(RobotContainer.driver.getRawAxis(1) / Constants.driveSpeed * Constants.invert, Constants.stickDeadband);
     ySpeed = MathUtil.applyDeadband(RobotContainer.driver.getRawAxis(0) / Constants.driveSpeed * Constants.invert, Constants.stickDeadband);

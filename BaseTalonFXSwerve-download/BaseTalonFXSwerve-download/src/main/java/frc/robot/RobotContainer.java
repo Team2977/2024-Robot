@@ -1,5 +1,6 @@
 package frc.robot;
 
+
 import org.photonvision.PhotonCamera;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -7,9 +8,11 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Pose2d;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.SendableCameraWrapper;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,6 +30,7 @@ import frc.robot.commands.UpperAssembly.moveShoulder;
 import frc.robot.commands.UpperAssembly.shootLow;
 import frc.robot.commands.UpperAssembly.shooterAmp;
 import frc.robot.commands.UpperAssembly.shoulderDown;
+
 import frc.robot.subsystems.*;
 
 
@@ -44,6 +48,7 @@ public class RobotContainer {
     public static final PhotonCamera backCamera = new PhotonCamera("backCamera");
     
     public final SendableChooser<Command> chooser;
+
     
 
     /* Drive Controls */
@@ -66,6 +71,7 @@ public class RobotContainer {
     private final JoystickButton driverSelect = new JoystickButton(driver, 11);
     private final JoystickButton driverStart = new JoystickButton(driver, 12);
 
+
     private final JoystickButton GA = new JoystickButton(gamepad2, 1);
     private final JoystickButton GB = new JoystickButton(gamepad2, 2);
     private final JoystickButton GX = new JoystickButton(gamepad2, 3);
@@ -76,6 +82,7 @@ public class RobotContainer {
     private final JoystickButton GA = new JoystickButton(gamepad2, 1);
     private final JoystickButton GB = new JoystickButton(gamepad2, 2);
  */   
+
    /*  private final JoystickButton rightBummber = new JoystickButton(driver, 8);
     private final JoystickButton zeroGyro = new JoystickButton(driver, 4);
     private final JoystickButton robotCentric = new JoystickButton(driver, 7);
@@ -84,11 +91,12 @@ public class RobotContainer {
 
 
     /* Subsystems */
-    public static final Swerve s_Swerve = new Swerve();
+    private final Swerve s_Swerve = new Swerve();
     public static final intake INTAKE = new intake();
     public static final poseEstimator poseESTIMATOR = new poseEstimator(photonCamera, backCamera, s_Swerve);
     public static final automaticAiming AUTOMATIC_AIMING = new automaticAiming(poseESTIMATOR, INTAKE, s_Swerve);
     public static final chaseTag CHASETAG = new chaseTag(photonCamera, s_Swerve, poseESTIMATOR::getCurrentPose);
+
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -202,6 +210,7 @@ public class RobotContainer {
         GRightBumper.whileTrue(new shooterAmp());
         GRightBumper.onFalse(new shoulderDown());
         
+
     }
 
     /**
