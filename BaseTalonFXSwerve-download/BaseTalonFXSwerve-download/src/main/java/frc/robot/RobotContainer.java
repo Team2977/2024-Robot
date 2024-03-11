@@ -91,7 +91,7 @@ public class RobotContainer {
 
 
     /* Subsystems */
-    private final Swerve s_Swerve = new Swerve();
+    public final static Swerve s_Swerve = new Swerve();
     public static final intake INTAKE = new intake();
     public static final poseEstimator poseESTIMATOR = new poseEstimator(photonCamera, backCamera, s_Swerve);
     public static final automaticAiming AUTOMATIC_AIMING = new automaticAiming(poseESTIMATOR, INTAKE, s_Swerve);
