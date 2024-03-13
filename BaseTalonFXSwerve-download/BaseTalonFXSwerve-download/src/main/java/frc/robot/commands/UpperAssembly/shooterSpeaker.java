@@ -4,11 +4,6 @@
 
 package frc.robot.commands.UpperAssembly;
 
-
-
-
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
@@ -25,18 +20,14 @@ public class shooterSpeaker extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-   var wantedShoulderAngle =  SmartDashboard.getNumber("wanted shoulder angle", 0);
-    Constants.wantedShoulderAngle = wantedShoulderAngle;
-    intake.shooterSlave.set(0.9);
-    intake.shooter.set(0.9);
-    
+    Constants.wantedShoulderAngle = 11.7;
+    intake.setFlywheelSpeed(96);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    intake.shooter.set(0);
-    intake.shooterSlave.set(0);
+   intake.disableFlywheels();
   }
 
   // Returns true when the command should end.

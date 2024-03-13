@@ -2,6 +2,8 @@ package frc.robot;
 
 
 
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
@@ -20,7 +22,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.util.COTSTalonFXSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
 
@@ -43,7 +44,12 @@ public final class Constants {
     public static boolean hasNote;
     public static boolean targetingOn;
     public static double robotRotationSpeed;
-    
+    public static BooleanSupplier shootBooleanSupplier;
+
+    //rotation PID values
+    public static final double rotaKP = 0.8;
+    public static final double rotaKI = 0;
+    public static final double rotaKD = 0;
     
 
     //auto mode constants

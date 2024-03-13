@@ -6,8 +6,8 @@ package frc.robot.autos;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
-import frc.robot.subsystems.intake;
+
+
 
 public class autoShoulderDown extends Command {
   /** Creates a new autoShoulderDown. */

@@ -48,7 +48,9 @@ public class intake extends SubsystemBase {
   //climber
   public static final TalonFX leftHook = new TalonFX(6);
   public static final TalonFX rightHook = new TalonFX(7);
-  
+  //indexer sensors
+  public static final DigitalInput rightInput = new DigitalInput(0);
+  public static final DigitalInput leftInput = new DigitalInput(1);
 
   private PositionDutyCycle mmDC = new PositionDutyCycle(0);
   public static VelocityDutyCycle vDC = new VelocityDutyCycle(0);

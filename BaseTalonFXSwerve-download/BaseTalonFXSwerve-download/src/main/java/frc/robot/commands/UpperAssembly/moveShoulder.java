@@ -4,16 +4,13 @@
 
 package frc.robot.commands.UpperAssembly;
 
-import edu.wpi.first.math.controller.PIDController;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.intake;
 
 public class moveShoulder extends Command {
   private final intake intake;
-  public static PIDController shoulderPID = new PIDController(0.01, 0, 0);
+
 
 
   /** Creates a new moveShoulder. */
@@ -31,24 +28,15 @@ public class moveShoulder extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
- 
     Constants.wantedShoulderAngle = 11.7;
-    
-    //frc.robot.subsystems.intake.shooter.setControl(intake.vDC.withVelocity(96));
-    //frc.robot.subsystems.intake.shooterSlave.setControl(intake.vDC.withVelocity(96));
-    intake.setFlywheelSpeed(96);
+    frc.robot.subsystems.intake.setFlywheelSpeed(96);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    
     Constants.wantedShoulderAngle = 0;
-    intake.disableFlywheels();
-    //frc.robot.subsystems.intake.shooter.setControl(intake.vDC.withVelocity(0));
-    //frc.robot.subsystems.intake.shooterSlave.setControl(intake.vDC.withVelocity(0));
-    //intake.shooter.set(0);
-    //intake.shooterSlave.set(0);
+    frc.robot.subsystems.intake.disableFlywheels();
   }
 
   // Returns true when the command should end.

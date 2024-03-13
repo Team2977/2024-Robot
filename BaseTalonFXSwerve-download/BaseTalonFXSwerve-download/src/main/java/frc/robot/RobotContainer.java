@@ -12,12 +12,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.shuffleboard.SendableCameraWrapper;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.autos.*;
 import frc.robot.commands.*;
 import frc.robot.commands.DriveBase.TeleopSwerve;
@@ -26,9 +26,9 @@ import frc.robot.commands.UpperAssembly.indexerIn;
 import frc.robot.commands.UpperAssembly.indexerSHOOT;
 import frc.robot.commands.UpperAssembly.intakeIn;
 import frc.robot.commands.UpperAssembly.intakeOut;
-import frc.robot.commands.UpperAssembly.moveShoulder;
 import frc.robot.commands.UpperAssembly.shootLow;
 import frc.robot.commands.UpperAssembly.shooterAmp;
+import frc.robot.commands.UpperAssembly.shooterSpeaker;
 import frc.robot.commands.UpperAssembly.shoulderDown;
 
 import frc.robot.subsystems.*;
@@ -78,16 +78,10 @@ public class RobotContainer {
     private final JoystickButton GY = new JoystickButton(gamepad2, 4);
     private final JoystickButton GLeftBumper = new JoystickButton(gamepad2, 5);
     private final JoystickButton GRightBumper = new JoystickButton(gamepad2, 6);
- /*   private final JoystickButton GLB = new JoystickButton(gamepad2, XboxController.Button.kLeftBumper.value);
-    private final JoystickButton GA = new JoystickButton(gamepad2, 1);
-    private final JoystickButton GB = new JoystickButton(gamepad2, 2);
- */   
+    
 
-   /*  private final JoystickButton rightBummber = new JoystickButton(driver, 8);
-    private final JoystickButton zeroGyro = new JoystickButton(driver, 4);
-    private final JoystickButton robotCentric = new JoystickButton(driver, 7);
-    private final JoystickButton driverX = new JoystickButton(driver, 5);
-*/
+    //trigers
+    public final Trigger shootTrigger = new Trigger(Constants.shootBooleanSupplier);
 
 
     /* Subsystems */
@@ -180,18 +174,18 @@ public class RobotContainer {
 
         //aim, and after relese, put shoulder down
         //driverLeftTrigger.whileTrue(new aimAndRev(INTAKE, photonCamera, s_Swerve, poseESTIMATOR));
-        //driverLeftTrigger.onFalse(new shoulderDown());
+        driverLeftTrigger.onFalse(new shoulderDown());
         driverLeftPaddle.onTrue(new shoulderDown());
         //driverStart.whileFalse(new aimAndRev(INTAKE, photonCamera, s_Swerve, poseESTIMATOR));
-        //driverLeftTrigger.whileTrue(new shooterAmp());
-        //driverLeftTrigger.onFalse(new shoulderDown());
+        driverLeftTrigger.whileTrue(new shooterAmp(s_Swerve, INTAKE, poseESTIMATOR));
         driverStart.whileTrue(new shootOverStage(INTAKE, poseESTIMATOR, s_Swerve));
         driverStart.onFalse(new shoulderDown());
         driverSelect.whileTrue(new shootLow());
 
         //shoot
         driverRightTrigger.whileTrue(new indexerSHOOT());
-        
+        shootTrigger.whileTrue(new aimAndRev(INTAKE, photonCamera, s_Swerve, poseESTIMATOR));
+        shootTrigger.onFalse(new shoulderDown());
         
       
         //Operator controls
@@ -199,15 +193,12 @@ public class RobotContainer {
         GA.onFalse(new shoulderDown());
         GLeftBumper.whileTrue(new indexerIn());
 
-        //GX.onTrue(new climberUp());
-        //GB.onTrue(new climberDown());
         
         GY.whileTrue(new shootLow());
-        //GB.whileTrue(new hoverMode());
-        GX.whileTrue(new moveShoulder(INTAKE));
+        GX.whileTrue(new shooterSpeaker());
         GX.onFalse(new shoulderDown());
        
-        GRightBumper.whileTrue(new shooterAmp());
+        GRightBumper.whileTrue(new shooterAmp(s_Swerve, INTAKE, poseESTIMATOR));
         GRightBumper.onFalse(new shoulderDown());
         
 

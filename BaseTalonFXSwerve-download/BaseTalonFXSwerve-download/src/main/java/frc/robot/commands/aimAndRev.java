@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import org.photonvision.PhotonCamera;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
@@ -13,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.commands.UpperAssembly.shoulderDown;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.intake;
@@ -29,7 +31,7 @@ public class aimAndRev extends Command {
 
 
   private final TrapezoidProfile.Constraints omegConstraints = new Constraints(Units.degreesToRadians(500), Units.degreesToRadians(500));
-  private final ProfiledPIDController pidControllerOmega = new ProfiledPIDController(0.8, 0, 0, omegConstraints);
+  private final ProfiledPIDController pidControllerOmega = new ProfiledPIDController(Constants.rotaKP, Constants.rotaKI, Constants.rotaKD, omegConstraints);
 
 
 
@@ -49,7 +51,6 @@ public class aimAndRev extends Command {
     pidControllerOmega.reset(poseSubsystem.field2d.getRobotPose().getRotation().getRadians());
     pidControllerOmega.setTolerance(Units.degreesToRadians(1));
     pidControllerOmega.enableContinuousInput(Math.PI, -Math.PI);
-    Constants.targetingOn = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -72,14 +73,14 @@ public class aimAndRev extends Command {
     if (pidControllerOmega.atGoal()) {
       omegaSpeed = 0;
     }
-    Constants.robotRotationSpeed = omegaSpeed;
+    //Constants.robotRotationSpeed = omegaSpeed;
    
-    /*swerve.drive(
+  swerve.drive(
                   new Translation2d(Robot.xSpeed, Robot.ySpeed).times(Constants.Swerve.maxSpeed), 
                   (omegaSpeed / Constants.turnSpeed) * Constants.Swerve.maxAngularVelocity, 
                   true, 
                   true
-                  );*/
+                  );
 
 
     //first equation. the fallback 
@@ -120,9 +121,7 @@ public class aimAndRev extends Command {
     frc.robot.subsystems.intake.disableFlywheels();
     Constants.flywheelSpeed = 0;
     Constants.wantedShoulderAngle = 1;
-    new InstantCommand(() -> new shoulderDown());
-    Constants.targetingOn = false;
-    
+    new InstantCommand(() -> new shoulderDown());    
   }
 
   // Returns true when the command should end.

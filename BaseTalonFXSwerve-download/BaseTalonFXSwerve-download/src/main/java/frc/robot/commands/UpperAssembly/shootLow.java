@@ -23,16 +23,19 @@ public class shootLow extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+
     intake.setFlywheelSpeed(96);
-    
+    Constants.wantedShoulderAngle = 2;
     
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+
     intake.disableFlywheels();
-    
+    Constants.wantedShoulderAngle = 0;
+
   }
 
   // Returns true when the command should end.

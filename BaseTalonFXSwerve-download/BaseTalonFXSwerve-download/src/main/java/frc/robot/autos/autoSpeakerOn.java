@@ -23,15 +23,14 @@ public class autoSpeakerOn extends Command {
   /** Creates a new autoSpeaker. */
   private final intake intake;
   private final Swerve swerve;
-  private final PhotonCamera photoncamera;  
-  private int wantedApriltag;
+  private final PhotonCamera photoncamera;
  // private final Supplier<Pose2d> poseProvider;
   private final poseEstimator poseSubsystem;
   private double angleOffset;
 
 
-  //private final TrapezoidProfile.Constraints omegConstraints = new Constraints(Units.degreesToRadians(500), Units.degreesToRadians(500));
-  //private final ProfiledPIDController pidControllerOmega = new ProfiledPIDController(0.8, 0, 0, omegConstraints);
+  private final TrapezoidProfile.Constraints omegConstraints = new Constraints(Units.degreesToRadians(500), Units.degreesToRadians(500));
+  private final ProfiledPIDController pidControllerOmega = new ProfiledPIDController(0.8, 0, 0, omegConstraints);
 
   public autoSpeakerOn(intake intake, PhotonCamera photonCamera, Swerve swerve, poseEstimator poseEstimator) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -48,13 +47,13 @@ public class autoSpeakerOn extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    //pidControllerOmega.reset(poseSubsystem.field2d.getRobotPose().getRotation().getRadians());
-    //pidControllerOmega.setTolerance(Units.degreesToRadians(1));
-    //pidControllerOmega.enableContinuousInput(Math.PI, -Math.PI);
+    pidControllerOmega.reset(poseSubsystem.field2d.getRobotPose().getRotation().getRadians());
+    pidControllerOmega.setTolerance(Units.degreesToRadians(1));
+    pidControllerOmega.enableContinuousInput(Math.PI, -Math.PI);
 
     Constants.speakerSpeed = 96;
-    intake.leftIntake.set(0);
-    intake.rightIntake.set(0);
+    frc.robot.subsystems.intake.leftIntake.set(0);
+    frc.robot.subsystems.intake.rightIntake.set(0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -64,15 +63,14 @@ public class autoSpeakerOn extends Command {
     var wantedAngle = poseSubsystem.getAngleToSpeaker();
    
      //more them 4 meters away
-  /*if (targetDistance > 4) {
+  if (targetDistance > 4) {
     angleOffset = Units.degreesToRadians(1);
   } else { angleOffset = Units.degreesToRadians(3);}
 
    var omegaSpeed = pidControllerOmega.calculate(swerve.getHeading().getRadians() - angleOffset, wantedAngle);
     if (pidControllerOmega.atGoal()) {
       omegaSpeed = 0;
-    }*/
-    var omegaSpeed = swerve.omegaSpeed();
+    }
     
     swerve.drive(
                   new Translation2d(Robot.xSpeed, Robot.ySpeed).times(Constants.Swerve.maxSpeed), 

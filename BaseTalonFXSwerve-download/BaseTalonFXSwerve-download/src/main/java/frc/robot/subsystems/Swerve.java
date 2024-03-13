@@ -107,23 +107,6 @@ public class Swerve extends SubsystemBase {
     
   }
 
-            public double omegaSpeed() {
-                var wantedAngle = poseEstimator.getAngleToSpeaker();
-                var omegaSpeed = pidControllerOmega.calculate(this.getHeading().getRadians() - Units.degreesToRadians(1), wantedAngle);
-                if (pidControllerOmega.atGoal()) {
-                    omegaSpeed = 0;
-                }
-                var rotationValue = (omegaSpeed / Constants.turnSpeed);
-                
-                return rotationValue;
-            }
-            
-            public void resetOmegaPID() {
-                pidControllerOmega.reset(poseEstimator.field2d.getRobotPose().getRotation().getRadians());
-            }
-
-            
-
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
         SwerveModuleState[] swerveModuleStates =
             Constants.Swerve.swerveKinematics.toSwerveModuleStates(

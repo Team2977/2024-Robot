@@ -4,18 +4,14 @@
 
 package frc.robot.subsystems;
 
+
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
-import frc.robot.commands.UpperAssembly.indexerIn;
-import frc.robot.commands.UpperAssembly.shoulderDown;
 
 
 public class automaticAiming extends SubsystemBase {
@@ -23,11 +19,13 @@ public class automaticAiming extends SubsystemBase {
   private final poseEstimator poseSubsystem;
   private final intake intake;
   private final Swerve swerve;
+  
+  
 
 
  
- // private final TrapezoidProfile.Constraints omegConstraints = new Constraints(Units.degreesToRadians(500), Units.degreesToRadians(720));
-  //public final ProfiledPIDController pidControllerOmega = new ProfiledPIDController(0.8, 0, 0, omegConstraints);
+  private final TrapezoidProfile.Constraints omegConstraints = new Constraints(Units.degreesToRadians(500), Units.degreesToRadians(720));
+  public final ProfiledPIDController pidControllerOmega = new ProfiledPIDController(0.8, 0, 0, omegConstraints);
 
   /** Creates a new automaticAiming. */
   public automaticAiming(poseEstimator poseEstimator, intake intake, Swerve swerve) {
@@ -36,10 +34,10 @@ public class automaticAiming extends SubsystemBase {
   this.intake = intake;
   this.swerve = swerve;
 
-  //pidControllerOmega.reset(poseSubsystem.field2d.getRobotPose().getRotation().getRadians());
+  pidControllerOmega.reset(poseSubsystem.field2d.getRobotPose().getRotation().getRadians());
     
-  //pidControllerOmega.setTolerance(Units.degreesToRadians(1));
-  //pidControllerOmega.enableContinuousInput(Math.PI, -Math.PI);
+  pidControllerOmega.setTolerance(Units.degreesToRadians(1));
+  pidControllerOmega.enableContinuousInput(Math.PI, -Math.PI);
   }
 
 
@@ -50,12 +48,27 @@ public class automaticAiming extends SubsystemBase {
     var targetDistance = poseSubsystem.getTargetDistance(Constants.wantedApriltag);
     
     
+    if (frc.robot.subsystems.intake.leftInput.get() == true || frc.robot.subsystems.intake.rightInput.get() == true){
+      Constants.hasNote = true;
+    } else {Constants.hasNote = false;}
    
-    if(targetDistance <= 4 && RobotContainer.driverLeftTrigger.getAsBoolean() == false && Constants.autoDriveMode == false) {
-        
-        Constants.targetingOn = true;
+    
+    
+    if(targetDistance <= 3.5 &&
+        RobotContainer.driverLeftTrigger.getAsBoolean() == false && 
+        Constants.autoDriveMode == false &&
+        Constants.hasNote == true
+        ) {
+        Constants.shootBooleanSupplier = () -> true;
+
+
+    /*     Constants.targetingOn = true;
         new InstantCommand(() -> new indexerIn());
-         swerve.omegaSpeed();
+         
+        var omegaSpeed = pidControllerOmega.calculate(swerve.getHeading().getRadians(), wantedAngle);
+        if (pidControllerOmega.atGoal()) {
+          omegaSpeed = 0;
+        }
 
      Constants.wantedShoulderAngle = 7.63
                                    + (10.7 * targetDistance) 
@@ -66,16 +79,20 @@ public class automaticAiming extends SubsystemBase {
 
     intake.setFlywheelSpeed(96);
   
-      SmartDashboard.putNumber("dis to tar", targetDistance);
+      SmartDashboard.putNumber("dis to tar", targetDistance);*/
 
 
-    } else if (Constants.autoDriveMode == false) {
+    } else {
+      Constants.shootBooleanSupplier = () -> false;
+    }
+    
+    /*else if (Constants.autoDriveMode == false) {
       Constants.targetingOn = false;
-      Constants.wantedShoulderAngle = 1;
+      Constants.wantedShoulderAngle = 0;
       intake.disableFlywheels();
       new InstantCommand(() -> new shoulderDown());
-      new InstantCommand(() -> new Swerve().resetOmegaPID());
-    }
+      //new InstantCommand(() -> new Swerve().resetOmegaPID());
+    }*/
 
 
   }

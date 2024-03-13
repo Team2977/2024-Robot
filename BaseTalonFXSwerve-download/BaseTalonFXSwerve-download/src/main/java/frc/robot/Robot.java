@@ -4,14 +4,6 @@
 
 package frc.robot;
 
-import javax.swing.text.StyleContext.SmallAttributeSet;
-
-
-
-
-
-
-
 import java.util.Optional;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -20,14 +12,12 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
-import frc.robot.commands.UpperAssembly.moveShoulder;
 import frc.robot.subsystems.automaticAiming;
 import frc.robot.subsystems.intake;
 import frc.robot.subsystems.poseEstimator;
@@ -77,7 +67,7 @@ public class Robot extends TimedRobot {
     Constants.wantedClimberPose = 0;
     Constants.shoot = false;
     
-    moveShoulder.shoulderPID.reset();
+    
     intake.shoulder.setNeutralMode(NeutralModeValue.Brake);
     intake.leftHook.setPosition(0);
     intake.rightHook.setPosition(0);
@@ -156,6 +146,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     Constants.autoDriveMode = false;
+    Constants.wantedShoulderAngle = 0;
     intake.rightIntake.set(0);
     intake.leftIntake.set(0);
     intake.shooter.set(0);
@@ -198,6 +189,9 @@ public class Robot extends TimedRobot {
     SmartDashboard.putString("auto mode for path", SmartDashboard.getData("Auto Mode").toString());
     SmartDashboard.putNumber("target x", poseSubsystem.aprilTagFieldLayout.getTagPose(7).get().getX());
     SmartDashboard.putNumber("target 7", poseSubsystem.aprilTagFieldLayout.getTagPose(7).get().getY());
+    SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
+    
+    
   }
 
   @Override

@@ -32,9 +32,9 @@ public class chaseTag extends Command {
   private Supplier<Pose2d> poseProvider;
 
 
-  private static final TrapezoidProfile.Constraints X_CONSTRAINTS = new TrapezoidProfile.Constraints(4.2, 4);
-  private static final TrapezoidProfile.Constraints Y_CONSTRAINTS = new TrapezoidProfile.Constraints(4.2, 4);
-  private static final TrapezoidProfile.Constraints OMEGA_CONSTRAINTS = new TrapezoidProfile.Constraints(Units.feetToMeters(4), Units.feetToMeters(3));
+  private static final TrapezoidProfile.Constraints X_CONSTRAINTS = new TrapezoidProfile.Constraints(4, 4);
+  private static final TrapezoidProfile.Constraints Y_CONSTRAINTS = new TrapezoidProfile.Constraints(4, 4);
+  private static final TrapezoidProfile.Constraints OMEGA_CONSTRAINTS = new TrapezoidProfile.Constraints(Units.degreesToRadians(500), Units.degreesToRadians(500));
   //private static final TrapezoidProfile.Constraints OMEGA_CONSTRAINTS = new TrapezoidProfile.Constraints(Constants.Swerve.maxAngularVelocity, Units.feetToMeters(3));
 
   private static final int TagToChase = 4;

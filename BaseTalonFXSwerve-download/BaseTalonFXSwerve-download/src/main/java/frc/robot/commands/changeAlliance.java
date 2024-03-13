@@ -4,10 +4,6 @@
 
 package frc.robot.commands;
 
-import java.util.Optional;
-
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 
