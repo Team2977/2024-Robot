@@ -27,9 +27,6 @@ public class intakeOut extends Command {
    
       intake.rightIntake.set(-0.6);
       intake.leftIntake.set(-0.6);
-      
-   
-  
 
   }
 
@@ -39,6 +36,7 @@ public class intakeOut extends Command {
   
       intake.rightIntake.set(0);
       intake.leftIntake.set(0);
+      
     }
 
   // Returns true when the command should end.

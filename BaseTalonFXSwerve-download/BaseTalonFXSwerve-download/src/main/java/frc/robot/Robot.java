@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
 import frc.robot.subsystems.automaticAiming;
 import frc.robot.subsystems.intake;
 import frc.robot.subsystems.poseEstimator;
@@ -38,7 +37,6 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
   private final poseEstimator poseSubsystem = RobotContainer.poseESTIMATOR;
-  private final automaticAiming automaticAiming = RobotContainer.AUTOMATIC_AIMING;
   
   final double GOAL_RANGE_METERS = Units.feetToMeters(3);
 
@@ -66,6 +64,8 @@ public class Robot extends TimedRobot {
     Constants.slowMode = true;
     Constants.wantedClimberPose = 0;
     Constants.shoot = false;
+    Constants.hasNote = false;
+    Constants.shootBooleanSupplier = () -> false;
     
     
     intake.shoulder.setNeutralMode(NeutralModeValue.Brake);
@@ -73,7 +73,7 @@ public class Robot extends TimedRobot {
     intake.rightHook.setPosition(0);
 
     
-
+    
 
   }
 
@@ -185,10 +185,30 @@ public class Robot extends TimedRobot {
       new InstantCommand(() -> automaticAiming.stopTargeting());
     }
 */
-    SmartDashboard.putBoolean("on red team", Constants.onRedTeam);
-    SmartDashboard.putString("auto mode for path", SmartDashboard.getData("Auto Mode").toString());
-    SmartDashboard.putNumber("target x", poseSubsystem.aprilTagFieldLayout.getTagPose(7).get().getX());
-    SmartDashboard.putNumber("target 7", poseSubsystem.aprilTagFieldLayout.getTagPose(7).get().getY());
+
+var targetDistance = poseSubsystem.getTargetDistance(Constants.wantedApriltag);
+    
+    
+    if (frc.robot.subsystems.intake.leftInput.get() == true || frc.robot.subsystems.intake.rightInput.get() == true){
+      Constants.hasNote = true;
+    } else {Constants.hasNote = false;}
+   
+    
+    
+    if(targetDistance <= 3.5 &&
+        RobotContainer.driverLeftTrigger.getAsBoolean() == false && 
+        Constants.autoDriveMode == false &&
+        Constants.hasNote == true
+        ) {
+        Constants.shootBooleanSupplier = () -> true;
+        } else {
+          Constants.shootBooleanSupplier = () -> false;
+        }
+
+    //SmartDashboard.putBoolean("on red team", Constants.onRedTeam);
+    //SmartDashboard.putString("auto mode for path", SmartDashboard.getData("Auto Mode").toString());
+    //SmartDashboard.putNumber("target x", poseSubsystem.aprilTagFieldLayout.getTagPose(7).get().getX());
+   // SmartDashboard.putNumber("target 7", poseSubsystem.aprilTagFieldLayout.getTagPose(7).get().getY());
     SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
     
     

@@ -5,6 +5,11 @@
 package frc.robot.subsystems;
 
 
+import java.util.function.BooleanSupplier;
+
+import javax.print.attribute.HashDocAttributeSet;
+import javax.swing.text.StyleContext.SmallAttributeSet;
+
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.HardwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -24,6 +29,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
@@ -34,7 +40,7 @@ import frc.robot.RobotContainer;
 
 public class intake extends SubsystemBase {
   /** Creates a new intake. */
-
+  private BooleanSupplier hasNote;
   //intakes
   public static final CANSparkMax rightIntake = new CANSparkMax(1, MotorType.kBrushless);
   public static final CANSparkMax leftIntake = new CANSparkMax(2, MotorType.kBrushless);
@@ -52,13 +58,16 @@ public class intake extends SubsystemBase {
   public static final DigitalInput rightInput = new DigitalInput(0);
   public static final DigitalInput leftInput = new DigitalInput(1);
 
+  //public final Trigger shootTrigger = new Trigger(rightInput::get);
+  //public final Trigger shootTriggerLeft = new Trigger(leftInput::get);
+
   private PositionDutyCycle mmDC = new PositionDutyCycle(0);
   public static VelocityDutyCycle vDC = new VelocityDutyCycle(0);
   
   //limit switch that doesn't exist. for testing trigger
-  private final DigitalInput digitalInput = new DigitalInput(1);
-  @SuppressWarnings("checkstyle:MemberName")
-  public final Trigger hasCargo = new Trigger(digitalInput::get);
+  //private final DigitalInput digitalInput = new DigitalInput(1);
+  //@SuppressWarnings("checkstyle:MemberName")
+  //public final Trigger hasCargo = new Trigger(digitalInput::get);
 
   public intake() {
     
@@ -197,9 +206,11 @@ public class intake extends SubsystemBase {
     rightHook.set(climberControls);
     
 
-    
+    SmartDashboard.putBoolean("left sensor", leftInput.get());
+    SmartDashboard.putBoolean("right sensor", rightInput.get());
+
      
-     // SmartDashboard.putNumber("shoulder Pos", shoulder.getPosition().getValueAsDouble());
+      SmartDashboard.putNumber("shoulder Pos", shoulder.getPosition().getValueAsDouble());
       //SmartDashboard.putNumber("left motor", shooterSlave.getVelocity().getValueAsDouble());
      // SmartDashboard.putNumber("right motor", shooter.getVelocity().getValueAsDouble());
     
@@ -212,7 +223,13 @@ public class intake extends SubsystemBase {
       //leftIntake.set(1);
     }
       
-
+  if (leftInput.get() == false || rightInput.get() == false) {
+    Constants.shootBooleanSupplier = () -> true;
+    hasNote = () -> true;
+  } else {
+    Constants.shootBooleanSupplier = () -> false;
+    hasNote = () -> false;
+  }
 
   }
 }

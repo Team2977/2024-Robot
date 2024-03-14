@@ -22,7 +22,7 @@ public class shooterAmp extends Command {
   private final Swerve swerve;
   private final intake intake;
   private final poseEstimator poseSubsystem;
-  
+
   private final TrapezoidProfile.Constraints omegConstraints = new Constraints(Units.degreesToRadians(500), Units.degreesToRadians(500));
   private final ProfiledPIDController pidControllerOmega = new ProfiledPIDController(Constants.rotaKP, Constants.rotaKI, Constants.rotaKD, omegConstraints);
 
@@ -48,8 +48,9 @@ public class shooterAmp extends Command {
   public void execute() {
   //shoulder 8.8 speed 0.8
     Constants.wantedShoulderAngle = 8.8;
-    frc.robot.subsystems.intake.shooter.set(0.8);
-    frc.robot.subsystems.intake.shooterSlave.set(0.8);
+    frc.robot.subsystems.intake.setFlywheelSpeed(85);
+    //frc.robot.subsystems.intake.shooter.set(0.8);
+    //frc.robot.subsystems.intake.shooterSlave.set(0.8);
 
     var wantedAngle = Units.degreesToRadians(90);
     var omegaSpeed = pidControllerOmega.calculate(swerve.getHeading().getRadians(), wantedAngle);

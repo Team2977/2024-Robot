@@ -81,8 +81,7 @@ public class RobotContainer {
     
 
     //trigers
-    public final Trigger shootTrigger = new Trigger(Constants.shootBooleanSupplier);
-
+    
 
     /* Subsystems */
     public final static Swerve s_Swerve = new Swerve();
@@ -90,6 +89,7 @@ public class RobotContainer {
     public static final poseEstimator poseESTIMATOR = new poseEstimator(photonCamera, backCamera, s_Swerve);
     public static final automaticAiming AUTOMATIC_AIMING = new automaticAiming(poseESTIMATOR, INTAKE, s_Swerve);
     public static final chaseTag CHASETAG = new chaseTag(photonCamera, s_Swerve, poseESTIMATOR::getCurrentPose);
+    
 
 
 
@@ -112,13 +112,12 @@ public class RobotContainer {
             NamedCommands.registerCommand("autoShoot", new autoshoot());
             NamedCommands.registerCommand("indexerSHOOT", new indexerSHOOT());
             NamedCommands.registerCommand("autoShoot", new autoshoot());
-            NamedCommands.registerCommand("setRobotPose", new setRobotPose());
             NamedCommands.registerCommand("autoINTAKEv2", new pathplannerIntakeIn(s_Swerve));
             NamedCommands.registerCommand("autoBackUp", new autoBackUp());
-            NamedCommands.registerCommand("setRobotPose", new setRobotPose());
             NamedCommands.registerCommand("autoIntakeIn", new autoIntakeIn());
             NamedCommands.registerCommand("hoverMode", new hoverMode());
-            NamedCommands.registerCommand("aimAndRev", new aimAndRev(INTAKE, photonCamera, s_Swerve, /*poseESTIMATOR::getCurrentPose,*/ poseESTIMATOR));
+            NamedCommands.registerCommand("aimAndRev", new aimAndRev(INTAKE, s_Swerve, poseESTIMATOR));
+            NamedCommands.registerCommand("null", null);
 
 
         
@@ -174,22 +173,26 @@ public class RobotContainer {
 
         //aim, and after relese, put shoulder down
         //driverLeftTrigger.whileTrue(new aimAndRev(INTAKE, photonCamera, s_Swerve, poseESTIMATOR));
+        driverLeftTrigger.whileTrue(new shooterAmp(s_Swerve, INTAKE, poseESTIMATOR));
         driverLeftTrigger.onFalse(new shoulderDown());
         driverLeftPaddle.onTrue(new shoulderDown());
-        //driverStart.whileFalse(new aimAndRev(INTAKE, photonCamera, s_Swerve, poseESTIMATOR));
-        driverLeftTrigger.whileTrue(new shooterAmp(s_Swerve, INTAKE, poseESTIMATOR));
+
         driverStart.whileTrue(new shootOverStage(INTAKE, poseESTIMATOR, s_Swerve));
         driverStart.onFalse(new shoulderDown());
         driverSelect.whileTrue(new shootLow());
 
         //shoot
         driverRightTrigger.whileTrue(new indexerSHOOT());
-        shootTrigger.whileTrue(new aimAndRev(INTAKE, photonCamera, s_Swerve, poseESTIMATOR));
-        shootTrigger.onFalse(new shoulderDown());
-        
+        //AUTOMATIC_AIMING.shootTrigger.whileTrue(new aimAndRev(INTAKE, s_Swerve, poseESTIMATOR));
+        //AUTOMATIC_AIMING.shootTrigger.onFalse(new shoulderDown());
+       /*  INTAKE.shootTrigger.whileFalse(new aimAndRev(INTAKE, s_Swerve, poseESTIMATOR));
+        INTAKE.shootTriggerLeft.whileFalse(new aimAndRev(INTAKE, s_Swerve, poseESTIMATOR));
+        INTAKE.shootTrigger.onTrue(new shoulderDown()); 
+        INTAKE.shootTriggerLeft.onTrue(new shoulderDown());
+        */
       
         //Operator controls
-        GA.whileTrue(new aimAndRev(INTAKE, photonCamera, s_Swerve, poseESTIMATOR));
+        GA.whileTrue(new aimAndRev(INTAKE, s_Swerve, poseESTIMATOR));
         GA.onFalse(new shoulderDown());
         GLeftBumper.whileTrue(new indexerIn());
 

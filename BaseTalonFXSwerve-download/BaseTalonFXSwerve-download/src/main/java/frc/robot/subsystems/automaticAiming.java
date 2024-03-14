@@ -6,12 +6,21 @@ package frc.robot.subsystems;
 
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
+import frc.robot.commands.aimAndRev;
+import frc.robot.commands.UpperAssembly.indexerIn;
+import frc.robot.commands.UpperAssembly.shoulderDown;
 
 
 public class automaticAiming extends SubsystemBase {
@@ -19,11 +28,10 @@ public class automaticAiming extends SubsystemBase {
   private final poseEstimator poseSubsystem;
   private final intake intake;
   private final Swerve swerve;
-  
-  
-
-
+  private double omegaSpeed;
  
+  
+
   private final TrapezoidProfile.Constraints omegConstraints = new Constraints(Units.degreesToRadians(500), Units.degreesToRadians(720));
   public final ProfiledPIDController pidControllerOmega = new ProfiledPIDController(0.8, 0, 0, omegConstraints);
 
@@ -35,7 +43,6 @@ public class automaticAiming extends SubsystemBase {
   this.swerve = swerve;
 
   pidControllerOmega.reset(poseSubsystem.field2d.getRobotPose().getRotation().getRadians());
-    
   pidControllerOmega.setTolerance(Units.degreesToRadians(1));
   pidControllerOmega.enableContinuousInput(Math.PI, -Math.PI);
   }
@@ -44,56 +51,54 @@ public class automaticAiming extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-      
+       
     var targetDistance = poseSubsystem.getTargetDistance(Constants.wantedApriltag);
+    var wantedAngle = poseSubsystem.getAngleToSpeaker();
+  
     
-    
-    if (frc.robot.subsystems.intake.leftInput.get() == true || frc.robot.subsystems.intake.rightInput.get() == true){
+    if (frc.robot.subsystems.intake.leftInput.get() == false && frc.robot.subsystems.intake.rightInput.get() == false){
       Constants.hasNote = true;
     } else {Constants.hasNote = false;}
    
     
     
-    if(targetDistance <= 3.5 &&
+    if(targetDistance <= 4 &&
         RobotContainer.driverLeftTrigger.getAsBoolean() == false && 
         Constants.autoDriveMode == false &&
         Constants.hasNote == true
         ) {
-        Constants.shootBooleanSupplier = () -> true;
-
-
-    /*     Constants.targetingOn = true;
+          Constants.targetingOn = true;
+      //new aimAndRev(intake, swerve, poseSubsystem);
         new InstantCommand(() -> new indexerIn());
-         
-        var omegaSpeed = pidControllerOmega.calculate(swerve.getHeading().getRadians(), wantedAngle);
+        
+       omegaSpeed = pidControllerOmega.calculate(swerve.getHeading().getRadians(), wantedAngle);
         if (pidControllerOmega.atGoal()) {
           omegaSpeed = 0;
         }
+        Constants.robotRotationSpeed = omegaSpeed;
+        
 
      Constants.wantedShoulderAngle = 7.63
                                    + (10.7 * targetDistance) 
                                    - (7.48 * Math.pow(targetDistance, 2)) 
                                    + (1.8 * Math.pow(targetDistance, 3)) 
                                    - (0.148 * Math.pow(targetDistance, 4))
-                                   - 0.4;  
+                                   - 0.5;  
 
     intake.setFlywheelSpeed(96);
   
-      SmartDashboard.putNumber("dis to tar", targetDistance);*/
-
-
-    } else {
-      Constants.shootBooleanSupplier = () -> false;
-    }
-    
-    /*else if (Constants.autoDriveMode == false) {
+   
+ 
+    } else if (Constants.autoDriveMode == false) {
       Constants.targetingOn = false;
-      Constants.wantedShoulderAngle = 0;
+     new WaitCommand(0.4);
+      Constants.wantedShoulderAngle = -1;
       intake.disableFlywheels();
       new InstantCommand(() -> new shoulderDown());
       //new InstantCommand(() -> new Swerve().resetOmegaPID());
-    }*/
-
+    }
+   SmartDashboard.putNumber("dis to tar", targetDistance);
+    SmartDashboard.putNumber("omega", omegaSpeed);
 
   }
 }
