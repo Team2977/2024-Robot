@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.automaticAiming;
 import frc.robot.subsystems.intake;
 import frc.robot.subsystems.poseEstimator;
 
@@ -71,6 +70,7 @@ public class Robot extends TimedRobot {
     intake.shoulder.setNeutralMode(NeutralModeValue.Brake);
     intake.leftHook.setPosition(0);
     intake.rightHook.setPosition(0);
+    //SmartDashboard.putNumber("shoulder offset", 0);
 
     
     
@@ -195,15 +195,6 @@ var targetDistance = poseSubsystem.getTargetDistance(Constants.wantedApriltag);
    
     
     
-    if(targetDistance <= 3.5 &&
-        RobotContainer.driverLeftTrigger.getAsBoolean() == false && 
-        Constants.autoDriveMode == false &&
-        Constants.hasNote == true
-        ) {
-        Constants.shootBooleanSupplier = () -> true;
-        } else {
-          Constants.shootBooleanSupplier = () -> false;
-        }
 
     //SmartDashboard.putBoolean("on red team", Constants.onRedTeam);
     //SmartDashboard.putString("auto mode for path", SmartDashboard.getData("Auto Mode").toString());

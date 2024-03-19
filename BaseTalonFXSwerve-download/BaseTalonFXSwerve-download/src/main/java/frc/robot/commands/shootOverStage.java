@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Unit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants;
@@ -21,6 +22,7 @@ public class shootOverStage extends Command {
   private final intake intake;
   private final poseEstimator poseSubsystem;
   private final frc.robot.subsystems.Swerve swerve;
+  private double angleOffset;
 
   private final TrapezoidProfile.Constraints omegConstraints = new Constraints(Units.degreesToRadians(500), Units.degreesToRadians(500));
   private final ProfiledPIDController pidControllerOmega = new ProfiledPIDController(Constants.rotaKP, Constants.rotaKI, Constants.rotaKD, omegConstraints);
@@ -41,6 +43,11 @@ public class shootOverStage extends Command {
     pidControllerOmega.reset(poseSubsystem.field2d.getRobotPose().getRotation().getRadians());
     pidControllerOmega.setTolerance(Units.degreesToRadians(1));
     pidControllerOmega.enableContinuousInput(Math.PI, -Math.PI);
+     if (Constants.onRedTeam == false) {
+  angleOffset = Units.degreesToRadians(-15);
+    } else{
+      angleOffset = Units.degreesToRadians(15);
+    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -49,8 +56,9 @@ public class shootOverStage extends Command {
     
     Constants.wantedShoulderAngle = 10;
     frc.robot.subsystems.intake.setFlywheelSpeed(96);
-
-    var wantedAngle = poseSubsystem.getAngleToSpeaker();
+   
+    
+    var wantedAngle = poseSubsystem.getAngleToSpeaker() - angleOffset;
     
     var omegaSpeed = pidControllerOmega.calculate(swerve.getHeading().getRadians(), wantedAngle);
     if (pidControllerOmega.atGoal()) {

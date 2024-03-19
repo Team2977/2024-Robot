@@ -49,8 +49,6 @@ public class shooterAmp extends Command {
   //shoulder 8.8 speed 0.8
     Constants.wantedShoulderAngle = 8.8;
     frc.robot.subsystems.intake.setFlywheelSpeed(85);
-    //frc.robot.subsystems.intake.shooter.set(0.8);
-    //frc.robot.subsystems.intake.shooterSlave.set(0.8);
 
     var wantedAngle = Units.degreesToRadians(90);
     var omegaSpeed = pidControllerOmega.calculate(swerve.getHeading().getRadians(), wantedAngle);

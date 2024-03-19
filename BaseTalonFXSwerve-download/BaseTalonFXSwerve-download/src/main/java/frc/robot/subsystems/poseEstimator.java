@@ -85,9 +85,6 @@ public class poseEstimator extends SubsystemBase {
     try {
       layout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
       layout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
-    /* 
-      layout.setOrigin(alliance.get() == Alliance.Blue ?
-          OriginPosition.kBlueAllianceWallRightSide : OriginPosition.kRedAllianceWallRightSide);*/          
     } catch(IOException e) {
       DriverStation.reportError("Failed to load AprilTagFieldLayout", e.getStackTrace());
       layout = null;
@@ -95,9 +92,6 @@ public class poseEstimator extends SubsystemBase {
     this.aprilTagFieldLayout = layout;
 
     ShuffleboardTab tab = Shuffleboard.getTab("Vision");
-
-    //frontEstimator = new PhotonPoseEstimator(layout, PoseStrategy.LOWEST_AMBIGUITY, Constants.Vision.kRobotToCam);
-    //backEstimator = new PhotonPoseEstimator(layout, PoseStrategy.LOWEST_AMBIGUITY, Constants.Vision.robotToBackCam);
 
     poseEstimator =  new SwerveDrivePoseEstimator(
         Constants.Swerve.swerveKinematics,
@@ -160,7 +154,7 @@ public class poseEstimator extends SubsystemBase {
       }
 
 
-
+      
 
     // Update pose estimator with drivetrain sensors
     poseEstimator.update(
@@ -169,14 +163,13 @@ public class poseEstimator extends SubsystemBase {
 
     field2d.setRobotPose(getCurrentPose());
     SmartDashboard.putData("pose", field2d);
-   
+
+      
 
   //sends estimated position to swerve subsytem for assimilation into robot pose estiamtor. 
   this.swerve.addVisionMeasurement(poseEstimator.getEstimatedPosition(), resultTimestamp);
 
-     // var targetYaw =  getTargetYaw(Constants.wantedApriltag);
-      //SmartDashboard.putNumber("angle to tar", targetYaw);
-      // SmartDashboard.putNumber("robot angle", getCurrentPose().getRotation().getRadians());
+  
     
 }
 
@@ -240,40 +233,6 @@ public class poseEstimator extends SubsystemBase {
   }
   return(targetAngle);
 }
-  public double getAngleToTarget(double targetX, double targetY) {
-    var alliance = DriverStation.getAlliance();
-    //double targetX;
-    //double targetY;
-    double currentX;
-    double currentY;
-    double targetAngle;
-    currentX = getCurrentPose().getX();
-    currentY = getCurrentPose().getY();
-    if (alliance.isPresent() && alliance.get() == Alliance.Red){
-        targetX = 16.58;
-        targetY = 5.55;
-        if(targetY-currentY>0){
-            targetAngle = Units.degreesToRadians(90) - Math.atan((targetX-currentX)/(targetY-currentY));
-        } else if(targetY-currentY<0){
-            targetAngle = Units.degreesToRadians(-90) + Math.atan((targetX-currentX)/(currentY-targetY));
-        } else {
-            targetAngle = Units.degreesToRadians(0);
-        }
-    // On Blue alliance
-  } else {
-        targetX = 0;
-        targetY = 5.55;
-         if(targetY-currentY>0){
-            targetAngle = Units.degreesToRadians(90) + Math.atan((currentX-targetX)/(targetY-currentY));
-        } else if(targetY-currentY<0){
-            targetAngle = Units.degreesToRadians(-90) - Math.atan((currentX-targetX)/(currentY-targetY));
-        } else {
-            targetAngle = Math.PI;
-        }
-    // targetY same as red
-  }
-  return(targetAngle);
-  }
 
         /**
    * Resets the current pose to the specified pose. This should ONLY be called

@@ -32,7 +32,6 @@ public final class Constants {
     public static boolean slowMode = true;
     public static double wantedShoulderAngle;
     public static double wantedClimberPose;
-    public static double shoulderSpeed;
     public static int wantedApriltag = 7;
     public static boolean onRedTeam;
     public static int invert;
@@ -44,12 +43,17 @@ public final class Constants {
     public static boolean hasNote;
     public static boolean targetingOn;
     public static double robotRotationSpeed;
-    public static BooleanSupplier shootBooleanSupplier;
+    public static final double permanetShoulderOffset = 0.4;
+    public static double shoulderOffset = 0;
+    public static BooleanSupplier shootBooleanSupplier = () -> false;
 
-    //rotation PID values
-    public static final double rotaKP = 0.8;
+    //automatic aiming rotation PID values
+    public static final double rotaKP = 0.9;
     public static final double rotaKI = 0;
-    public static final double rotaKD = 0;
+    public static final double rotaKD = 0.01;
+
+    //automatic aiming shoulder offsets
+    
     
 
     //auto mode constants
@@ -146,7 +150,7 @@ public static class Vision {
         public static final double angleKD = chosenModule.angleKD;
 
         /* Drive Motor PID Values */
-        public static final double driveKP = 0.5; //TODO: This must be tuned to specific robot
+        public static final double driveKP = 0.8; //TODO: This must be tuned to specific robot
         public static final double driveKI = 0.0;
         public static final double driveKD = 0.0;
         public static final double driveKF = 0.0;

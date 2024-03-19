@@ -2,39 +2,36 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.UpperAssembly;
+package frc.robot.commands.shooterTrim;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.RobotContainer;
-import frc.robot.subsystems.intake;
+import frc.robot.Constants;
 
-public class indexerIn extends Command {
-  /** Creates a new indexerIn. */
-  public indexerIn() {
+public class shooterTrimUp extends Command {
+  /** Creates a new shooterTrimUp. */
+  public shooterTrimUp() {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(RobotContainer.INTAKE);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    Constants.shoulderOffset = Constants.shoulderOffset + 0.1;
+    SmartDashboard.putNumber("shoulder trim", Constants.shoulderOffset);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    intake.indexer.set(-0.5);
-
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    intake.indexer.set(0);
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }

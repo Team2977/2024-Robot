@@ -5,10 +5,6 @@
 package frc.robot.subsystems;
 
 
-import java.util.function.BooleanSupplier;
-
-import javax.print.attribute.HashDocAttributeSet;
-import javax.swing.text.StyleContext.SmallAttributeSet;
 
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.HardwareLimitSwitchConfigs;
@@ -23,9 +19,19 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.ReverseLimitSourceValue;
 import com.ctre.phoenix6.signals.ReverseLimitTypeValue;
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.EncoderType;
+import com.revrobotics.MotorFeedbackSensor;
+import com.revrobotics.SparkAbsoluteEncoder;
+import com.revrobotics.SparkMaxAlternateEncoder;
+import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.SparkMaxAlternateEncoder.Type;
+import com.revrobotics.SparkPIDController.AccelStrategy;
+import com.revrobotics.SparkPIDController.ArbFFUnits;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -40,7 +46,7 @@ import frc.robot.RobotContainer;
 
 public class intake extends SubsystemBase {
   /** Creates a new intake. */
-  private BooleanSupplier hasNote;
+  
   //intakes
   public static final CANSparkMax rightIntake = new CANSparkMax(1, MotorType.kBrushless);
   public static final CANSparkMax leftIntake = new CANSparkMax(2, MotorType.kBrushless);
@@ -57,17 +63,17 @@ public class intake extends SubsystemBase {
   //indexer sensors
   public static final DigitalInput rightInput = new DigitalInput(0);
   public static final DigitalInput leftInput = new DigitalInput(1);
-
-  //public final Trigger shootTrigger = new Trigger(rightInput::get);
-  //public final Trigger shootTriggerLeft = new Trigger(leftInput::get);
-
+  //amp bar
+  //public static final CANSparkMax ampBar = new CANSparkMax(9, MotorType.kBrushless);
+  
   private PositionDutyCycle mmDC = new PositionDutyCycle(0);
   public static VelocityDutyCycle vDC = new VelocityDutyCycle(0);
   
-  //limit switch that doesn't exist. for testing trigger
-  //private final DigitalInput digitalInput = new DigitalInput(1);
-  //@SuppressWarnings("checkstyle:MemberName")
-  //public final Trigger hasCargo = new Trigger(digitalInput::get);
+  public static final Trigger rightTrigger = new Trigger(rightInput::get);
+  public static final Trigger leftTrigger = new Trigger(leftInput::get);
+  
+  //private SparkMaxAlternateEncoder.Type alternateEncoder = SparkMaxAlternateEncoder.Type.kQuadrature;
+  //private SparkAbsoluteEncoder.Type absoluteEncoderType = SparkAbsoluteEncoder.Type.kDutyCycle;
 
   public intake() {
     
@@ -76,18 +82,33 @@ public class intake extends SubsystemBase {
     rightIntake.setInverted(true);
     leftIntake.setSmartCurrentLimit(100);
     leftIntake.setIdleMode(IdleMode.kCoast);
-    indexer.setSmartCurrentLimit(30);
+    indexer.setSmartCurrentLimit(40);
    
+    /*ampBar.setSmartCurrentLimit(1, 20);
+    ampBar.setIdleMode(IdleMode.kCoast);
+    ampBar.enableSoftLimit(SoftLimitDirection.kForward, true);
+    ampBar.enableSoftLimit(SoftLimitDirection.kReverse, true);
+    ampBar.setSoftLimit(SoftLimitDirection.kForward, 200);
+    ampBar.setSoftLimit(SoftLimitDirection.kReverse, 0);
+    
+    ampBar.getPIDController().setP(0.1, 0);
+    ampBar.getPIDController().setI(0, 0);
+    ampBar.getPIDController().setD(0, 0);
+    ampBar.getPIDController().setFeedbackDevice(absoluteEncoderType);*/
+    
+    
+    
+
     //shoulder configs
     TalonFXConfiguration cfg = new TalonFXConfiguration();
     /* Configure current limits */
     MotionMagicConfigs mm = cfg.MotionMagic;
-    mm.MotionMagicCruiseVelocity = 1; // 1 rotations per second cruise
+    mm.MotionMagicCruiseVelocity = 2; // 1 rotations per second cruise
     mm.MotionMagicAcceleration = 10; // Take approximately 0.5 seconds to reach max vel
     mm.MotionMagicJerk = 50; // Take approximately 0.2 seconds to reach max accel 
     
     Slot0Configs slot0 = cfg.Slot0;
-    slot0.kP = 0.08; //0.05
+    slot0.kP = 0.15; //0.05
     slot0.kI = 0;
     slot0.kD = 0.01;
     slot0.kV = 10;
@@ -194,12 +215,13 @@ public class intake extends SubsystemBase {
     shooterSlave.set(0);
   }
 
-
+ 
 
   @Override
   public void periodic() {    
     indexer.set(Constants.indexerShootSpeed);
     shoulder.setControl(mmDC.withPosition(Constants.wantedShoulderAngle));
+    //ampBar.set(RobotContainer.driver.getRawAxis(5) / 5);
 
     double climberControls = MathUtil.applyDeadband(-RobotContainer.gamepad2.getRawAxis(1), 0.1);
     leftHook.set(climberControls);
@@ -211,25 +233,17 @@ public class intake extends SubsystemBase {
 
      
       SmartDashboard.putNumber("shoulder Pos", shoulder.getPosition().getValueAsDouble());
-      //SmartDashboard.putNumber("left motor", shooterSlave.getVelocity().getValueAsDouble());
-     // SmartDashboard.putNumber("right motor", shooter.getVelocity().getValueAsDouble());
     
      
      //runs during auto
      if (Constants.autoDriveMode == true) {
       shooter.setControl(vDC.withVelocity(Constants.speakerSpeed));
       shooterSlave.setControl(vDC.withVelocity(Constants.speakerSpeed));
-      //rightIntake.set(1);
-      //leftIntake.set(1);
     }
-      
-  if (leftInput.get() == false || rightInput.get() == false) {
-    Constants.shootBooleanSupplier = () -> true;
-    hasNote = () -> true;
-  } else {
-    Constants.shootBooleanSupplier = () -> false;
-    hasNote = () -> false;
-  }
+   
+
+  
+    
 
   }
 }

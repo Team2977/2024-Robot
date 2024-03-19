@@ -4,8 +4,6 @@
 
 package frc.robot.autos;
 
-import org.photonvision.PhotonCamera;
-
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -23,8 +21,6 @@ public class autoSpeakerOn extends Command {
   /** Creates a new autoSpeaker. */
   private final intake intake;
   private final Swerve swerve;
-  private final PhotonCamera photoncamera;
- // private final Supplier<Pose2d> poseProvider;
   private final poseEstimator poseSubsystem;
   private double angleOffset;
 
@@ -32,11 +28,11 @@ public class autoSpeakerOn extends Command {
   private final TrapezoidProfile.Constraints omegConstraints = new Constraints(Units.degreesToRadians(500), Units.degreesToRadians(500));
   private final ProfiledPIDController pidControllerOmega = new ProfiledPIDController(0.8, 0, 0, omegConstraints);
 
-  public autoSpeakerOn(intake intake, PhotonCamera photonCamera, Swerve swerve, poseEstimator poseEstimator) {
+  public autoSpeakerOn(intake intake, Swerve swerve, poseEstimator poseEstimator) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(RobotContainer.INTAKE);
     this.intake = intake;
-    this.photoncamera = photonCamera;
+    
     this.swerve = swerve;
    // this.poseProvider = poseProvider;
     this.poseSubsystem = poseEstimator;

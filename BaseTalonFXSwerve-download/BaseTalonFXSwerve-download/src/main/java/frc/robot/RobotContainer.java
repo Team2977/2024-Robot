@@ -12,11 +12,13 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.autos.*;
 import frc.robot.commands.*;
@@ -30,7 +32,9 @@ import frc.robot.commands.UpperAssembly.shootLow;
 import frc.robot.commands.UpperAssembly.shooterAmp;
 import frc.robot.commands.UpperAssembly.shooterSpeaker;
 import frc.robot.commands.UpperAssembly.shoulderDown;
-
+import frc.robot.commands.automaticShooting.automaticShooting;
+import frc.robot.commands.shooterTrim.shooterTrimDown;
+import frc.robot.commands.shooterTrim.shooterTrimUp;
 import frc.robot.subsystems.*;
 
 
@@ -46,9 +50,8 @@ public class RobotContainer {
     public static final Joystick gamepad2 =  new Joystick(1);
     public static final PhotonCamera photonCamera = new PhotonCamera("frontCamera");
     public static final PhotonCamera backCamera = new PhotonCamera("backCamera");
-    
     public final SendableChooser<Command> chooser;
-
+    //public static final Trigger shootTrigger = new Trigger(Constants.shootBooleanSupplier);
     
 
     /* Drive Controls */
@@ -58,19 +61,20 @@ public class RobotContainer {
 
 
     /* Driver Buttons */
-    private final JoystickButton zeroGyro = new JoystickButton(driver, 4);  //Y
-    private final JoystickButton robotCentric = new JoystickButton(driver, 7);
-    private final JoystickButton driverY = new JoystickButton(driver, 5); //reset modules to absolute
-    private final JoystickButton rightBummber = new JoystickButton(driver, 8); 
-    private final JoystickButton driverIntakeIn = new JoystickButton(driver, 1); //A button
-    private final JoystickButton driverIntakeOut = new JoystickButton(driver, 2); //B button
-    private final JoystickButton driverRightPaddle = new JoystickButton(driver, 3);//aim at speaker
-    private final JoystickButton driverLeftPaddle =  new JoystickButton(driver, 6);
-    public static final JoystickButton driverLeftTrigger = new JoystickButton(driver, 9);
-    private final JoystickButton driverRightTrigger = new JoystickButton(driver, 10);
-    private final JoystickButton driverSelect = new JoystickButton(driver, 11);
-    private final JoystickButton driverStart = new JoystickButton(driver, 12);
-
+    private final JoystickButton driverIntakeIn = new JoystickButton(driver, 1); //A button. intake in
+    private final JoystickButton driverIntakeOut = new JoystickButton(driver, 2); //B button. intake out
+    private final JoystickButton driverRightPaddle = new JoystickButton(driver, 3);//right paddle. indexer in
+    private final JoystickButton zeroGyro = new JoystickButton(driver, 4);  //X button. zero gyro
+    private final JoystickButton driverY = new JoystickButton(driver, 5); //Y button. reset modules to aboslute
+    private final JoystickButton driverLeftPaddle =  new JoystickButton(driver, 6);// left paddle. shoulderDown
+    private final JoystickButton robotCentric = new JoystickButton(driver, 7); //left bumper. robot centric
+    private final JoystickButton rightBummber = new JoystickButton(driver, 8); //right bumper. change speeds 
+    public static final JoystickButton driverLeftTrigger = new JoystickButton(driver, 9); //left trigger. amp 
+    public static final JoystickButton driverRightTrigger = new JoystickButton(driver, 10); //right trigger. indexer shoot
+    private final JoystickButton driverSelect = new JoystickButton(driver, 11); //select. shoot low.
+    private final JoystickButton driverStart = new JoystickButton(driver, 12); //start. shoot over stage
+    private final POVButton driverPOVUp = new POVButton(driver, 0); //dpad up
+    private final POVButton driverPOVDown = new POVButton(driver, 180); //dpad down
 
     private final JoystickButton GA = new JoystickButton(gamepad2, 1);
     private final JoystickButton GB = new JoystickButton(gamepad2, 2);
@@ -106,7 +110,7 @@ public class RobotContainer {
         );
            
             
-            NamedCommands.registerCommand("autoSpeakerOn", new autoSpeakerOn(INTAKE, photonCamera, s_Swerve, poseESTIMATOR));
+            NamedCommands.registerCommand("autoSpeakerOn", new autoSpeakerOn(INTAKE, s_Swerve, poseESTIMATOR));
             NamedCommands.registerCommand("intakeIn", new intakeIn());
             NamedCommands.registerCommand("intakeOut", new intakeOut());
             NamedCommands.registerCommand("autoShoot", new autoshoot());
@@ -117,7 +121,7 @@ public class RobotContainer {
             NamedCommands.registerCommand("autoIntakeIn", new autoIntakeIn());
             NamedCommands.registerCommand("hoverMode", new hoverMode());
             NamedCommands.registerCommand("aimAndRev", new aimAndRev(INTAKE, s_Swerve, poseESTIMATOR));
-            NamedCommands.registerCommand("null", null);
+            //NamedCommands.registerCommand("null", null);
 
 
         
@@ -163,44 +167,47 @@ public class RobotContainer {
         /* Driver Buttons */
         driverY.onTrue(new InstantCommand(() -> s_Swerve.resetModulesToAbsolute()));
         zeroGyro.onTrue(new InstantCommand(() -> poseESTIMATOR.setCurrentPose(new Pose2d())));
-        //driverStart.onTrue(new changeAlliance());
         rightBummber.onTrue(new toggleSpeed());
 
         //intake control
         driverIntakeIn.onTrue(new intakeIn());
         driverIntakeOut.onTrue(new intakeOut());
         driverRightPaddle.whileTrue(new indexerIn());
+        //driverRightPaddle.onTrue(new shoulderDown());
 
         //aim, and after relese, put shoulder down
-        //driverLeftTrigger.whileTrue(new aimAndRev(INTAKE, photonCamera, s_Swerve, poseESTIMATOR));
-        driverLeftTrigger.whileTrue(new shooterAmp(s_Swerve, INTAKE, poseESTIMATOR));
+        driverLeftTrigger.whileTrue(new aimAndRev(INTAKE, s_Swerve, poseESTIMATOR));
+       // driverLeftTrigger.whileTrue(new shooterAmp(s_Swerve, INTAKE, poseESTIMATOR));
         driverLeftTrigger.onFalse(new shoulderDown());
         driverLeftPaddle.onTrue(new shoulderDown());
 
+        //extra stuff
         driverStart.whileTrue(new shootOverStage(INTAKE, poseESTIMATOR, s_Swerve));
         driverStart.onFalse(new shoulderDown());
         driverSelect.whileTrue(new shootLow());
+        driverSelect.onFalse(new shoulderDown());
+
+        //shooter trim
+        driverPOVUp.onTrue(new shooterTrimUp());
+        driverPOVDown.onTrue(new shooterTrimDown());
 
         //shoot
         driverRightTrigger.whileTrue(new indexerSHOOT());
-        //AUTOMATIC_AIMING.shootTrigger.whileTrue(new aimAndRev(INTAKE, s_Swerve, poseESTIMATOR));
-        //AUTOMATIC_AIMING.shootTrigger.onFalse(new shoulderDown());
-       /*  INTAKE.shootTrigger.whileFalse(new aimAndRev(INTAKE, s_Swerve, poseESTIMATOR));
-        INTAKE.shootTriggerLeft.whileFalse(new aimAndRev(INTAKE, s_Swerve, poseESTIMATOR));
-        INTAKE.shootTrigger.onTrue(new shoulderDown()); 
-        INTAKE.shootTriggerLeft.onTrue(new shoulderDown());
-        */
+        //shootTrigger.whileTrue(new indexerSHOOT());
+        intake.rightTrigger.onFalse(new automaticShooting(poseESTIMATOR));
+        intake.leftTrigger.onFalse(new automaticShooting(poseESTIMATOR));
       
-        //Operator controls
+        /*Operator controls*/
         GA.whileTrue(new aimAndRev(INTAKE, s_Swerve, poseESTIMATOR));
         GA.onFalse(new shoulderDown());
         GLeftBumper.whileTrue(new indexerIn());
 
-        
+        //extra controls
         GY.whileTrue(new shootLow());
         GX.whileTrue(new shooterSpeaker());
         GX.onFalse(new shoulderDown());
-       
+
+       //amp shoot
         GRightBumper.whileTrue(new shooterAmp(s_Swerve, INTAKE, poseESTIMATOR));
         GRightBumper.onFalse(new shoulderDown());
         

@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
 import frc.robot.SwerveModule;
-//import frc.robot.vision;
+
 
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
@@ -12,10 +12,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.PathPlannerTrajectory;
-import com.pathplanner.lib.pathfinding.Pathfinder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -204,14 +200,7 @@ public class Swerve extends SubsystemBase {
 
 
     public void autoResetPose(Pose2d pose2d) {
-    //try this
-        //poseEstimator.field2d.setRobotPose(pose2d);
-        //poseEstimator.setCurrentPose(PathPlannerAuto.getStaringPoseFromAutoFile(SmartDashboard.getData("Auto Mode").toString()));
-        //this.setPose(PathPlannerAuto.getStaringPoseFromAutoFile("Blue 3 note"));
-        //this.setPose(new Pose2d(new Translation2d(1.52, 5.67), new Rotation2d(Units.degreesToRadians(180))));
-        
-        //poseEstimator.setCurrentPose(new Pose2d(new Translation2d(1.52, 5.67), new Rotation2d(Units.degreesToRadians(180))));
-        
+    //does nothing, but can't remove. required for pathplaner.
     }
 
     /*========================================================================================================= */
@@ -230,7 +219,26 @@ public class Swerve extends SubsystemBase {
         return Constants.Swerve.swerveKinematics.toChassisSpeeds(getModuleStates());
     }
 
+    public ChassisSpeeds getFieldRelativeChassisSpeeds() {
+        return new ChassisSpeeds(
+                getChassisSpeeds().vxMetersPerSecond * getPose().getRotation().getCos()
+                        - getChassisSpeeds().vyMetersPerSecond * getPose().getRotation().getSin(),
+                getChassisSpeeds().vyMetersPerSecond * getPose().getRotation().getCos()
+                        + getChassisSpeeds().vxMetersPerSecond * getPose().getRotation().getSin(),
+                getChassisSpeeds().omegaRadiansPerSecond);
+    }
 
+    public double getFieldRelativeXVelocity() {
+        return getFieldRelativeChassisSpeeds().vxMetersPerSecond;
+    }
+
+    public double getFieldRelativeYVelocity() {
+        return getFieldRelativeChassisSpeeds().vyMetersPerSecond;
+    }
+
+    public double getFieldRelativeAngularVelocity() {
+        return getFieldRelativeChassisSpeeds().omegaRadiansPerSecond;
+    }
 
 
     @Override
@@ -238,13 +246,15 @@ public class Swerve extends SubsystemBase {
        
        
         swerveOdometry.update(getGyroYaw(), getModulePositions());
-/* 
-        for(SwerveModule mod : mSwerveMods){
+ 
+      /*  for(SwerveModule mod : mSwerveMods){
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Angle", mod.getPosition().angle.getDegrees());
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);    
-        }        
-      */  
+        }  */       
+       
+        SmartDashboard.putNumber("Vel X", this.getChassisSpeeds().vxMetersPerSecond);
+        SmartDashboard.putNumber("vel Y", this.getChassisSpeeds().vyMetersPerSecond);
         
       
     }

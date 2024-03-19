@@ -29,7 +29,7 @@ public class aimAndRev extends Command {
   
 
 
-  private final TrapezoidProfile.Constraints omegConstraints = new Constraints(Units.degreesToRadians(500), Units.degreesToRadians(500));
+  private final TrapezoidProfile.Constraints omegConstraints = new Constraints(Units.degreesToRadians(500), Units.degreesToRadians(720));
   private final ProfiledPIDController pidControllerOmega = new ProfiledPIDController(Constants.rotaKP, Constants.rotaKI, Constants.rotaKD, omegConstraints);
 
 
@@ -64,7 +64,7 @@ public class aimAndRev extends Command {
   //angleOffset = 0;
     
 
-  if(targetDistance <= 3.5  ) {
+    
     
    var omegaSpeed = pidControllerOmega.calculate(swerve.getHeading().getRadians(), wantedAngle);
     if (pidControllerOmega.atGoal()) {
@@ -80,16 +80,24 @@ public class aimAndRev extends Command {
 
 
     //forth equation. same dataset as the first, just to the 4th polynomial.  R^2 = 1
-    Constants.wantedShoulderAngle = 7.63
+   /*  Constants.wantedShoulderAngle = 7.63
                                    + (10.7 * targetDistance) 
                                    - (7.48 * Math.pow(targetDistance, 2)) 
                                    + (1.8 * Math.pow(targetDistance, 3)) 
                                    - (0.148 * Math.pow(targetDistance, 4))
-                                   - 0.4;  
+                                   - 0.4;  */
+
+    Constants.wantedShoulderAngle = 17.6
+                                    - (3.12 * targetDistance)
+                                    - (0.598 * Math.pow(targetDistance, 2))
+                                    + (0.189 * Math.pow(targetDistance, 3))
+                                    + Constants.permanetShoulderOffset;
+                                    
+                                     
 
 
    frc.robot.subsystems.intake.setFlywheelSpeed(96);
-  } 
+  
 
    
    SmartDashboard.putNumber("dis to tar", targetDistance);
@@ -104,7 +112,7 @@ public class aimAndRev extends Command {
     swerve.drive(new Translation2d(), 0, true, true);
     frc.robot.subsystems.intake.disableFlywheels();
     Constants.flywheelSpeed = 0;
-    Constants.wantedShoulderAngle = 1;
+    Constants.wantedShoulderAngle = 3;
     new InstantCommand(() -> new shoulderDown());    
   }
 
