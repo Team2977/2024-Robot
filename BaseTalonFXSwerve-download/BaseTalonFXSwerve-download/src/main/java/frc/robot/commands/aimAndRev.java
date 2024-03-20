@@ -63,10 +63,21 @@ public class aimAndRev extends Command {
   } else { angleOffset = Units.degreesToRadians(5);}*/
   //angleOffset = 0;
     
-
+   //robot aiming angles
+      //angles for leading shoots
+      if (swerve.getFieldRelativeYVelocity() <= -1 
+      && swerve.getFieldRelativeYVelocity() >= -3 
+      || swerve.getFieldRelativeYVelocity() >= 1 
+      && swerve.getFieldRelativeYVelocity() <= 3) {
+            angleOffset = Units.degreesToRadians(swerve.getChassisSpeeds().vyMetersPerSecond * 11);
+  } else if (swerve.getFieldRelativeYVelocity() <= -3 || swerve.getFieldRelativeYVelocity() >= 3){
+    angleOffset = Units.degreesToRadians(swerve.getChassisSpeeds().vyMetersPerSecond * 10);
+  } else {
+    angleOffset = 0;
+  }
     
     
-   var omegaSpeed = pidControllerOmega.calculate(swerve.getHeading().getRadians(), wantedAngle);
+   var omegaSpeed = pidControllerOmega.calculate(swerve.getHeading().getRadians(), wantedAngle - angleOffset);
     if (pidControllerOmega.atGoal()) {
       omegaSpeed = 0;
     }
@@ -91,7 +102,8 @@ public class aimAndRev extends Command {
                                     - (3.12 * targetDistance)
                                     - (0.598 * Math.pow(targetDistance, 2))
                                     + (0.189 * Math.pow(targetDistance, 3))
-                                    + Constants.permanetShoulderOffset;
+                                    + Constants.permanetShoulderOffset
+                                    + Constants.shoulderOffset;
                                     
                                      
 

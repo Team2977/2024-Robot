@@ -12,7 +12,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -102,13 +102,13 @@ public class automaticAiming extends SubsystemBase {
 
 
 
+        
+        
+        
 
 
 
-
-
-
-/* 
+///* 
     //check to see if there is a note in the shooter
     if (frc.robot.subsystems.intake.leftInput.get() == false && frc.robot.subsystems.intake.rightInput.get() == false){
       Constants.hasNote = true;
@@ -126,7 +126,7 @@ public class automaticAiming extends SubsystemBase {
   Constants.targetingOn = true;
 
   //bring intake in
-  new InstantCommand(() -> new indexerIn());
+  //new InstantCommand(() -> new indexerIn());
 
   //send the rotaion value to TeleopSwerve command
   Constants.robotRotationSpeed = omegaSpeed;
@@ -162,28 +162,30 @@ public class automaticAiming extends SubsystemBase {
     
   
        //checks robot angle for auto shooting
-   /*  if (poseSubsystem.field2d.getRobotPose().getRotation().getRadians() <= wantedAngle - Units.degreesToRadians(3) 
-      || poseSubsystem.field2d.getRobotPose().getRotation().getRadians() >= wantedAngle + Units.degreesToRadians(3)) {shootAngleCheck = true;
-      } else {shootAngleCheck = false;}*/
+   ///*  
+   if (poseSubsystem.field2d.getRobotPose().getRotation().getRadians() <= wantedAngle - Units.degreesToRadians(3) 
+      || poseSubsystem.field2d.getRobotPose().getRotation().getRadians() >= wantedAngle + Units.degreesToRadians(3)) 
+      {shootAngleCheck = true;
+        } else {shootAngleCheck = false;}
+      //*/
       
       
 
     
  
- /* 
+ ///* 
         //checks shoulder position for auto shooting
    if (Constants.wantedShoulderAngle >= Constants.wantedShoulderAngle - 0.2 
    || Constants.wantedShoulderAngle <= Constants.wantedShoulderAngle + 0.2) {shootShoulderCheck = true; 
       } else {shootShoulderCheck = false;}
 
        //auto shooting
-    if(pidControllerOmega.atGoal() == true && shootShoulderCheck == true && targetDistance <= 3.5) {
-      
-      frc.robot.subsystems.intake.indexerShoot();
-      
-    } 
-*/
-/* 
+    if(targetingCheck.atGoal() == true && shootShoulderCheck == true && targetDistance <= 3.5) {
+      Constants.shootBooleanSupplier = () -> true;
+    } else {Constants.shootBooleanSupplier = () -> false;}
+//*/
+///* 
+    Commands.either(new indexerSHOOT(), new indexerIn(), Constants.shootBooleanSupplier);
 
     //runs if the robot is farther than 4 meters away  
     } else if (Constants.autoDriveMode == false && RobotContainer.driverRightTrigger.getAsBoolean() == false) {
@@ -194,7 +196,8 @@ public class automaticAiming extends SubsystemBase {
       new InstantCommand(() -> new shoulderDown());
       
     }
-  */
+    
+  //*/
 
     SmartDashboard.putNumber("dis to tar", targetDistance);
     //SmartDashboard.putNumber("omega", omegaSpeed);
@@ -203,6 +206,7 @@ public class automaticAiming extends SubsystemBase {
     SmartDashboard.putNumber("field relitive X", swerve.getFieldRelativeXVelocity());
     SmartDashboard.putNumber("field relitive Y", swerve.getFieldRelativeYVelocity());
     SmartDashboard.putNumber("shoulder offset", Constants.shoulderOffset);
+    
     
   }
 }

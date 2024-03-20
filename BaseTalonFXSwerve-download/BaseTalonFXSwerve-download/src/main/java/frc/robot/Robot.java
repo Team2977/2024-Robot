@@ -177,22 +177,9 @@ public class Robot extends TimedRobot {
     //this gets the x and y values for the command "turnToTarget"
     xSpeed = MathUtil.applyDeadband(RobotContainer.driver.getRawAxis(1) / Constants.driveSpeed * Constants.invert, Constants.stickDeadband);
     ySpeed = MathUtil.applyDeadband(RobotContainer.driver.getRawAxis(0) / Constants.driveSpeed * Constants.invert, Constants.stickDeadband);
-    /* 
-    double targetdis = poseSubsystem.getTargetDistance(Constants.wantedApriltag);
-    if(targetdis <= 4) {
-      automaticAiming.targeting();
-    } else if (targetdis > 4) {
-      new InstantCommand(() -> automaticAiming.stopTargeting());
-    }
-*/
+   
 
 var targetDistance = poseSubsystem.getTargetDistance(Constants.wantedApriltag);
-    
-    
-    if (frc.robot.subsystems.intake.leftInput.get() == true || frc.robot.subsystems.intake.rightInput.get() == true){
-      Constants.hasNote = true;
-    } else {Constants.hasNote = false;}
-   
     
     
 

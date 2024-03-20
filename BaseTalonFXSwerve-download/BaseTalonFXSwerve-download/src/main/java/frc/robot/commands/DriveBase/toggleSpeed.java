@@ -19,8 +19,8 @@ public class toggleSpeed extends Command {
   public void initialize() {
 
     if (Constants.slowMode == true) {
-      Constants.driveSpeed = 3;
-      Constants.turnSpeed = 3;
+      Constants.driveSpeed = 2;
+      Constants.turnSpeed = 2;
     } else {
       Constants.driveSpeed = 1;
       Constants.turnSpeed = 1;

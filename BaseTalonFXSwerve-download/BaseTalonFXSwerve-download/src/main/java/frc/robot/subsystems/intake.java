@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 
-
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.HardwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -19,19 +18,11 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.ReverseLimitSourceValue;
 import com.ctre.phoenix6.signals.ReverseLimitTypeValue;
-import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.EncoderType;
-import com.revrobotics.MotorFeedbackSensor;
 import com.revrobotics.SparkAbsoluteEncoder;
-import com.revrobotics.SparkMaxAlternateEncoder;
-import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.SparkMaxAlternateEncoder.Type;
-import com.revrobotics.SparkPIDController.AccelStrategy;
-import com.revrobotics.SparkPIDController.ArbFFUnits;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -64,7 +55,7 @@ public class intake extends SubsystemBase {
   public static final DigitalInput rightInput = new DigitalInput(0);
   public static final DigitalInput leftInput = new DigitalInput(1);
   //amp bar
-  //public static final CANSparkMax ampBar = new CANSparkMax(9, MotorType.kBrushless);
+  public static final CANSparkMax ampBar = new CANSparkMax(9, MotorType.kBrushless);
   
   private PositionDutyCycle mmDC = new PositionDutyCycle(0);
   public static VelocityDutyCycle vDC = new VelocityDutyCycle(0);
@@ -72,32 +63,43 @@ public class intake extends SubsystemBase {
   public static final Trigger rightTrigger = new Trigger(rightInput::get);
   public static final Trigger leftTrigger = new Trigger(leftInput::get);
   
-  //private SparkMaxAlternateEncoder.Type alternateEncoder = SparkMaxAlternateEncoder.Type.kQuadrature;
-  //private SparkAbsoluteEncoder.Type absoluteEncoderType = SparkAbsoluteEncoder.Type.kDutyCycle;
-
+  
+  
+  private SparkAbsoluteEncoder absoluteEncoder = ampBar.getAbsoluteEncoder(com.revrobotics.SparkAbsoluteEncoder.Type.kDutyCycle);
   public intake() {
-    
+    //restore factory defaults on the spark maxes
+    leftIntake.restoreFactoryDefaults();
+    rightIntake.restoreFactoryDefaults();
+    ampBar.restoreFactoryDefaults();
+    indexer.restoreFactoryDefaults();
+
+    //intake and indexer settings
     rightIntake.setSmartCurrentLimit(100);
     rightIntake.setIdleMode(IdleMode.kCoast);
     rightIntake.setInverted(true);
     leftIntake.setSmartCurrentLimit(100);
     leftIntake.setIdleMode(IdleMode.kCoast);
     indexer.setSmartCurrentLimit(40);
-   
-    /*ampBar.setSmartCurrentLimit(1, 20);
+    
+    //amp bar settings
+    ampBar.setSmartCurrentLimit(1, 20);
     ampBar.setIdleMode(IdleMode.kCoast);
     ampBar.enableSoftLimit(SoftLimitDirection.kForward, true);
     ampBar.enableSoftLimit(SoftLimitDirection.kReverse, true);
     ampBar.setSoftLimit(SoftLimitDirection.kForward, 200);
     ampBar.setSoftLimit(SoftLimitDirection.kReverse, 0);
-    
+    absoluteEncoder.setZeroOffset(0);
+    absoluteEncoder.setPositionConversionFactor(360);
     ampBar.getPIDController().setP(0.1, 0);
     ampBar.getPIDController().setI(0, 0);
     ampBar.getPIDController().setD(0, 0);
-    ampBar.getPIDController().setFeedbackDevice(absoluteEncoderType);*/
+    ampBar.getPIDController().setFeedbackDevice(absoluteEncoder);
     
-    
-    
+    //burn flash to the spark maxes to prevent settings being lost on brownout
+    leftIntake.burnFlash();
+    rightIntake.burnFlash();
+    ampBar.burnFlash();
+    indexer.burnFlash();
 
     //shoulder configs
     TalonFXConfiguration cfg = new TalonFXConfiguration();
@@ -142,10 +144,6 @@ public class intake extends SubsystemBase {
     configsShooter.Slot0.kI = 0; //0.5 An error of 1 rotation per second increases output by 0.5V every second
     configsShooter.Slot0.kD = 0; //0.0001 A change of 1 rotation per second squared results in 0.01 volts output
     configsShooter.Slot0.kV = 0.01; //0.12 Falcon 500 is  500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12 volts / Rotation per second
-   
-    // Peak output of 100 volts
-    //configsShooter.Voltage.PeakForwardVoltage = 100;
-    //configsShooter.Voltage.PeakReverseVoltage = -100;
 
     // shooter current limits
     configsShooter.CurrentLimits.SupplyCurrentLimit = 25;
@@ -230,9 +228,8 @@ public class intake extends SubsystemBase {
 
     SmartDashboard.putBoolean("left sensor", leftInput.get());
     SmartDashboard.putBoolean("right sensor", rightInput.get());
-
-     
-      SmartDashboard.putNumber("shoulder Pos", shoulder.getPosition().getValueAsDouble());
+    SmartDashboard.putNumber("shoulder Pos", shoulder.getPosition().getValueAsDouble());
+    SmartDashboard.putNumber("amp bar encoder", absoluteEncoder.getPosition());
     
      
      //runs during auto
