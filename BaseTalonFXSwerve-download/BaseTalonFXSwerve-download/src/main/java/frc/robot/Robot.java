@@ -160,10 +160,12 @@ public class Robot extends TimedRobot {
       Constants.invert = 1;
       Constants.onRedTeam = true;
       Constants.wantedApriltag = 4;
+      Constants.wantedAmpTag = 5;
     } else {
       Constants.invert = -1;
       Constants.onRedTeam = false;
       Constants.wantedApriltag = 7;
+      Constants.wantedAmpTag = 6;
     }
         SignalLogger.stop();
     intake.leftHook.setNeutralMode(NeutralModeValue.Brake);

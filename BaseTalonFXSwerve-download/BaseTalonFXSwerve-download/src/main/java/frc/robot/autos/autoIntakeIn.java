@@ -23,7 +23,7 @@ public class autoIntakeIn extends Command {
   public void execute() {
     intake.rightIntake.set(1);
     intake.leftIntake.set(1);
-    intake.indexer.set(-0.1);
+    intake.indexer.set(-0.5);
     
   }
 
@@ -32,7 +32,7 @@ public class autoIntakeIn extends Command {
   public void end(boolean interrupted) {
     //intake.rightIntake.set(0);
     //intake.leftIntake.set(0);
-    //intake.indexer.set(0);
+    intake.indexer.set(0);
   }
 
   // Returns true when the command should end.

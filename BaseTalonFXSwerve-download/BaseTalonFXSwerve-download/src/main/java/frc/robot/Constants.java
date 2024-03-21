@@ -33,6 +33,7 @@ public final class Constants {
     public static double wantedShoulderAngle;
     public static double wantedClimberPose;
     public static int wantedApriltag = 7;
+    public static int wantedAmpTag = 6;
     public static boolean onRedTeam;
     public static int invert;
 
@@ -43,7 +44,7 @@ public final class Constants {
     public static boolean hasNote;
     public static boolean targetingOn;
     public static double robotRotationSpeed;
-    public static final double permanetShoulderOffset = 0.4;
+    public static final double permanetShoulderOffset = 0.5;
     public static double shoulderOffset = 0;
     public static BooleanSupplier shootBooleanSupplier = () -> false;
 
@@ -78,11 +79,17 @@ public static class Vision {
         public static final String kCameraName = "photonvision";
         // Cam mounted facing forward, 17 inches forward of center, 11 inches left of center, 8 inches up from ground, and rotated 20 degrees upward 
         public static final Transform3d kRobotToCam =
-                new Transform3d(new Translation3d(Units.inchesToMeters(-17), Units.inchesToMeters(-11), Units.inchesToMeters(8)), new Rotation3d(0, Units.degreesToRadians(-20), 0));
+                new Transform3d(new Translation3d(Units.inchesToMeters(-17), 
+                                                  Units.inchesToMeters(-11), 
+                                                  Units.inchesToMeters(8)), 
+                                                  new Rotation3d(0, Units.degreesToRadians(-20), 0));
         
                 // Cam mouned facing backwards, 17 inches back of center, 11 inches right of center, 5 inches up from groud, rotated 20 degrees up, and rotated 180 degrees to face backwards
         public static final Transform3d robotToBackCam = 
-                new Transform3d(new Translation3d(Units.inchesToMeters(17), Units.inchesToMeters(11), Units.inchesToMeters(8)), new Rotation3d(0, Units.degreesToRadians(-20), Units.degreesToRadians(180)));
+                new Transform3d(new Translation3d(Units.inchesToMeters(17), 
+                                                  Units.inchesToMeters(11), 
+                                                  Units.inchesToMeters(8)), 
+                                                  new Rotation3d(0, Units.degreesToRadians(-20), Units.degreesToRadians(180)));
         
                 // The layout of the AprilTags on the field
         public static final AprilTagFieldLayout kTagLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();

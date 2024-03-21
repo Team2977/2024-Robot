@@ -77,13 +77,19 @@ public class autoSpeakerOn extends Command {
 
     //Constants.wantedShoulderAngle = 12.7 - (1.04 * targetDistance) - (0.0631 * Math.pow(targetDistance, 2));
     //Constants.wantedShoulderAngle = 18.8 - (3.88 * targetDistance) + (0.368 * Math.pow(targetDistance, 2));
-    Constants.wantedShoulderAngle = 7.63
+    /*Constants.wantedShoulderAngle = 7.63
                                    + (10.7 * targetDistance) 
                                    - (7.48 * Math.pow(targetDistance, 2)) 
                                    + (1.8 * Math.pow(targetDistance, 3)) 
                                    - (0.148 * Math.pow(targetDistance, 4))
-                                   - 0.7;  
+                                   - 0.7;  */
 
+Constants.wantedShoulderAngle = 
+          17.6
+        - (3.12 * targetDistance)
+        - (0.598 * Math.pow(targetDistance, 2))
+        + (0.189 * Math.pow(targetDistance, 3))
+        - 0.2;
    
     Constants.speakerSpeed = 96;
     

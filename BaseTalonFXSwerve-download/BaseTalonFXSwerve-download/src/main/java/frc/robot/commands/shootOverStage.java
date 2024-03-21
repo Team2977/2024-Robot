@@ -43,9 +43,9 @@ public class shootOverStage extends Command {
     pidControllerOmega.setTolerance(Units.degreesToRadians(1));
     pidControllerOmega.enableContinuousInput(Math.PI, -Math.PI);
      if (Constants.onRedTeam == false) {
-  angleOffset = Units.degreesToRadians(-15);
+  angleOffset = Units.degreesToRadians(10);
     } else{
-      angleOffset = Units.degreesToRadians(15);
+      angleOffset = Units.degreesToRadians(-10);
     }
   }
 

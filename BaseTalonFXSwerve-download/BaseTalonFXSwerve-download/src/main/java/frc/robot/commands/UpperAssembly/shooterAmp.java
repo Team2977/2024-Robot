@@ -5,8 +5,12 @@
 package frc.robot.commands.UpperAssembly;
 
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
@@ -23,10 +27,17 @@ public class shooterAmp extends Command {
   private final intake intake;
   private final poseEstimator poseSubsystem;
 
+
+  private static final TrapezoidProfile.Constraints X_CONSTRAINTS = new TrapezoidProfile.Constraints(4, 4);
+  private static final TrapezoidProfile.Constraints Y_CONSTRAINTS = new TrapezoidProfile.Constraints(4, 4);
   private final TrapezoidProfile.Constraints omegConstraints = new Constraints(Units.degreesToRadians(500), Units.degreesToRadians(500));
   private final ProfiledPIDController pidControllerOmega = new ProfiledPIDController(Constants.rotaKP, Constants.rotaKI, Constants.rotaKD, omegConstraints);
+  private final ProfiledPIDController xController = new ProfiledPIDController(Constants.Swerve.driveKP, Constants.Swerve.driveKI, Constants.Swerve.driveKD, X_CONSTRAINTS);
+  private final ProfiledPIDController yController = new ProfiledPIDController(Constants.Swerve.driveKP, Constants.Swerve.driveKI, Constants.Swerve.driveKD, Y_CONSTRAINTS);
+  private final Transform3d tagToPose = new Transform3d(new Translation3d(-0.3, 0, 0), new Rotation3d());
 
-  
+
+
   /** Creates a new shooterAmp. */
   public shooterAmp(Swerve swerve, intake intake, poseEstimator poseEstimator) {
     this.intake = intake;
@@ -41,6 +52,9 @@ public class shooterAmp extends Command {
     pidControllerOmega.reset(poseSubsystem.field2d.getRobotPose().getRotation().getRadians());
     pidControllerOmega.setTolerance(Units.degreesToRadians(1));
     pidControllerOmega.enableContinuousInput(Math.PI, -Math.PI);
+    
+    xController.setTolerance(0.2);
+    yController.setTolerance(0.2);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -55,8 +69,16 @@ public class shooterAmp extends Command {
     if (pidControllerOmega.atGoal()) {
       omegaSpeed = 0;
     }
+    var targetPose = poseSubsystem.aprilTagFieldLayout.getTagPose(Constants.wantedAmpTag).get().transformBy(tagToPose);
+    var xSpeed = xController.calculate(poseSubsystem.getCurrentPose().getX(), 
+                                        targetPose.getX());
+
+    var ySpeed = yController.calculate(poseSubsystem.getCurrentPose().getY(), 
+                                        targetPose.getY());
+
+
     swerve.drive(
-                  new Translation2d(Robot.xSpeed, Robot.ySpeed).times(Constants.Swerve.maxSpeed), 
+                  new Translation2d(xSpeed, ySpeed).times(Constants.Swerve.maxSpeed), 
                   (omegaSpeed / Constants.turnSpeed) * Constants.Swerve.maxAngularVelocity, 
                   true, 
                   true

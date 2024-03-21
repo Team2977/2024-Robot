@@ -82,14 +82,14 @@ public class intake extends SubsystemBase {
     indexer.setSmartCurrentLimit(40);
     
     //amp bar settings
-    ampBar.setSmartCurrentLimit(1, 20);
+    ampBar.setSmartCurrentLimit(20);
     ampBar.setIdleMode(IdleMode.kCoast);
-    ampBar.enableSoftLimit(SoftLimitDirection.kForward, true);
-    ampBar.enableSoftLimit(SoftLimitDirection.kReverse, true);
+    ampBar.enableSoftLimit(SoftLimitDirection.kForward, false);
+    ampBar.enableSoftLimit(SoftLimitDirection.kReverse, false);
     ampBar.setSoftLimit(SoftLimitDirection.kForward, 200);
     ampBar.setSoftLimit(SoftLimitDirection.kReverse, 0);
     absoluteEncoder.setZeroOffset(0);
-    absoluteEncoder.setPositionConversionFactor(360);
+    absoluteEncoder.setPositionConversionFactor(0);
     ampBar.getPIDController().setP(0.1, 0);
     ampBar.getPIDController().setI(0, 0);
     ampBar.getPIDController().setD(0, 0);
@@ -186,7 +186,7 @@ public class intake extends SubsystemBase {
     climberMagicConfigs.MotionMagicJerk = 50; // Take approximately 0.2 seconds to reach max accel 
     
     SoftwareLimitSwitchConfigs climberSoftlimit = climberConfig.SoftwareLimitSwitch;
-    climberSoftlimit.ForwardSoftLimitThreshold = 160;
+    climberSoftlimit.ForwardSoftLimitThreshold = 200;
     climberSoftlimit.ForwardSoftLimitEnable = true;
     climberSoftlimit.ReverseSoftLimitThreshold = 0;
     climberSoftlimit.ReverseSoftLimitEnable = true;
@@ -230,6 +230,7 @@ public class intake extends SubsystemBase {
     SmartDashboard.putBoolean("right sensor", rightInput.get());
     SmartDashboard.putNumber("shoulder Pos", shoulder.getPosition().getValueAsDouble());
     SmartDashboard.putNumber("amp bar encoder", absoluteEncoder.getPosition());
+    SmartDashboard.putNumber("amp", ampBar.getEncoder().getPosition());
     
      
      //runs during auto
@@ -238,8 +239,8 @@ public class intake extends SubsystemBase {
       shooterSlave.setControl(vDC.withVelocity(Constants.speakerSpeed));
     }
    
-
-  
+    double amp = MathUtil.applyDeadband(-RobotContainer.gamepad2.getRawAxis(5), 0.1);
+  ampBar.set(amp);
     
 
   }

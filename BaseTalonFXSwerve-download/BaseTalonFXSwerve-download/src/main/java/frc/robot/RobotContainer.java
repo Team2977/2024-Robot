@@ -192,8 +192,7 @@ public class RobotContainer {
         //shoot
         driverRightTrigger.whileTrue(new indexerSHOOT());
         //shootTrigger.whileTrue(new indexerSHOOT());
-        intake.rightTrigger.onFalse(new automaticShooting(poseESTIMATOR));
-        intake.leftTrigger.onFalse(new automaticShooting(poseESTIMATOR));
+       
       
         /*Operator controls*/
         GA.whileTrue(new aimAndRev(INTAKE, s_Swerve, poseESTIMATOR));

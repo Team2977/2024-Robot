@@ -79,36 +79,14 @@ public class automaticAiming extends SubsystemBase {
   } else {
     angleOffset = 0;
   }
-
+      
      omegaSpeed = pidControllerOmega.calculate(swerve.getHeading().getRadians(), wantedAngle - angleOffset);
         if (pidControllerOmega.atGoal()) {
           omegaSpeed = 0;
         }
      
     targetingCheck.calculate(swerve.getHeading().getRadians(), wantedAngle - angleOffset);
-
-        if (Constants.targetingOn == true && targetDistance <= 4) {
-           //send the rotaion value to TeleopSwerve command
-  Constants.robotRotationSpeed = omegaSpeed;
-        Constants.wantedShoulderAngle = 
-          17.6
-        - (3.12 * targetDistance)
-        - (0.598 * Math.pow(targetDistance, 2))
-        + (0.189 * Math.pow(targetDistance, 3))
-        + Constants.permanetShoulderOffset
-        + Constants.shoulderOffset;
-          
-        }
-
-
-
-        
-        
-        
-
-
-
-///* 
+ 
     //check to see if there is a note in the shooter
     if (frc.robot.subsystems.intake.leftInput.get() == false && frc.robot.subsystems.intake.rightInput.get() == false){
       Constants.hasNote = true;
@@ -148,44 +126,9 @@ public class automaticAiming extends SubsystemBase {
         + (0.189 * Math.pow(targetDistance, 3))
         + Constants.permanetShoulderOffset
         + Constants.shoulderOffset;
-
-   
-
-
-    /*  Constants.wantedShoulderAngle = 7.63
-                                   + (10.7 * targetDistance) 
-                                   - (7.48 * Math.pow(targetDistance, 2)) 
-                                   + (1.8 * Math.pow(targetDistance, 3)) 
-                                   - (0.148 * Math.pow(targetDistance, 4))
-                                   - 0.5;  */
-
     
-  
-       //checks robot angle for auto shooting
-   ///*  
-   if (poseSubsystem.field2d.getRobotPose().getRotation().getRadians() <= wantedAngle - Units.degreesToRadians(3) 
-      || poseSubsystem.field2d.getRobotPose().getRotation().getRadians() >= wantedAngle + Units.degreesToRadians(3)) 
-      {shootAngleCheck = true;
-        } else {shootAngleCheck = false;}
-      //*/
-      
-      
 
-    
- 
- ///* 
-        //checks shoulder position for auto shooting
-   if (Constants.wantedShoulderAngle >= Constants.wantedShoulderAngle - 0.2 
-   || Constants.wantedShoulderAngle <= Constants.wantedShoulderAngle + 0.2) {shootShoulderCheck = true; 
-      } else {shootShoulderCheck = false;}
 
-       //auto shooting
-    if(targetingCheck.atGoal() == true && shootShoulderCheck == true && targetDistance <= 3.5) {
-      Constants.shootBooleanSupplier = () -> true;
-    } else {Constants.shootBooleanSupplier = () -> false;}
-//*/
-///* 
-    Commands.either(new indexerSHOOT(), new indexerIn(), Constants.shootBooleanSupplier);
 
     //runs if the robot is farther than 4 meters away  
     } else if (Constants.autoDriveMode == false && RobotContainer.driverRightTrigger.getAsBoolean() == false) {
@@ -197,7 +140,7 @@ public class automaticAiming extends SubsystemBase {
       
     }
     
-  //*/
+  
 
     SmartDashboard.putNumber("dis to tar", targetDistance);
     //SmartDashboard.putNumber("omega", omegaSpeed);

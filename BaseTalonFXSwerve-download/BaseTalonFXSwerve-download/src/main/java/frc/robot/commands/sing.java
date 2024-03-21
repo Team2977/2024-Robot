@@ -4,12 +4,9 @@
 
 package frc.robot.commands;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix6.controls.ControlRequest;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.intake;
+
 
 public class sing extends Command {
   /** Creates a new sing. */

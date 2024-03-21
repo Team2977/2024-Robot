@@ -56,13 +56,13 @@ public class poseEstimator extends SubsystemBase {
    * Standard deviations of model states. Increase these numbers to trust your model's state estimates less. This
    * matrix is in the form [x, y, theta]ᵀ, with units in meters and radians, then meters.
    */
-  private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
+  private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(3));
 
   /**
    * Standard deviations of the vision measurements. Increase these numbers to trust global measurements from vision
    * less. This matrix is in the form [x, y, theta]ᵀ, with units in meters and radians.
    */
-  private static final Vector<N3> localMesurementStdDevs = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(10));
+  private static final Vector<N3> localMesurementStdDevs = VecBuilder.fill(0.07, 0.07, Units.degreesToRadians(10));
 
   public final SwerveDrivePoseEstimator poseEstimator;
   //public final PhotonPoseEstimator frontEstimator;
@@ -233,6 +233,9 @@ public class poseEstimator extends SubsystemBase {
   }
   return(targetAngle);
 }
+
+
+  
 
         /**
    * Resets the current pose to the specified pose. This should ONLY be called
