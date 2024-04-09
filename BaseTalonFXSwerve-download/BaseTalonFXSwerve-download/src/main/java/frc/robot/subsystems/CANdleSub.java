@@ -15,7 +15,7 @@ import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
 import com.ctre.phoenix.led.TwinkleOffAnimation.TwinkleOffPercent;
 
 public class CANdleSub extends SubsystemBase {
-    public static final CANdle m_candle = new CANdle(1);
+    public static final CANdle m_candle = new CANdle(0);
     private final int LedCount = 8;
 
 
@@ -43,9 +43,12 @@ public class CANdleSub extends SubsystemBase {
         configAll.statusLedOffWhenActive = true;
         configAll.disableWhenLOS = true;
         configAll.stripType = LEDStripType.GRB;
-        configAll.brightnessScalar = 0.1;
+        configAll.brightnessScalar = 1;
         configAll.vBatOutputMode = VBatOutputMode.Modulated;
+        configAll.v5Enabled = false;
+        configAll.enableOptimizations = true;
         m_candle.configAllSettings(configAll, 100);
+        
     }
 
     public void incrementAnimation() {
@@ -99,13 +102,13 @@ public class CANdleSub extends SubsystemBase {
         switch(toChange)
         {
             case ColorFlow:
-                m_toAnimate = new ColorFlowAnimation(128, 20, 70, 0, 0.7, LedCount, Direction.Forward);
+                m_toAnimate = new ColorFlowAnimation(128, 150, 150, 100, 0.7, LedCount, Direction.Forward);
                 break;
             case Fire:
                 m_toAnimate = new FireAnimation(0.5, 0.7, LedCount, 0.7, 0.5);
                 break;
             case Larson:
-                m_toAnimate = new LarsonAnimation(0, 255, 46, 0, 1, LedCount, BounceMode.Front, 3);
+                m_toAnimate = new LarsonAnimation(0, 255, 46, 0, 1, LedCount, BounceMode.Front, 1);
                 break;
             case Rainbow:
                 m_toAnimate = new RainbowAnimation(1, 0.1, LedCount);
@@ -117,10 +120,10 @@ public class CANdleSub extends SubsystemBase {
                 m_toAnimate = new SingleFadeAnimation(50, 2, 200, 0, 0.5, LedCount);
                 break;
             case redStrobe:
-                m_toAnimate = new StrobeAnimation(240, 0, 0, 0, 0.8, LedCount);
+                m_toAnimate = new StrobeAnimation(255, 0, 0, 0, 1, LedCount);
                 break;
             case greenStrobe:
-                m_toAnimate = new StrobeAnimation(0, 255, 0, 0, 0.8, LedCount);
+                m_toAnimate = new StrobeAnimation(0, 255, 0, 0, 0.5, LedCount);
                 break;
             case Twinkle:
                 m_toAnimate = new TwinkleAnimation(30, 70, 60, 0, 0.4, LedCount, TwinklePercent.Percent6);
@@ -132,19 +135,24 @@ public class CANdleSub extends SubsystemBase {
                 m_toAnimate = null;
                 break;
         }
-        System.out.println("Changed to " + m_currentAnimation.toString());
+        //System.out.println("Changed to " + m_currentAnimation.toString());
     }
 
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-       if (intake.leftInput.get() == false || intake.rightInput.get() == false){
+        if (intake.leftInput.get() == false && intake.rightInput.get() == false){
         changeAnimation(AnimationTypes.greenStrobe);
        } else {
-        changeAnimation(AnimationTypes.greenStrobe);
+        changeAnimation(AnimationTypes.redStrobe);
+        
+        m_candle.setLEDs(255, 0, 0);
        }
-
-        m_candle.animate(m_toAnimate);
+       
+        
+       //changeAnimation(AnimationTypes.greenStrobe);
+       m_candle.animate(m_toAnimate); 
+       //m_candle.setLEDs(255, 0, 0, 0, 0, LedCount);
     }
 
    

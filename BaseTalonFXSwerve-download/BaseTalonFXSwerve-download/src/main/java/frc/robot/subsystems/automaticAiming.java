@@ -6,20 +6,16 @@ package frc.robot.subsystems;
 
 
 
-
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
-import frc.robot.commands.UpperAssembly.indexerIn;
-import frc.robot.commands.UpperAssembly.indexerSHOOT;
 import frc.robot.commands.UpperAssembly.shoulderDown;
 
 
@@ -31,14 +27,17 @@ public class automaticAiming extends SubsystemBase {
   private double omegaSpeed;
   private double angleOffset;
   private double shoulderOffset;
-  private boolean shootAngleCheck;
-  private boolean shootShoulderCheck;
- 
-  
+  //private boolean shootAngleCheck;
+  //private boolean shootShoulderCheck;
+  //true to make auto shooting not work
+  private boolean debuging = false;
+
+ // TreeMap<Double, Double> treeMap = new TreeMap<Double, Double>();
+  public static InterpolatingDoubleTreeMap treeMap = new InterpolatingDoubleTreeMap();
 
   private final TrapezoidProfile.Constraints omegConstraints = new Constraints(Units.degreesToRadians(500), Units.degreesToRadians(720));
   public final ProfiledPIDController pidControllerOmega = new ProfiledPIDController(Constants.rotaKP, Constants.rotaKI, Constants.rotaKD, omegConstraints);
-  public final ProfiledPIDController targetingCheck = new ProfiledPIDController(Constants.rotaKP, Constants.rotaKI, Constants.rotaKD, omegConstraints);
+  //public final ProfiledPIDController targetingCheck = new ProfiledPIDController(Constants.rotaKP, Constants.rotaKI, Constants.rotaKD, omegConstraints);
   /** Creates a new automaticAiming. */
   public automaticAiming(poseEstimator poseEstimator, intake intake, Swerve swerve) {
 
@@ -49,12 +48,20 @@ public class automaticAiming extends SubsystemBase {
   pidControllerOmega.reset(poseSubsystem.field2d.getRobotPose().getRotation().getRadians());
   pidControllerOmega.setTolerance(Units.degreesToRadians(3));
   pidControllerOmega.enableContinuousInput(Math.PI, -Math.PI);
-  shootAngleCheck = false;
-  shootShoulderCheck = false;
+  //shootAngleCheck = false;
+  //shootShoulderCheck = false;
 
-  targetingCheck.reset(poseSubsystem.field2d.getRobotPose().getRotation().getRadians());
-  targetingCheck.setTolerance(Units.degreesToRadians(7));
-  targetingCheck.enableContinuousInput(Math.PI, -Math.PI);
+
+    treeMap.put(1.526, 11.0);
+    treeMap.put(1.82, 10.5);
+    treeMap.put(2.16, 9.5);
+    treeMap.put(2.5, 9.0);
+    treeMap.put(2.82, 8.6);
+    treeMap.put(3.135, 8.2);
+    treeMap.put(3.5, 7.8);
+    treeMap.put(3.85, 7.5);
+    treeMap.put(4.29, 7.2);
+
   }
 
   /*===========================================================================================*/
@@ -63,10 +70,26 @@ public class automaticAiming extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
+
+    
     //vital variables for aiming
     var targetDistance = poseSubsystem.getTargetDistance(Constants.wantedApriltag);
     var wantedAngle = poseSubsystem.getAngleToSpeaker();
-  
+
+
+
+
+    
+
+
+
+    
+    
+
+    
+
+
+   
     //robot aiming angles
       //angles for leading shoots
   if (swerve.getFieldRelativeYVelocity() <= -1 
@@ -75,17 +98,17 @@ public class automaticAiming extends SubsystemBase {
       && swerve.getFieldRelativeYVelocity() <= 3) {
             angleOffset = Units.degreesToRadians(swerve.getChassisSpeeds().vyMetersPerSecond * 11);
   } else if (swerve.getFieldRelativeYVelocity() <= -3 || swerve.getFieldRelativeYVelocity() >= 3){
-    angleOffset = Units.degreesToRadians(swerve.getChassisSpeeds().vyMetersPerSecond * 10);
+    angleOffset = Units.degreesToRadians(swerve.getChassisSpeeds().vyMetersPerSecond * 11);
   } else {
     angleOffset = 0;
   }
       
-     omegaSpeed = pidControllerOmega.calculate(swerve.getHeading().getRadians(), wantedAngle - angleOffset);
+     omegaSpeed = pidControllerOmega.calculate(swerve.getHeading().getRadians(), wantedAngle);
         if (pidControllerOmega.atGoal()) {
           omegaSpeed = 0;
         }
      
-    targetingCheck.calculate(swerve.getHeading().getRadians(), wantedAngle - angleOffset);
+   
  
     //check to see if there is a note in the shooter
     if (frc.robot.subsystems.intake.leftInput.get() == false && frc.robot.subsystems.intake.rightInput.get() == false){
@@ -97,14 +120,13 @@ public class automaticAiming extends SubsystemBase {
     if(targetDistance <= 4 &&
         RobotContainer.driverLeftTrigger.getAsBoolean() == false && 
         Constants.autoDriveMode == false &&
-        Constants.hasNote == true
+        Constants.hasNote == true &&
+        debuging == false
         ) {
+
 
   //set targeting on for automatic control of robot rotation        
   Constants.targetingOn = true;
-
-  //bring intake in
-  //new InstantCommand(() -> new indexerIn());
 
   //send the rotaion value to TeleopSwerve command
   Constants.robotRotationSpeed = omegaSpeed;
@@ -119,25 +141,31 @@ public class automaticAiming extends SubsystemBase {
         shoulderOffset = 0;
     }
 
-      Constants.wantedShoulderAngle = 
+    /*   Constants.wantedShoulderAngle = 
           17.6
         - (3.12 * targetDistance)
         - (0.598 * Math.pow(targetDistance, 2))
         + (0.189 * Math.pow(targetDistance, 3))
         + Constants.permanetShoulderOffset
-        + Constants.shoulderOffset;
-    
+        + Constants.shoulderOffset;*/
 
+        /* 
+         Constants.wantedShoulderAngle = 15.4 
+                                      - (3.44 * targetDistance)
+                                      + (0.357 * Math.pow(targetDistance, 2))
+                                      + Constants.permanetShoulderOffset
+                                      + Constants.shoulderOffset;*/
+
+    Constants.wantedShoulderAngle = treeMap.get(targetDistance);
 
 
     //runs if the robot is farther than 4 meters away  
-    } else if (Constants.autoDriveMode == false && RobotContainer.driverRightTrigger.getAsBoolean() == false) {
+    } else if (Constants.autoDriveMode == false && RobotContainer.driverRightTrigger.getAsBoolean() == false && debuging == false) {
       Constants.targetingOn = false;
-      new WaitCommand(0.4);
+      //new WaitCommand(0.4);
       Constants.wantedShoulderAngle = -1;
       frc.robot.subsystems.intake.disableFlywheels();
       new InstantCommand(() -> new shoulderDown());
-      
     }
     
   

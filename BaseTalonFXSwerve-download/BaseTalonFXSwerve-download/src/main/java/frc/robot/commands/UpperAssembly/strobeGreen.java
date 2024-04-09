@@ -4,15 +4,18 @@
 
 package frc.robot.commands.UpperAssembly;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
-import frc.robot.RobotContainer;
 
-public class indexerIn extends Command {
-  /** Creates a new indexerIn. */
-  public indexerIn() {
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.CANdleSub;
+import frc.robot.subsystems.CANdleSub.AnimationTypes;
+
+public class strobeGreen extends Command {
+  private CANdleSub caNdleSub;
+  /** Creates a new strobeGreen. */
+  public strobeGreen(CANdleSub caNdleSub) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(RobotContainer.INTAKE);
+    this.caNdleSub = caNdleSub;
+    addRequirements(caNdleSub);
   }
 
   // Called when the command is initially scheduled.
@@ -22,14 +25,13 @@ public class indexerIn extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Constants.indexerShootSpeed = -0.3;
-
+    caNdleSub.changeAnimation(AnimationTypes.greenStrobe);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    Constants.indexerShootSpeed = 0;
+    caNdleSub.changeAnimation(AnimationTypes.Rainbow);
   }
 
   // Returns true when the command should end.

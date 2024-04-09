@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.25856238607064,
-        "y": 7.437482225391801
+        "x": 8.38719808493748,
+        "y": 7.402399762064483
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.779401644273374,
-        "y": 7.285458217640082
+        "x": 1.6045885083223173,
+        "y": 6.9814102021366455
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Fast Hover path v2"
     },
     {
       "anchor": {
-        "x": 4.399491420065461,
-        "y": 4.958321483594535
+        "x": 1.1017398672973981,
+        "y": 3.98770666487202
       },
       "prevControl": {
-        "x": 4.703539435568899,
-        "y": 6.537032333323926
+        "x": 7.100841096269087,
+        "y": -0.5613194132371162
       },
       "nextControl": null,
       "isLocked": false,
@@ -39,13 +39,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 165.6186054089094,
+    "rotation": 117.18111108547724,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "Fast hoover mode",
   "previewStartingState": {
-    "rotation": -139.95027223429173,
+    "rotation": 173.3674853848615,
     "velocity": 0
   },
   "useDefaultConstraints": true

@@ -4,8 +4,6 @@
 
 package frc.robot.commands.automaticShooting;
 
-import org.ejml.ops.ConvertMatrixData;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 

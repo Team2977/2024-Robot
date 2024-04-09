@@ -39,8 +39,8 @@ public class intake extends SubsystemBase {
   /** Creates a new intake. */
   
   //intakes
-  public static final CANSparkMax rightIntake = new CANSparkMax(1, MotorType.kBrushless);
-  public static final CANSparkMax leftIntake = new CANSparkMax(2, MotorType.kBrushless);
+  public static final CANSparkMax rightIntake = new CANSparkMax(2, MotorType.kBrushless);
+  public static final CANSparkMax leftIntake = new CANSparkMax(1, MotorType.kBrushless);
   //omni wheels on the top of the shooter
   public static final CANSparkMax indexer = new CANSparkMax(52, MotorType.kBrushless);
   //shooting flywheel
@@ -66,6 +66,7 @@ public class intake extends SubsystemBase {
   
   
   private SparkAbsoluteEncoder absoluteEncoder = ampBar.getAbsoluteEncoder(com.revrobotics.SparkAbsoluteEncoder.Type.kDutyCycle);
+
   public intake() {
     //restore factory defaults on the spark maxes
     leftIntake.restoreFactoryDefaults();
@@ -76,24 +77,27 @@ public class intake extends SubsystemBase {
     //intake and indexer settings
     rightIntake.setSmartCurrentLimit(100);
     rightIntake.setIdleMode(IdleMode.kCoast);
-    rightIntake.setInverted(true);
+    rightIntake.setInverted(false);
     leftIntake.setSmartCurrentLimit(100);
     leftIntake.setIdleMode(IdleMode.kCoast);
+    leftIntake.setInverted(true);
     indexer.setSmartCurrentLimit(40);
     
     //amp bar settings
-    ampBar.setSmartCurrentLimit(20);
-    ampBar.setIdleMode(IdleMode.kCoast);
-    ampBar.enableSoftLimit(SoftLimitDirection.kForward, false);
-    ampBar.enableSoftLimit(SoftLimitDirection.kReverse, false);
-    ampBar.setSoftLimit(SoftLimitDirection.kForward, 200);
+    ampBar.setSmartCurrentLimit(30);
+    ampBar.setIdleMode(IdleMode.kBrake);
+    ampBar.enableSoftLimit(SoftLimitDirection.kForward, true);
+    ampBar.enableSoftLimit(SoftLimitDirection.kReverse, true);
+    ampBar.setSoftLimit(SoftLimitDirection.kForward, 60);
     ampBar.setSoftLimit(SoftLimitDirection.kReverse, 0);
+    absoluteEncoder.setPositionConversionFactor(1);
     absoluteEncoder.setZeroOffset(0);
-    absoluteEncoder.setPositionConversionFactor(0);
-    ampBar.getPIDController().setP(0.1, 0);
+    
+    ampBar.getPIDController().setP(0.02, 0);
     ampBar.getPIDController().setI(0, 0);
-    ampBar.getPIDController().setD(0, 0);
-    ampBar.getPIDController().setFeedbackDevice(absoluteEncoder);
+    ampBar.getPIDController().setD(0.00, 0);
+    //ampBar.getPIDController().setFeedbackDevice(ampBar.getEncoder());
+    //ampBar.getPIDController().setFeedbackDevice(absoluteEncoder);
     
     //burn flash to the spark maxes to prevent settings being lost on brownout
     leftIntake.burnFlash();
@@ -105,15 +109,15 @@ public class intake extends SubsystemBase {
     TalonFXConfiguration cfg = new TalonFXConfiguration();
     /* Configure current limits */
     MotionMagicConfigs mm = cfg.MotionMagic;
-    mm.MotionMagicCruiseVelocity = 2; // 1 rotations per second cruise
+    mm.MotionMagicCruiseVelocity = 3; // 1 rotations per second cruise
     mm.MotionMagicAcceleration = 10; // Take approximately 0.5 seconds to reach max vel
     mm.MotionMagicJerk = 50; // Take approximately 0.2 seconds to reach max accel 
     
     Slot0Configs slot0 = cfg.Slot0;
     slot0.kP = 0.15; //0.05
     slot0.kI = 0;
-    slot0.kD = 0.01;
-    slot0.kV = 10;
+    slot0.kD = 0.0; //0.01
+    slot0.kV = 0; //7
     slot0.kS = 2; // Approximately 0.5V to get the mechanism moving
 
     FeedbackConfigs fdb = cfg.Feedback;
@@ -146,7 +150,7 @@ public class intake extends SubsystemBase {
     configsShooter.Slot0.kV = 0.01; //0.12 Falcon 500 is  500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12 volts / Rotation per second
 
     // shooter current limits
-    configsShooter.CurrentLimits.SupplyCurrentLimit = 25;
+    configsShooter.CurrentLimits.SupplyCurrentLimit = 35;
     configsShooter.CurrentLimits.SupplyCurrentThreshold = 40;
     configsShooter.CurrentLimits.SupplyTimeThreshold = 0.1;
     configsShooter.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -162,6 +166,19 @@ public class intake extends SubsystemBase {
     shooterSlave.setNeutralMode(NeutralModeValue.Coast);
     indexer.setInverted(true);
 
+
+    TalonFXConfiguration ampShooterConfig = new TalonFXConfiguration();
+    ampShooterConfig.Slot1.kP = 0.1;
+    ampShooterConfig.Slot1.kI = 0;
+    ampShooterConfig.Slot1.kD = 0;
+
+    // shooter current limits
+    ampShooterConfig.CurrentLimits.SupplyCurrentLimit = 35;
+    ampShooterConfig.CurrentLimits.SupplyCurrentThreshold = 40;
+    ampShooterConfig.CurrentLimits.SupplyTimeThreshold = 0.1;
+    ampShooterConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+
+ 
 //climber configs
   TalonFXConfiguration climberConfig = new TalonFXConfiguration();
     climberConfig.Slot2.kP = 1;
@@ -181,7 +198,7 @@ public class intake extends SubsystemBase {
     climberConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     
     MotionMagicConfigs climberMagicConfigs = climberConfig.MotionMagic;
-    climberMagicConfigs.MotionMagicCruiseVelocity = 50; //2 rotations per second
+    climberMagicConfigs.MotionMagicCruiseVelocity = 50; //50 rotations per second
     climberMagicConfigs.MotionMagicAcceleration = 10; // Take approximately 0.5 seconds to reach max vel
     climberMagicConfigs.MotionMagicJerk = 50; // Take approximately 0.2 seconds to reach max accel 
     
@@ -206,6 +223,12 @@ public class intake extends SubsystemBase {
     shooterSlave.setControl(vDC.withVelocity(speed));
   }
 
+  public static void setFlywheelPercent(double speed) {
+    shooter.set(speed);
+    shooterSlave.set(speed);
+  }
+
+
   public static void disableFlywheels() {
     shooter.setControl(vDC.withVelocity(0));
     shooterSlave.setControl(vDC.withVelocity(0));
@@ -213,13 +236,16 @@ public class intake extends SubsystemBase {
     shooterSlave.set(0);
   }
 
+  public static void ampFlywheels() {
+    
+  }
  
 
   @Override
   public void periodic() {    
     indexer.set(Constants.indexerShootSpeed);
     shoulder.setControl(mmDC.withPosition(Constants.wantedShoulderAngle));
-    //ampBar.set(RobotContainer.driver.getRawAxis(5) / 5);
+    
 
     double climberControls = MathUtil.applyDeadband(-RobotContainer.gamepad2.getRawAxis(1), 0.1);
     leftHook.set(climberControls);
@@ -231,6 +257,8 @@ public class intake extends SubsystemBase {
     SmartDashboard.putNumber("shoulder Pos", shoulder.getPosition().getValueAsDouble());
     SmartDashboard.putNumber("amp bar encoder", absoluteEncoder.getPosition());
     SmartDashboard.putNumber("amp", ampBar.getEncoder().getPosition());
+    SmartDashboard.putNumber("shooter", shooter.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("shooter slave", shooterSlave.getVelocity().getValueAsDouble());
     
      
      //runs during auto
@@ -239,9 +267,9 @@ public class intake extends SubsystemBase {
       shooterSlave.setControl(vDC.withVelocity(Constants.speakerSpeed));
     }
    
-    double amp = MathUtil.applyDeadband(-RobotContainer.gamepad2.getRawAxis(5), 0.1);
-  ampBar.set(amp);
-    
+    //double amp = MathUtil.applyDeadband(-RobotContainer.gamepad2.getRawAxis(5), 0.1);
+    //ampBar.set(amp / 5);
+    //ampBar.getPIDController().setReference(Constants.wantedAmpAngle, ControlType.kDutyCycle);
 
   }
 }

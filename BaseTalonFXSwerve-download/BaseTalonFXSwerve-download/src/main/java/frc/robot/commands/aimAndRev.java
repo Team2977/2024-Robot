@@ -4,7 +4,6 @@
 
 package frc.robot.commands;
 
-
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -17,6 +16,7 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.commands.UpperAssembly.shoulderDown;
 import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.automaticAiming;
 import frc.robot.subsystems.intake;
 import frc.robot.subsystems.poseEstimator;
 
@@ -29,7 +29,7 @@ public class aimAndRev extends Command {
   
 
 
-  private final TrapezoidProfile.Constraints omegConstraints = new Constraints(Units.degreesToRadians(500), Units.degreesToRadians(720));
+  private final TrapezoidProfile.Constraints omegConstraints = new Constraints(Units.degreesToRadians(500), Units.degreesToRadians(500));
   private final ProfiledPIDController pidControllerOmega = new ProfiledPIDController(Constants.rotaKP, Constants.rotaKI, Constants.rotaKD, omegConstraints);
 
 
@@ -65,7 +65,7 @@ public class aimAndRev extends Command {
     
    //robot aiming angles
       //angles for leading shoots
-      if (swerve.getFieldRelativeYVelocity() <= -1 
+   /*    if (swerve.getFieldRelativeYVelocity() <= -1 
       && swerve.getFieldRelativeYVelocity() >= -3 
       || swerve.getFieldRelativeYVelocity() >= 1 
       && swerve.getFieldRelativeYVelocity() <= 3) {
@@ -75,9 +75,9 @@ public class aimAndRev extends Command {
   } else {
     angleOffset = 0;
   }
+    */
     
-    
-   var omegaSpeed = pidControllerOmega.calculate(swerve.getHeading().getRadians(), wantedAngle - angleOffset);
+   var omegaSpeed = pidControllerOmega.calculate(swerve.getHeading().getRadians(), wantedAngle);
     if (pidControllerOmega.atGoal()) {
       omegaSpeed = 0;
     }
@@ -97,16 +97,58 @@ public class aimAndRev extends Command {
                                    + (1.8 * Math.pow(targetDistance, 3)) 
                                    - (0.148 * Math.pow(targetDistance, 4))
                                    - 0.4;  */
-
-    Constants.wantedShoulderAngle = 17.6
+ 
+   /*  Constants.wantedShoulderAngle = 17.6
                                     - (3.12 * targetDistance)
                                     - (0.598 * Math.pow(targetDistance, 2))
                                     + (0.189 * Math.pow(targetDistance, 3))
                                     + Constants.permanetShoulderOffset
-                                    + Constants.shoulderOffset;
+                                    + Constants.shoulderOffset;*/
                                     
-                                     
+  /*Constants.wantedShoulderAngle = -9904 
+                                  + (31142 * targetDistance)
+                                  - (42062 * Math.pow(targetDistance, 2))
+                                  + (31930 * Math.pow(targetDistance, 3))
+                                  - (14909 * Math.pow(targetDistance, 4))
+                                  + (4387 * Math.pow(targetDistance, 5))
+                                  - (795 * Math.pow(targetDistance, 6))
+                                  + (81 * Math.pow(targetDistance, 7))
+                                  - (3.56 * Math.pow(targetDistance, 8))
+                                  + Constants.shoulderOffset;*/
+  
+   /*  Constants.wantedShoulderAngle = - 327
+                                    + (804 * targetDistance)
+                                    - (773 * Math.pow(targetDistance, 2))
+                                    + (383 * Math.pow(targetDistance, 3))
+                                    - (104 * Math.pow(targetDistance, 4))
+                                    + (14.7 * Math.pow(targetDistance, 5))
+                                    - (0.84 * Math.pow(targetDistance, 6))
+                                    + Constants.shoulderOffset;*/
 
+    /*Constants.wantedShoulderAngle = 19.1
+                                  - (9.42 * targetDistance)
+                                  + (3.86 * Math.pow(targetDistance, 2))
+                                  - (0.884 * Math.pow(targetDistance, 3))
+                                  + (0.0804 * Math.pow(targetDistance, 4))
+                                  + Constants.shoulderOffset; */
+
+   /*  Constants.wantedShoulderAngle = 13.3
+                                  + (3.56 * targetDistance)
+                                  - (1.99 * Math.pow(targetDistance, 2))
+                                  + (0.566 * Math.pow(targetDistance, 3))
+                                  - (0.0464 * Math.pow(targetDistance, 4))
+                                  + Constants.shoulderOffset;*/
+
+   /*  Constants.wantedShoulderAngle = 15.4 
+                                  - (3.44 * targetDistance)
+                                  + (0.357 * Math.pow(targetDistance, 2))
+                                  + Constants.permanetShoulderOffset
+                                  + Constants.shoulderOffset;*/
+
+
+    Constants.wantedShoulderAngle = automaticAiming.treeMap.get(targetDistance);
+
+//Constants.wantedShoulderAngle = 11 + Constants.shoulderOffset;
 
    frc.robot.subsystems.intake.setFlywheelSpeed(96);
   

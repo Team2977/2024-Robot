@@ -35,13 +35,32 @@ public class TeleopSwerve extends Command {
     public void execute() {
         /* Get Values, Deadband*/
          
-         strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband);
+         //strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband);
+         //translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband);
          //rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
+
+         
          if (Constants.targetingOn == true){
             rotationVal = Constants.robotRotationSpeed;
-            translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband) / 2;
+                if(MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband) < 0) {
+                    translationVal = -0.5;
+                } else if (MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband) > 0) {
+                    translationVal = 0.5;
+                } else {
+                    translationVal = 0;
+                }
+                
+                if (MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband) < 0){
+                    strafeVal = -0.5;
+                } else if (MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband) > 0) {
+                    strafeVal = 0.5;
+                } else {
+                    strafeVal = 0;
+                }
+
         } else {
             rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
+            strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband);
             translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband);
         }
 

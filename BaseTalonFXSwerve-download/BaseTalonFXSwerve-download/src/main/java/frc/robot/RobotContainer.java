@@ -30,7 +30,6 @@ import frc.robot.commands.UpperAssembly.shootLow;
 import frc.robot.commands.UpperAssembly.shooterAmp;
 import frc.robot.commands.UpperAssembly.shooterSpeaker;
 import frc.robot.commands.UpperAssembly.shoulderDown;
-import frc.robot.commands.automaticShooting.automaticShooting;
 import frc.robot.commands.shooterTrim.shooterTrimDown;
 import frc.robot.commands.shooterTrim.shooterTrimUp;
 import frc.robot.subsystems.*;
@@ -73,24 +72,28 @@ public class RobotContainer {
     private final JoystickButton driverStart = new JoystickButton(driver, 12); //start. shoot over stage
     private final POVButton driverPOVUp = new POVButton(driver, 0); //dpad up
     private final POVButton driverPOVDown = new POVButton(driver, 180); //dpad down
+    public static final POVButton driverPOVLeft = new POVButton(driver, 270); //dpad left
+    public static final POVButton driverPOVRight = new POVButton(driver, 90); //dpad right
+    
 
-    private final JoystickButton GA = new JoystickButton(gamepad2, 1);
-    private final JoystickButton GB = new JoystickButton(gamepad2, 2);
-    private final JoystickButton GX = new JoystickButton(gamepad2, 3);
-    private final JoystickButton GY = new JoystickButton(gamepad2, 4);
-    private final JoystickButton GLeftBumper = new JoystickButton(gamepad2, 5);
-    private final JoystickButton GRightBumper = new JoystickButton(gamepad2, 6);
+    private final JoystickButton GA = new JoystickButton(gamepad2, 1); //GA
+    private final JoystickButton GB = new JoystickButton(gamepad2, 2);//GB
+    private final JoystickButton GX = new JoystickButton(gamepad2, 3);//GX
+    private final JoystickButton GY = new JoystickButton(gamepad2, 4); //GY
+    private final JoystickButton GLeftBumper = new JoystickButton(gamepad2, 5); //GLeftBumper
+    private final JoystickButton GRightBumper = new JoystickButton(gamepad2, 6); //GRightBumper
     
 
     //trigers
     
 
     /* Subsystems */
-    public final static Swerve s_Swerve = new Swerve();
+    public static final Swerve s_Swerve = new Swerve();
     public static final intake INTAKE = new intake();
     public static final poseEstimator poseESTIMATOR = new poseEstimator(photonCamera, backCamera, s_Swerve);
     public static final automaticAiming AUTOMATIC_AIMING = new automaticAiming(poseESTIMATOR, INTAKE, s_Swerve);
     public static final chaseTag CHASETAG = new chaseTag(photonCamera, s_Swerve, poseESTIMATOR::getCurrentPose);
+    public static final CANdleSub candleSub = new CANdleSub();
     
 
 
@@ -102,7 +105,7 @@ public class RobotContainer {
                 s_Swerve, 
                 () -> driver.getRawAxis(translationAxis)/Constants.driveSpeed * Constants.invert, 
                 () -> driver.getRawAxis(strafeAxis)/Constants.driveSpeed * Constants.invert, 
-                () -> -driver.getRawAxis(rotationAxis)/Constants.turnSpeed /* Constants.invert*/, 
+                () -> -driver.getRawAxis(rotationAxis)/Constants.turnSpeed, 
                 () -> robotCentric.getAsBoolean()
             )
         );
@@ -163,7 +166,7 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         /* Driver Buttons */
-        driverY.onTrue(new InstantCommand(() -> s_Swerve.resetModulesToAbsolute()));
+        //driverY.onTrue(new InstantCommand(() -> s_Swerve.resetModulesToAbsolute()));
         zeroGyro.onTrue(new InstantCommand(() -> poseESTIMATOR.setCurrentPose(new Pose2d())));
         rightBummber.onTrue(new toggleSpeed());
 
@@ -174,10 +177,16 @@ public class RobotContainer {
         //driverRightPaddle.onTrue(new shoulderDown());
 
         //aim, and after relese, put shoulder down
-        driverLeftTrigger.whileTrue(new aimAndRev(INTAKE, s_Swerve, poseESTIMATOR));
-       // driverLeftTrigger.whileTrue(new shooterAmp(s_Swerve, INTAKE, poseESTIMATOR));
+        //driverLeftTrigger.whileTrue(new aimAndRev(INTAKE, s_Swerve, poseESTIMATOR));
+        driverLeftTrigger.whileTrue(new shooterAmp(s_Swerve, INTAKE, poseESTIMATOR));
+        driverLeftTrigger.onFalse(new armBarIn());
         driverLeftTrigger.onFalse(new shoulderDown());
-        driverLeftPaddle.onTrue(new shoulderDown());
+        
+        //driverY.whileTrue(new shooterAmp(s_Swerve, INTAKE, poseESTIMATOR));
+        //driverY.onFalse(new shoulderDown());
+        //driverLeftPaddle.onTrue(new shoulderDown());
+        driverLeftPaddle.whileTrue(new shooterAmp(s_Swerve, INTAKE, poseESTIMATOR));
+        driverLeftPaddle.onFalse(new shoulderDown());
 
         //extra stuff
         driverStart.whileTrue(new shootOverStage(INTAKE, poseESTIMATOR, s_Swerve));
@@ -192,23 +201,26 @@ public class RobotContainer {
         //shoot
         driverRightTrigger.whileTrue(new indexerSHOOT());
         //shootTrigger.whileTrue(new indexerSHOOT());
-       
+       driverPOVRight.whileTrue(new armBarIn());
+       driverPOVLeft.whileTrue(new armBarOut());
       
         /*Operator controls*/
-        GA.whileTrue(new aimAndRev(INTAKE, s_Swerve, poseESTIMATOR));
-        GA.onFalse(new shoulderDown());
+        GY.whileTrue(new aimAndRev(INTAKE, s_Swerve, poseESTIMATOR));
+        GY.onFalse(new shoulderDown());
         GLeftBumper.whileTrue(new indexerIn());
 
         //extra controls
-        GY.whileTrue(new shootLow());
-        GX.whileTrue(new shooterSpeaker());
-        GX.onFalse(new shoulderDown());
+        //GY.whileTrue(new shootLow());
+        GA.whileTrue(new shooterSpeaker());
+        GA.onFalse(new shoulderDown());
 
        //amp shoot
-        GRightBumper.whileTrue(new shooterAmp(s_Swerve, INTAKE, poseESTIMATOR));
-        GRightBumper.onFalse(new shoulderDown());
-        
+        GX.whileTrue(new shooterAmp(s_Swerve, INTAKE, poseESTIMATOR));
+        GX.onFalse(new shoulderDown());
 
+        //G4.whileTrue(new strobeGreen(candleSub));
+        
+        
     }
 
     /**
@@ -216,6 +228,7 @@ public class RobotContainer {
      *
      * @return the command to run in autonomous
      */
+
     public Command getAutonomousCommand() {
         // The chosen auto will run in autonomus 
         return chooser.getSelected();

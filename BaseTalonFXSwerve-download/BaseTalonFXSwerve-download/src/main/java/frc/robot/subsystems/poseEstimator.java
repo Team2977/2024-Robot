@@ -11,6 +11,7 @@ import java.util.Optional;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 
@@ -41,7 +42,7 @@ public class poseEstimator extends SubsystemBase {
   private final PhotonCamera backCamera;
   private final Swerve swerve;
   public AprilTagFieldLayout aprilTagFieldLayout;
-  
+
   
 
   
@@ -121,7 +122,7 @@ public class poseEstimator extends SubsystemBase {
         var fiducialId = target.getFiducialId();
         // Get the tag pose from field layout - consider that the layout will be null if it failed to load
         Optional<Pose3d> tagPose = aprilTagFieldLayout == null ? Optional.empty() : aprilTagFieldLayout.getTagPose(fiducialId);
-        if (target.getPoseAmbiguity() <= .2 && fiducialId >= 0 && tagPose.isPresent()) {
+        if (target.getPoseAmbiguity() <= Constants.Vision.poseAmbiguity && fiducialId >= 0 && tagPose.isPresent()) {
           var targetPose = tagPose.get();
           Transform3d camToTarget = target.getBestCameraToTarget();
           Pose3d camPose = targetPose.transformBy(camToTarget.inverse());
@@ -131,7 +132,7 @@ public class poseEstimator extends SubsystemBase {
   }
 
 }
- 
+ /* 
     //BACK CAMERA
     // Update pose estimator with the best visible target for the back camera
       var backPipelineResult = backCamera.getLatestResult();
@@ -142,7 +143,7 @@ public class poseEstimator extends SubsystemBase {
         var backFiducailID = backTarget.getFiducialId();
         // Get the tag pose from field layout - consider that the layout will be null if it failed to load
         Optional<Pose3d> backTagPose = aprilTagFieldLayout == null ? Optional.empty() : aprilTagFieldLayout.getTagPose(backFiducailID);
-        if (backTarget.getPoseAmbiguity() <= .2 && backFiducailID >= 0 && backTagPose.isPresent()) {
+        if (backTarget.getPoseAmbiguity() <= Constants.Vision.poseAmbiguity && backFiducailID >= 0 && backTagPose.isPresent()) {
           var backtargetPose = backTagPose.get();
           Transform3d backCamToTarget = backTarget.getBestCameraToTarget();
           Pose3d backCamPose = backtargetPose.transformBy(backCamToTarget.inverse());
@@ -152,7 +153,7 @@ public class poseEstimator extends SubsystemBase {
 
         }
       }
-
+*/
 
       
 
@@ -169,6 +170,8 @@ public class poseEstimator extends SubsystemBase {
   //sends estimated position to swerve subsytem for assimilation into robot pose estiamtor. 
   this.swerve.addVisionMeasurement(poseEstimator.getEstimatedPosition(), resultTimestamp);
 
+
+ 
   
     
 }

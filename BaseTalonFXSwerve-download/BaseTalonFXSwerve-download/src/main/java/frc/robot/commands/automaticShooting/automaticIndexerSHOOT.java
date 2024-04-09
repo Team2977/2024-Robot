@@ -31,11 +31,7 @@ public class automaticIndexerSHOOT extends Command {
    || Constants.wantedShoulderAngle <= Constants.wantedShoulderAngle + 0.2) {shootShoulderCheck = true; 
       } else {shootShoulderCheck = false;}
 
-    if (Constants.targetingOn == true && autoAim.targetingCheck.atGoal() && shootShoulderCheck == true) {
-      Constants.indexerShootSpeed = 0.9;
-    } else {
-      Constants.indexerShootSpeed = 0;
-    }
+   
   }
 
   // Called once the command ends or is interrupted.

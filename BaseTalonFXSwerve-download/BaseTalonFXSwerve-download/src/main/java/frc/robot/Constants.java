@@ -1,7 +1,5 @@
 package frc.robot;
 
-
-
 import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -44,9 +42,10 @@ public final class Constants {
     public static boolean hasNote;
     public static boolean targetingOn;
     public static double robotRotationSpeed;
-    public static final double permanetShoulderOffset = 0.5;
+    public static final double permanetShoulderOffset = -0.9;
     public static double shoulderOffset = 0;
     public static BooleanSupplier shootBooleanSupplier = () -> false;
+    public static double wantedAmpAngle = 0;
 
     //automatic aiming rotation PID values
     public static final double rotaKP = 0.9;
@@ -84,23 +83,22 @@ public static class Vision {
                                                   Units.inchesToMeters(8)), 
                                                   new Rotation3d(0, Units.degreesToRadians(-20), 0));
         
-                // Cam mouned facing backwards, 17 inches back of center, 11 inches right of center, 5 inches up from groud, rotated 20 degrees up, and rotated 180 degrees to face backwards
+                // Cam mouned 17 inches back of center, 11 inches right of center, 5 inches up from groud, rotated 20 degrees up, and rotated 180 degrees to face backwards
         public static final Transform3d robotToBackCam = 
-                new Transform3d(new Translation3d(Units.inchesToMeters(17), 
+                new Transform3d(new Translation3d(Units.inchesToMeters(-17), 
                                                   Units.inchesToMeters(11), 
                                                   Units.inchesToMeters(8)), 
-                                                  new Rotation3d(0, Units.degreesToRadians(-20), Units.degreesToRadians(180)));
+                                                  new Rotation3d(Units.degreesToRadians(180), Units.degreesToRadians(-20), Units.degreesToRadians(180)));
         
                 // The layout of the AprilTags on the field
         public static final AprilTagFieldLayout kTagLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-
-        //public static final AprilTagFieldLayout kTagLayout =
-          //      AprilTagFields.kDefaultField.loadAprilTagLayoutField();
 
         // The standard deviations of our vision estimated poses, which affect correction rate
         // (Fake values. Experiment and determine estimation noise on an actual robot.)
         public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
         public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
+
+        public static double poseAmbiguity = 0.2;
     }
 /*===============================================================================================================================*/
     

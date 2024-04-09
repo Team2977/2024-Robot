@@ -8,13 +8,11 @@ import java.util.Optional;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.intake;
@@ -41,6 +39,7 @@ public class Robot extends TimedRobot {
 
   public static double xSpeed;
   public static double ySpeed;
+  public static double omegaSpeed;
   public static Optional<Alliance> alliance = DriverStation.getAlliance();
 
 
@@ -65,15 +64,12 @@ public class Robot extends TimedRobot {
     Constants.shoot = false;
     Constants.hasNote = false;
     Constants.shootBooleanSupplier = () -> false;
+    Constants.Vision.poseAmbiguity = 0.3;
     
     
     intake.shoulder.setNeutralMode(NeutralModeValue.Brake);
     intake.leftHook.setPosition(0);
     intake.rightHook.setPosition(0);
-    //SmartDashboard.putNumber("shoulder offset", 0);
-
-    
-    
 
   }
 
@@ -91,10 +87,6 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-
-
-   
-
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -110,6 +102,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
         SignalLogger.stop();
+        Constants.Vision.poseAmbiguity = 0.2;
     var alliance = DriverStation.getAlliance();
 
     if (alliance.isPresent() && alliance.get() == Alliance.Red) {
@@ -130,6 +123,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
+
   }
 
   /** This function is called periodically during autonomous. */
@@ -145,6 +139,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    Constants.Vision.poseAmbiguity = 0.2;
     Constants.autoDriveMode = false;
     Constants.wantedShoulderAngle = 0;
     intake.rightIntake.set(0);
@@ -167,7 +162,8 @@ public class Robot extends TimedRobot {
       Constants.wantedApriltag = 7;
       Constants.wantedAmpTag = 6;
     }
-        SignalLogger.stop();
+
+    SignalLogger.stop();
     intake.leftHook.setNeutralMode(NeutralModeValue.Brake);
     intake.rightHook.setNeutralMode(NeutralModeValue.Brake);
   }
@@ -179,17 +175,12 @@ public class Robot extends TimedRobot {
     //this gets the x and y values for the command "turnToTarget"
     xSpeed = MathUtil.applyDeadband(RobotContainer.driver.getRawAxis(1) / Constants.driveSpeed * Constants.invert, Constants.stickDeadband);
     ySpeed = MathUtil.applyDeadband(RobotContainer.driver.getRawAxis(0) / Constants.driveSpeed * Constants.invert, Constants.stickDeadband);
-   
-
-var targetDistance = poseSubsystem.getTargetDistance(Constants.wantedApriltag);
-    
-    
+    omegaSpeed = MathUtil.applyDeadband(RobotContainer.driver.getRawAxis(3) / Constants.turnSpeed, Constants.stickDeadband);
 
     //SmartDashboard.putBoolean("on red team", Constants.onRedTeam);
     //SmartDashboard.putString("auto mode for path", SmartDashboard.getData("Auto Mode").toString());
     //SmartDashboard.putNumber("target x", poseSubsystem.aprilTagFieldLayout.getTagPose(7).get().getX());
-   // SmartDashboard.putNumber("target 7", poseSubsystem.aprilTagFieldLayout.getTagPose(7).get().getY());
-    SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
+    //SmartDashboard.putNumber("target 7", poseSubsystem.aprilTagFieldLayout.getTagPose(7).get().getY());
     
     
   }

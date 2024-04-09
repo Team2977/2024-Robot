@@ -32,9 +32,7 @@ public class autoSpeakerOn extends Command {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(RobotContainer.INTAKE);
     this.intake = intake;
-    
     this.swerve = swerve;
-   // this.poseProvider = poseProvider;
     this.poseSubsystem = poseEstimator;
     
     
@@ -49,7 +47,7 @@ public class autoSpeakerOn extends Command {
 
     Constants.speakerSpeed = 96;
     frc.robot.subsystems.intake.leftIntake.set(0);
-    frc.robot.subsystems.intake.rightIntake.set(0);
+    //frc.robot.subsystems.intake.rightIntake.set(0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -84,12 +82,17 @@ public class autoSpeakerOn extends Command {
                                    - (0.148 * Math.pow(targetDistance, 4))
                                    - 0.7;  */
 
-Constants.wantedShoulderAngle = 
+/*Constants.wantedShoulderAngle = 
           17.6
         - (3.12 * targetDistance)
         - (0.598 * Math.pow(targetDistance, 2))
         + (0.189 * Math.pow(targetDistance, 3))
-        - 0.2;
+        - 0.2; */
+        Constants.wantedShoulderAngle = 15.4 
+                                      - (3.44 * targetDistance)
+                                      + (0.357 * Math.pow(targetDistance, 2));
+                                      /*+ Constants.permanetShoulderOffset
+                                      + Constants.shoulderOffset;*/
    
     Constants.speakerSpeed = 96;
     
