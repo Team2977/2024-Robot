@@ -1,0 +1,58 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.183598948394478,
+        "y": 3.8941534293325004
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.1835989483944775,
+        "y": 3.8941534293325004
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.7155331803541096,
+        "y": 4.116342363738859
+      },
+      "prevControl": {
+        "x": 1.7155331803541096,
+        "y": 4.116342363738859
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.4,
+      "rotationDegrees": 90.0,
+      "rotateFast": true
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 91.36392753160294,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Podium 2 note",
+  "previewStartingState": {
+    "rotation": 129.09385888622944,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

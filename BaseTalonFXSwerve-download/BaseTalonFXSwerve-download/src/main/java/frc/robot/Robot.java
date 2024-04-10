@@ -4,24 +4,20 @@
 
 package frc.robot;
 
+import java.util.Optional;
 
-
-
-
-
-import java.lang.annotation.Target;
-
-import org.photonvision.targeting.PhotonTrackedTarget;
-import org.photonvision.targeting.proto.TargetCornerProto;
-
+import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.net.PortForwarder;
-
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.intake;
+import frc.robot.subsystems.poseEstimator;
+
 
 
 /**
@@ -32,17 +28,20 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  */
 public class Robot extends TimedRobot {
   public static final CTREConfigs ctreConfigs = new CTREConfigs();
+
  // private vision Vision;
   private Command m_autonomousCommand;
 
-  
-
   private RobotContainer m_robotContainer;
-  public static DutyCycleEncoder shoulderPos = new DutyCycleEncoder(0);
+  private final poseEstimator poseSubsystem = RobotContainer.poseESTIMATOR;
   
   final double GOAL_RANGE_METERS = Units.feetToMeters(3);
-  private static double yaw;
-  private PhotonTrackedTarget lastTarget;
+
+  public static double xSpeed;
+  public static double ySpeed;
+  public static double omegaSpeed;
+  public static Optional<Alliance> alliance = DriverStation.getAlliance();
+
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -50,15 +49,27 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    SignalLogger.stop();
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    
     Constants.driveSpeed = 1;
     Constants.turnSpeed = 1;
-    //Vision = new vision();
-  // PortForwarder.add(5800, "10.29.77.11", 5800);
-    //get camera name
-   
+
+    Constants.wantedShoulderAngle = 0;
+    Constants.flywheelSpeed = 0;
+    Constants.slowMode = true;
+    Constants.wantedClimberPose = 0;
+    Constants.shoot = false;
+    Constants.hasNote = false;
+    Constants.shootBooleanSupplier = () -> false;
+    Constants.Vision.poseAmbiguity = 0.3;
+    
+    
+    intake.shoulder.setNeutralMode(NeutralModeValue.Brake);
+    intake.leftHook.setPosition(0);
+    intake.rightHook.setPosition(0);
 
   }
 
@@ -76,32 +87,13 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-
-   /*  var result = camera.getLatestResult();
-
-    if (result.hasTargets()) {
-      var target = result.getBestTarget();
-      var yaw = target.getYaw();
-      var pitch = target.getPitch();
-      var camTotarget = target.getBestCameraToTarget();
-    }*/
-
-    /*  // Correct pose estimate with vision measurements
-     var visionEst = Vision.getEstimatedGlobalPose();
-     visionEst.ifPresent(
-             est -> {
-                 var estPose = est.estimatedPose.toPose2d();
-                 // Change our trust in the measurement based on the tags we can see
-                 var estStdDevs = Vision.getEstimationStdDevs(estPose);
-
-                 RobotContainer.s_Swerve.addVisionMeasurement(
-                         est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
-             });*/
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    intake.shoulder.setNeutralMode(NeutralModeValue.Coast);
+  }
 
   @Override
   public void disabledPeriodic() {}
@@ -109,6 +101,21 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+        SignalLogger.stop();
+        Constants.Vision.poseAmbiguity = 0.2;
+    var alliance = DriverStation.getAlliance();
+
+    if (alliance.isPresent() && alliance.get() == Alliance.Red) {
+      Constants.invert = 1;
+      Constants.onRedTeam = true;
+      Constants.wantedApriltag = 4;
+    } else {
+      Constants.invert = -1;
+      Constants.onRedTeam = false;
+      Constants.wantedApriltag = 7;
+    }
+    intake.leftHook.setNeutralMode(NeutralModeValue.Brake);
+    intake.rightHook.setNeutralMode(NeutralModeValue.Brake);
     Constants.autoDriveMode = true;
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
@@ -116,6 +123,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
+
   }
 
   /** This function is called periodically during autonomous. */
@@ -131,45 +139,50 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    Constants.Vision.poseAmbiguity = 0.2;
     Constants.autoDriveMode = false;
+    Constants.wantedShoulderAngle = 0;
+    intake.rightIntake.set(0);
+    intake.leftIntake.set(0);
+    intake.shooter.set(0);
+    intake.shooterSlave.set(0);
+    intake.indexer.set(0);
+    intake.disableFlywheels();
+    
+
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isPresent() && alliance.get() == Alliance.Red) {
+      Constants.invert = 1;
+      Constants.onRedTeam = true;
+      Constants.wantedApriltag = 4;
+      Constants.wantedAmpTag = 5;
+    } else {
+      Constants.invert = -1;
+      Constants.onRedTeam = false;
+      Constants.wantedApriltag = 7;
+      Constants.wantedAmpTag = 6;
+    }
+
+    SignalLogger.stop();
+    intake.leftHook.setNeutralMode(NeutralModeValue.Brake);
+    intake.rightHook.setNeutralMode(NeutralModeValue.Brake);
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    
-    SmartDashboard.putData("encoder", shoulderPos);
-    
-    
-    var phoResu = RobotContainer.photonCamera.getLatestResult();
-    if(phoResu.hasTargets()) {
-      var targetOpt = phoResu.getTargets().stream()
-          .filter(t -> t.getFiducialId() == 4)
-          .filter(t -> !t.equals(lastTarget) && t.getPoseAmbiguity() <= .2 && t.getPoseAmbiguity() != -1)
-          .findFirst();
-       yaw = targetOpt.get().getYaw().getasdouble();
-      // targetOpt = phoResu.getTargets().stream().filter();
-    } else {
-      yaw = 0;
-    }
 
-    SmartDashboard.putNumber("RposeX", RobotContainer.s_Swerve.swerveOdometry.getEstimatedPosition().getX());
-    SmartDashboard.putNumber("RposeY", RobotContainer.s_Swerve.swerveOdometry.getEstimatedPosition().getY());
-    SmartDashboard.putNumber("yaw", yaw);
-    //SmartDashboard.putNumber("Robot x", this.Vision.getEstimatedGlobalPose().get());
-   
+    //this gets the x and y values for the command "turnToTarget"
+    xSpeed = MathUtil.applyDeadband(RobotContainer.driver.getRawAxis(1) / Constants.driveSpeed * Constants.invert, Constants.stickDeadband);
+    ySpeed = MathUtil.applyDeadband(RobotContainer.driver.getRawAxis(0) / Constants.driveSpeed * Constants.invert, Constants.stickDeadband);
+    omegaSpeed = MathUtil.applyDeadband(RobotContainer.driver.getRawAxis(3) / Constants.turnSpeed, Constants.stickDeadband);
 
-    //intake.shoulder.set(RobotContainer.gamepad2.getRawAxis(1)/10);
-
-    
-    SmartDashboard.putNumber("7poseX", RobotContainer.poseESTIMATOR.getCurrentPose().getX());
-    SmartDashboard.putNumber("7poseY", RobotContainer.poseESTIMATOR.getCurrentPose().getY());
-    
-
+    //SmartDashboard.putBoolean("on red team", Constants.onRedTeam);
+    //SmartDashboard.putString("auto mode for path", SmartDashboard.getData("Auto Mode").toString());
+    //SmartDashboard.putNumber("target x", poseSubsystem.aprilTagFieldLayout.getTagPose(7).get().getX());
+    //SmartDashboard.putNumber("target 7", poseSubsystem.aprilTagFieldLayout.getTagPose(7).get().getY());
     
     
-    //SmartDashboard.putNumber("tag #", );
-
   }
 
   @Override
@@ -180,5 +193,8 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    intake.leftHook.setNeutralMode(NeutralModeValue.Coast);
+    intake.rightHook.setNeutralMode(NeutralModeValue.Coast);
+  }
 }

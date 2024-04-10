@@ -1,6 +1,6 @@
 package frc.robot;
 
-
+import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -27,7 +27,34 @@ public final class Constants {
     public static final double stickDeadband = 0.1;
     public static  double driveSpeed;
     public static  double turnSpeed;
-    public static boolean fastmode = false;
+    public static boolean slowMode = true;
+    public static double wantedShoulderAngle;
+    public static double wantedClimberPose;
+    public static int wantedApriltag = 7;
+    public static int wantedAmpTag = 6;
+    public static boolean onRedTeam;
+    public static int invert;
+
+
+    //shooting stuff
+    public static double flywheelSpeed;
+    public static boolean shoot;
+    public static boolean hasNote;
+    public static boolean targetingOn;
+    public static double robotRotationSpeed;
+    public static final double permanetShoulderOffset = -0.9;
+    public static double shoulderOffset = 0;
+    public static BooleanSupplier shootBooleanSupplier = () -> false;
+    public static double wantedAmpAngle = 0;
+
+    //automatic aiming rotation PID values
+    public static final double rotaKP = 0.9;
+    public static final double rotaKI = 0;
+    public static final double rotaKD = 0.01;
+
+    //automatic aiming shoulder offsets
+    
+    
 
     //auto mode constants
     public static boolean autoDriveMode = false;
@@ -37,31 +64,41 @@ public final class Constants {
 
     public static boolean intakeInActive = false;
     public static boolean intakeOutActive = false;
-
-    public static final double speakerSpeed = 0;
-    public static final double ampSpeed = 0;
-    public static final double indexerShootSpeed = -0.5;
+    //not auto mode constants
+    public static double speakerSpeed = 96;
+    public static final double ampSpeed = 30;
+    public static double indexerShootSpeed;
     public static final double indexerIntake = 0.5;
-    public static final double intakeInSpeed = 1;
-    public static final double indexerOutSpeed = -1;
+    public static final double intakeInSpeed = -0.1;
+    public static final double indexerOutSpeed = 0.9;
+    public static final double climberMaxPose = 10;
 
 /*===============================================================================================================================*/
 public static class Vision {
         public static final String kCameraName = "photonvision";
-        // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
+        // Cam mounted facing forward, 17 inches forward of center, 11 inches left of center, 8 inches up from ground, and rotated 20 degrees upward 
         public static final Transform3d kRobotToCam =
-                new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
-
-        // The layout of the AprilTags on the field
+                new Transform3d(new Translation3d(Units.inchesToMeters(-17), 
+                                                  Units.inchesToMeters(-11), 
+                                                  Units.inchesToMeters(8)), 
+                                                  new Rotation3d(0, Units.degreesToRadians(-20), 0));
+        
+                // Cam mouned 17 inches back of center, 11 inches right of center, 5 inches up from groud, rotated 20 degrees up, and rotated 180 degrees to face backwards
+        public static final Transform3d robotToBackCam = 
+                new Transform3d(new Translation3d(Units.inchesToMeters(-17), 
+                                                  Units.inchesToMeters(11), 
+                                                  Units.inchesToMeters(8)), 
+                                                  new Rotation3d(Units.degreesToRadians(180), Units.degreesToRadians(-20), Units.degreesToRadians(180)));
+        
+                // The layout of the AprilTags on the field
         public static final AprilTagFieldLayout kTagLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-
-        //public static final AprilTagFieldLayout kTagLayout =
-          //      AprilTagFields.kDefaultField.loadAprilTagLayoutField();
 
         // The standard deviations of our vision estimated poses, which affect correction rate
         // (Fake values. Experiment and determine estimation noise on an actual robot.)
         public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
         public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
+
+        public static double poseAmbiguity = 0.2;
     }
 /*===============================================================================================================================*/
     
@@ -118,7 +155,7 @@ public static class Vision {
         public static final double angleKD = chosenModule.angleKD;
 
         /* Drive Motor PID Values */
-        public static final double driveKP = 0.5; //TODO: This must be tuned to specific robot
+        public static final double driveKP = 0.8; //TODO: This must be tuned to specific robot
         public static final double driveKI = 0.0;
         public static final double driveKD = 0.0;
         public static final double driveKF = 0.0;
@@ -136,7 +173,7 @@ public static class Vision {
         /** Meters per Second */
         public static final double maxSpeed = Units.feetToMeters(13); //TODO: This must be tuned to specific robot
         /** Radians per Second */
-        public static final double maxAngularVelocity = 8; //TODO: This must be tuned to specific robot
+        public static final double maxAngularVelocity = Units.degreesToRadians(500); //TODO: This must be tuned to specific robot
 
         /* Neutral Modes */
         public static final NeutralModeValue angleNeutralMode = NeutralModeValue.Coast;

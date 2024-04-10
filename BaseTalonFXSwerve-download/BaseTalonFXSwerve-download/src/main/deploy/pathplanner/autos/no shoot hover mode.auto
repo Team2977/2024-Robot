@@ -1,0 +1,25 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.2069872572793579,
+      "y": 1.9880062552147901
+    },
+    "rotation": -87.95459151111278
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "no shoot hover path"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Hover modes",
+  "choreoAuto": false
+}

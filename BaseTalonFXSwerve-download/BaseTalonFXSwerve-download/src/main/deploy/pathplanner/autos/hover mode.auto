@@ -1,0 +1,38 @@
+{
+  "version": 1.0,
+  "startingPose": null,
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "autoShoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "hoverMode"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "hover path"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Hover modes",
+  "choreoAuto": false
+}

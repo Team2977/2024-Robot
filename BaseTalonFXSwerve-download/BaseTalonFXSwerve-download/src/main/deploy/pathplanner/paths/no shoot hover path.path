@@ -1,0 +1,71 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.2069872572793579,
+        "y": 1.9880062552147901
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.2069872572793567,
+        "y": 1.4880062552147901
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.38719808493748,
+        "y": 0.9004498920678762
+      },
+      "prevControl": {
+        "x": 7.777603604035247,
+        "y": 0.4635738474212747
+      },
+      "nextControl": {
+        "x": 9.088847351483876,
+        "y": 1.4032985330927934
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.38719808493748,
+        "y": 7.402399762064483
+      },
+      "prevControl": {
+        "x": 8.936823343732158,
+        "y": 5.659970750140932
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Fast Hover path v2"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": -125.0187419470197,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 500.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -161.56505117707798,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Fast hoover mode",
+  "previewStartingState": null,
+  "useDefaultConstraints": true
+}
