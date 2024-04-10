@@ -146,7 +146,7 @@ public class CANdleSub extends SubsystemBase {
        } else {
         changeAnimation(AnimationTypes.redStrobe);
         
-        m_candle.setLEDs(255, 0, 0);
+        //m_candle.setLEDs(255, 0, 0);
        }
        
         

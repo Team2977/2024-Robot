@@ -217,7 +217,7 @@ public class intake extends SubsystemBase {
     rightHook.setInverted(true);
     
   }
-
+/*========================================================================== */
   public static void setFlywheelSpeed(double speed) {
     shooter.setControl(vDC.withVelocity(speed));
     shooterSlave.setControl(vDC.withVelocity(speed));

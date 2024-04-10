@@ -47,7 +47,7 @@ public class autoSpeakerOn extends Command {
 
     Constants.speakerSpeed = 96;
     frc.robot.subsystems.intake.leftIntake.set(0);
-    //frc.robot.subsystems.intake.rightIntake.set(0);
+    frc.robot.subsystems.intake.rightIntake.set(0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -67,7 +67,7 @@ public class autoSpeakerOn extends Command {
     }
     
     swerve.drive(
-                  new Translation2d(Robot.xSpeed, Robot.ySpeed).times(Constants.Swerve.maxSpeed), 
+                  new Translation2d(/*Robot.xSpeed, Robot.ySpeed*/).times(Constants.Swerve.maxSpeed), 
                   omegaSpeed * Constants.Swerve.maxAngularVelocity, 
                   true, 
                   true
