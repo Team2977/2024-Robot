@@ -36,8 +36,24 @@
         "y": 5.595965863628722
       },
       "prevControl": {
-        "x": 2.628996437483162,
-        "y": 6.182180652193195
+        "x": 3.1321569142236334,
+        "y": 6.131990278951451
+      },
+      "nextControl": {
+        "x": 2.7272273347965497,
+        "y": 5.145427954673573
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.5752033270448305,
+        "y": 4.829685784727695
+      },
+      "prevControl": {
+        "x": 2.6102857903721506,
+        "y": 5.086957182461374
       },
       "nextControl": null,
       "isLocked": false,
@@ -52,7 +68,7 @@
     },
     {
       "waypointRelativePos": 1.65,
-      "rotationDegrees": 176.95323374727883,
+      "rotationDegrees": 159.83944838868493,
       "rotateFast": false
     }
   ],
@@ -117,7 +133,7 @@
     },
     {
       "name": "shoot 2",
-      "waypointRelativePos": 1.0,
+      "waypointRelativePos": 1.5,
       "command": {
         "type": "parallel",
         "data": {
@@ -131,11 +147,28 @@
           ]
         }
       }
+    },
+    {
+      "name": "Wait",
+      "waypointRelativePos": 1.15,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "wait",
+              "data": {
+                "waitTime": 0.5
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "globalConstraints": {
     "maxVelocity": 4.0,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 500.0,
     "maxAngularAcceleration": 720.0
   },

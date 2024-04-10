@@ -30,10 +30,16 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "3 note Part 1 v2"
+                  "pathName": "4 note amp part 1"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
           }
         },
         {
@@ -45,6 +51,6 @@
       ]
     }
   },
-  "folder": null,
+  "folder": "2 note",
   "choreoAuto": false
 }

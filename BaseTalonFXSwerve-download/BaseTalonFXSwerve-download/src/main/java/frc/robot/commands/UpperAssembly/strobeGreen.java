@@ -2,19 +2,20 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.autos;
+package frc.robot.commands.UpperAssembly;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
+
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.RobotContainer;
+import frc.robot.subsystems.CANdleSub;
+import frc.robot.subsystems.CANdleSub.AnimationTypes;
 
-public class setRobotPose extends Command {
-  /** Creates a new setRobotPose. */
-  public setRobotPose() {
+public class strobeGreen extends Command {
+  private CANdleSub caNdleSub;
+  /** Creates a new strobeGreen. */
+  public strobeGreen(CANdleSub caNdleSub) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(RobotContainer.s_Swerve);
+    this.caNdleSub = caNdleSub;
+    addRequirements(caNdleSub);
   }
 
   // Called when the command is initially scheduled.
@@ -24,17 +25,18 @@ public class setRobotPose extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    RobotContainer.s_Swerve.setPose(new Pose2d(new Translation2d(1.59, 5.58), new Rotation2d(180)));
-    
+    caNdleSub.changeAnimation(AnimationTypes.greenStrobe);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    caNdleSub.changeAnimation(AnimationTypes.Rainbow);
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return true;
+    return false;
   }
 }

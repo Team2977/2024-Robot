@@ -13,9 +13,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.Unit;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
@@ -28,7 +25,6 @@ public class shootTRAP extends Command {
    private final intake intake;
   private final Swerve swerve;
   private final PhotonCamera photoncamera;  
-  private int wantedApriltag;
  // private final Supplier<Pose2d> poseProvider;
   private final poseEstimator poseSubsystem;
   private double angleOffset;

@@ -11,7 +11,7 @@ private Swerve swerve;
     public pathplannerIntakeIn(Swerve s_Swerve){
         this.swerve = s_Swerve;
         addCommands(
-             new autoIntakeIn().withTimeout(3)
+             new autoIntakeIn().withTimeout(2.5)
         );
         
     }

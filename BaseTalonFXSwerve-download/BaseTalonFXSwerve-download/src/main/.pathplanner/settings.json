@@ -3,20 +3,21 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
-    "3 note v1",
-    "3 note v2",
+    "3 note source",
+    "3 note amp",
     "4 note",
     "Fast hoover mode",
     "Podium 2 note",
     "hover mode"
   ],
   "autoFolders": [
+    "3 note auto",
     "4 note auto",
     "Hover modes",
-    "3 note auto"
+    "2 note"
   ],
   "defaultMaxVel": 4.0,
-  "defaultMaxAccel": 3.0,
+  "defaultMaxAccel": 4.0,
   "defaultMaxAngVel": 500.0,
   "defaultMaxAngAccel": 720.0,
   "maxModuleSpeed": 4.5

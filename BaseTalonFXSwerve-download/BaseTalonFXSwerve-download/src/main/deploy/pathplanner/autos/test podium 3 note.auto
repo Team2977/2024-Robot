@@ -36,9 +36,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "race",
           "data": {
-            "pathName": "podium note part 3"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "podium note part 3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "autoIntakeIn"
+                }
+              }
+            ]
           }
         },
         {

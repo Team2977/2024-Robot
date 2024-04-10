@@ -1,7 +1,6 @@
 package frc.robot.commands.DriveBase;
 
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.Swerve;
 
 import java.util.function.BooleanSupplier;
@@ -35,14 +34,34 @@ public class TeleopSwerve extends Command {
     @Override
     public void execute() {
         /* Get Values, Deadband*/
-         translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband);
-         strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband);
-        
+         
+         //strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband);
+         //translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband);
+         //rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
 
-        if (Constants.targetingOn){
-            rotationVal = RobotContainer.AUTOMATIC_AIMING.rotationValue;
+         
+         if (Constants.targetingOn == true){
+            rotationVal = Constants.robotRotationSpeed;
+                if(MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband) < 0) {
+                    translationVal = -0.5;
+                } else if (MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband) > 0) {
+                    translationVal = 0.5;
+                } else {
+                    translationVal = 0;
+                }
+                
+                if (MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband) < 0){
+                    strafeVal = -0.5;
+                } else if (MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband) > 0) {
+                    strafeVal = 0.5;
+                } else {
+                    strafeVal = 0;
+                }
+
         } else {
             rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
+            strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband);
+            translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband);
         }
 
         /* Drive */

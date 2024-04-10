@@ -25,11 +25,8 @@ public class intakeOut extends Command {
   @Override
   public void execute() {
    
-      intake.rightIntake.set(-0.6);
+     // intake.rightIntake.set(-0.6);
       intake.leftIntake.set(-0.6);
-      
-   
-  
 
   }
 
@@ -37,8 +34,9 @@ public class intakeOut extends Command {
   @Override
   public void end(boolean interrupted) {Constants.intakeOutActive = !Constants.intakeOutActive;
   
-      intake.rightIntake.set(0);
+     // intake.rightIntake.set(0);
       intake.leftIntake.set(0);
+      
     }
 
   // Returns true when the command should end.
