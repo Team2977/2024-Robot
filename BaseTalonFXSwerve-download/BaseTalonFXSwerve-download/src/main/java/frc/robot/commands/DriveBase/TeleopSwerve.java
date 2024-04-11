@@ -37,13 +37,17 @@ public class TeleopSwerve extends Command {
         /* Get Values, Deadband*/
          translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband);
          strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband);
-        
+        rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
 
-        if (Constants.targetingOn){
+
+
+
+
+       /*   if (Constants.targetingOn){
             rotationVal = RobotContainer.AUTOMATIC_AIMING.rotationValue;
         } else {
             rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
-        }
+        }*/
 
         /* Drive */
         s_Swerve.drive(

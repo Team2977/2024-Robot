@@ -37,6 +37,8 @@ public final class Constants {
     public static double flywheelSpeed;
     public static boolean hasNote;
     public static boolean targetingOn;
+    public static final double permanetShoulderOffset = -0.9;
+    public static double shoulderOffset = 0;
 
     //auto mode constants
     public static boolean autoDriveMode = false;
@@ -54,6 +56,11 @@ public final class Constants {
     public static final double intakeInSpeed = -0.1;
     public static final double indexerOutSpeed = 0.9;
     public static final double climberMaxPose = 10;
+
+     //automatic aiming rotation PID values
+     public static final double rotaKP = 1.5;
+     public static final double rotaKI = 0;
+     public static final double rotaKD = 0.01;
 
 /*===============================================================================================================================*/
 public static class Vision {
@@ -87,8 +94,8 @@ public static class Vision {
         COTSTalonFXSwerveConstants.SDS.MK4i.Falcon500(COTSTalonFXSwerveConstants.SDS.MK4i.driveRatios.L1);
 
         /* Drivetrain Constants */
-        public static final double trackWidth = Units.inchesToMeters(21.5); //TODO: This must be tuned to specific robot
-        public static final double wheelBase = Units.inchesToMeters(26.6); //TODO: This must be tuned to specific robot
+        public static final double trackWidth = Units.inchesToMeters(27); //TODO: This must be tuned to specific robot 21.5
+        public static final double wheelBase = Units.inchesToMeters(32); //TODO: This must be tuned to specific robot  26.6
         public static final double wheelCircumference = chosenModule.wheelCircumference;
 
         /* Swerve Kinematics 
@@ -132,7 +139,7 @@ public static class Vision {
         public static final double angleKD = chosenModule.angleKD;
 
         /* Drive Motor PID Values */
-        public static final double driveKP = 0.5; //TODO: This must be tuned to specific robot
+        public static final double driveKP = 0.8; //TODO: This must be tuned to specific robot
         public static final double driveKI = 0.0;
         public static final double driveKD = 0.0;
         public static final double driveKF = 0.0;
@@ -150,7 +157,7 @@ public static class Vision {
         /** Meters per Second */
         public static final double maxSpeed = Units.feetToMeters(13); //TODO: This must be tuned to specific robot
         /** Radians per Second */
-        public static final double maxAngularVelocity = 8; //TODO: This must be tuned to specific robot
+        public static final double maxAngularVelocity = Units.degreesToRadians(500); //TODO: This must be tuned to specific robot
 
         /* Neutral Modes */
         public static final NeutralModeValue angleNeutralMode = NeutralModeValue.Coast;

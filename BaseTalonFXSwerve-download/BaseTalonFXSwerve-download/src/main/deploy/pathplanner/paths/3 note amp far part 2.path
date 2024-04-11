@@ -3,41 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.148516485067158,
-        "y": 4.373613761472538
+        "x": 2.972804578087788,
+        "y": 7.051575128791284
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.2537638750491182,
-        "y": 3.1106450816890243
+        "x": 3.972804578087788,
+        "y": 7.051575128791284
       },
       "isLocked": false,
-      "linkedName": "podium note part 2 end"
+      "linkedName": "4 note amp part 1"
     },
     {
       "anchor": {
-        "x": 8.43397470270724,
-        "y": 0.9238382009527542
+        "x": 8.270256540513081,
+        "y": 7.449176379834242
       },
       "prevControl": {
-        "x": 7.587338153496234,
-        "y": 0.3916666557344095
+        "x": 6.9254307743308186,
+        "y": 7.414017536273922
       },
       "nextControl": {
-        "x": 9.252565513678034,
-        "y": 1.4383809964201097
+        "x": 10.05946217020639,
+        "y": 7.495952997604001
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.370705419473517,
-        "y": 4.221589753720817
+        "x": 1.932024832710634,
+        "y": 7.051575128791284
       },
       "prevControl": {
-        "x": 1.5344235816712832,
-        "y": 2.198501035177464
+        "x": 4.092594763537122,
+        "y": 7.519341306488881
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,19 +47,24 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 0.75,
-      "rotationDegrees": 78.16587274569643,
+      "rotationDegrees": -88.32252597005224,
       "rotateFast": true
+    },
+    {
+      "waypointRelativePos": 1.3,
+      "rotationDegrees": -90.0,
+      "rotateFast": false
     }
   ],
   "constraintZones": [
     {
       "name": "New Constraints Zone",
-      "minWaypointRelativePos": 0.85,
-      "maxWaypointRelativePos": 1.1,
+      "minWaypointRelativePos": 1.05,
+      "maxWaypointRelativePos": 1.25,
       "constraints": {
-        "maxVelocity": 2.0,
+        "maxVelocity": 1.0,
         "maxAcceleration": 3.0,
-        "maxAngularVelocity": 540.0,
+        "maxAngularVelocity": 500.0,
         "maxAngularAcceleration": 720.0
       }
     }
@@ -73,13 +78,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 134.06080905406824,
+    "rotation": -137.489552921999,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Podium 2 note",
+  "folder": "3 note amp",
   "previewStartingState": {
-    "rotation": 131.49646835508312,
+    "rotation": -145.24408744645862,
     "velocity": 0
   },
   "useDefaultConstraints": true

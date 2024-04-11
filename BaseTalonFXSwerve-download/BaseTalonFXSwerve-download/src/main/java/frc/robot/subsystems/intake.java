@@ -5,12 +5,6 @@
 package frc.robot.subsystems;
 
 
-
-import com.ctre.phoenix.led.Animation;
-import com.ctre.phoenix.led.CANdle;
-import com.ctre.phoenix.led.CANdle.LEDStripType;
-import com.ctre.phoenix.led.CANdle.VBatOutputMode;
-import com.ctre.phoenix.led.CANdleConfiguration;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.HardwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -26,9 +20,11 @@ import com.ctre.phoenix6.signals.ReverseLimitSourceValue;
 import com.ctre.phoenix6.signals.ReverseLimitTypeValue;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -41,8 +37,8 @@ public class intake extends SubsystemBase {
   /** Creates a new intake. */
 
   //intakes
-  public static final CANSparkMax rightIntake = new CANSparkMax(1, MotorType.kBrushless);
-  public static final CANSparkMax leftIntake = new CANSparkMax(2, MotorType.kBrushless);
+  public static final CANSparkMax rightIntake = new CANSparkMax(2, MotorType.kBrushless);
+  public static final CANSparkMax leftIntake = new CANSparkMax(1, MotorType.kBrushless);
   //omni wheels on the top of the shooter
   public static final CANSparkMax indexer = new CANSparkMax(52, MotorType.kBrushless);
   //shooting flywheel
@@ -53,8 +49,11 @@ public class intake extends SubsystemBase {
   //climber
   public static final TalonFX leftHook = new TalonFX(6);
   public static final TalonFX rightHook = new TalonFX(7);
-  
-
+  //amp bar  
+  public static final CANSparkMax ampBar = new CANSparkMax(9, MotorType.kBrushless);
+  //lights
+  public static final DigitalInput rightInput = new DigitalInput(0);
+  public static final DigitalInput leftInput = new DigitalInput(1);
   
   private PositionDutyCycle mmDC = new PositionDutyCycle(0);
   public static VelocityDutyCycle vDC = new VelocityDutyCycle(0);
@@ -63,12 +62,43 @@ public class intake extends SubsystemBase {
 
   public intake() {
     
+    //restore factory defaults on the spark maxes
+    leftIntake.restoreFactoryDefaults();
+    rightIntake.restoreFactoryDefaults();
+    ampBar.restoreFactoryDefaults();
+    indexer.restoreFactoryDefaults();
+
+    //intake and indexer settings
     rightIntake.setSmartCurrentLimit(100);
     rightIntake.setIdleMode(IdleMode.kCoast);
-    rightIntake.setInverted(true);
+    rightIntake.setInverted(false);
     leftIntake.setSmartCurrentLimit(100);
     leftIntake.setIdleMode(IdleMode.kCoast);
-    indexer.setSmartCurrentLimit(30);
+    leftIntake.setInverted(true);
+    indexer.setSmartCurrentLimit(40);
+    indexer.setInverted(true);
+    
+    //amp bar settings
+    ampBar.setSmartCurrentLimit(30);
+    ampBar.setIdleMode(IdleMode.kBrake);
+    ampBar.enableSoftLimit(SoftLimitDirection.kForward, true);
+    ampBar.enableSoftLimit(SoftLimitDirection.kReverse, true);
+    ampBar.setSoftLimit(SoftLimitDirection.kForward, 60);
+    ampBar.setSoftLimit(SoftLimitDirection.kReverse, 0);
+    //absoluteEncoder.setPositionConversionFactor(1);
+    //absoluteEncoder.setZeroOffset(0);
+    
+    ampBar.getPIDController().setP(0.02, 0);
+    ampBar.getPIDController().setI(0, 0);
+    ampBar.getPIDController().setD(0.00, 0);
+    //ampBar.getPIDController().setFeedbackDevice(ampBar.getEncoder());
+    //ampBar.getPIDController().setFeedbackDevice(absoluteEncoder);
+    
+    //burn flash to the spark maxes to prevent settings being lost on brownout
+    leftIntake.burnFlash();
+    rightIntake.burnFlash();
+    ampBar.burnFlash();
+    indexer.burnFlash();
    
     //shoulder configs
     TalonFXConfiguration cfg = new TalonFXConfiguration();
@@ -133,7 +163,7 @@ public class intake extends SubsystemBase {
     shooterSlave.setInverted(false);
     shooter.setNeutralMode(NeutralModeValue.Coast);
     shooterSlave.setNeutralMode(NeutralModeValue.Coast);
-    indexer.setInverted(true);
+    
 
 //climber configs
   TalonFXConfiguration climberConfig = new TalonFXConfiguration();
@@ -159,7 +189,7 @@ public class intake extends SubsystemBase {
     climberMagicConfigs.MotionMagicJerk = 50; // Take approximately 0.2 seconds to reach max accel 
     
     SoftwareLimitSwitchConfigs climberSoftlimit = climberConfig.SoftwareLimitSwitch;
-    climberSoftlimit.ForwardSoftLimitThreshold = 160;
+    climberSoftlimit.ForwardSoftLimitThreshold = 200;
     climberSoftlimit.ForwardSoftLimitEnable = true;
     climberSoftlimit.ReverseSoftLimitThreshold = 0;
     climberSoftlimit.ReverseSoftLimitEnable = true;
@@ -172,9 +202,32 @@ public class intake extends SubsystemBase {
     leftHook.setInverted(false);
     rightHook.setInverted(true);
     
-  }
+  }  
 
+/*========================================================================== */
+public static void setFlywheelSpeed(double speed) {
+  shooter.setControl(vDC.withVelocity(speed));
+  shooterSlave.setControl(vDC.withVelocity(speed));
+}
+
+public static void setFlywheelPercent(double speed) {
+  shooter.set(speed);
+  shooterSlave.set(speed);
+}
+
+
+public static void disableFlywheels() {
+  shooter.setControl(vDC.withVelocity(0));
+  shooterSlave.setControl(vDC.withVelocity(0));
+  shooter.set(0);
+  shooterSlave.set(0);
+}
+
+public static void ampFlywheels() {
   
+}
+
+
   @Override
   public void periodic() {    
     indexer.set(Constants.indexerShootSpeed);
@@ -185,13 +238,13 @@ public class intake extends SubsystemBase {
     rightHook.set(climberControls);
     
     
-   //shooter.setControl(vDC.withVelocity(Constants.flywheelSpeed));
-   //shooterSlave.setControl(vDC.withVelocity(Constants.flywheelSpeed));
+
      
      // SmartDashboard.putNumber("shoulder Pos", shoulder.getPosition().getValueAsDouble());
       //SmartDashboard.putNumber("left motor", shooterSlave.getVelocity().getValueAsDouble());
      // SmartDashboard.putNumber("right motor", shooter.getVelocity().getValueAsDouble());
-    
+    SmartDashboard.putBoolean("left sensor", leftInput.get());
+    SmartDashboard.putBoolean("right sensor", rightInput.get());
      
      //runs during auto
     if (Constants.autoDriveMode == true) {

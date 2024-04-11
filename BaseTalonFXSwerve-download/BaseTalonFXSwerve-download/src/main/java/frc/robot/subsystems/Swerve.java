@@ -221,6 +221,26 @@ public class Swerve extends SubsystemBase {
         return Constants.Swerve.swerveKinematics.toChassisSpeeds(getModuleStates());
     }
 
+    public ChassisSpeeds getFieldRelativeChassisSpeeds() {
+        return new ChassisSpeeds(
+                getChassisSpeeds().vxMetersPerSecond * getPose().getRotation().getCos()
+                        - getChassisSpeeds().vyMetersPerSecond * getPose().getRotation().getSin(),
+                getChassisSpeeds().vyMetersPerSecond * getPose().getRotation().getCos()
+                        + getChassisSpeeds().vxMetersPerSecond * getPose().getRotation().getSin(),
+                getChassisSpeeds().omegaRadiansPerSecond);
+    }
+
+    public double getFieldRelativeXVelocity() {
+        return getFieldRelativeChassisSpeeds().vxMetersPerSecond;
+    }
+
+    public double getFieldRelativeYVelocity() {
+        return getFieldRelativeChassisSpeeds().vyMetersPerSecond;
+    }
+
+    public double getFieldRelativeAngularVelocity() {
+        return getFieldRelativeChassisSpeeds().omegaRadiansPerSecond;
+    }
 
 
 
@@ -239,7 +259,8 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putNumber("poseX", this.getPose().getX());
         SmartDashboard.putNumber("poseY", this.getPose().getY());
       */  
-        
+      SmartDashboard.putNumber("field relitive X", getFieldRelativeXVelocity());
+      SmartDashboard.putNumber("field relitive Y", getFieldRelativeYVelocity());
       
     }
 

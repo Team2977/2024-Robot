@@ -29,7 +29,7 @@ import frc.robot.subsystems.poseEstimator;
 public class aimAndRev extends Command {
   private final intake intake;
   private final Swerve swerve;
-  private final PhotonCamera photoncamera;  
+ // private final PhotonCamera photoncamera;  
   private int wantedApriltag;
  // private final Supplier<Pose2d> poseProvider;
   private final poseEstimator poseSubsystem;
@@ -37,19 +37,15 @@ public class aimAndRev extends Command {
   private boolean endCommand;
 
 
-  //private final TrapezoidProfile.Constraints omegConstraints = new Constraints(Units.feetToMeters(8), Units.feetToMeters(8));
-  private final TrapezoidProfile.Constraints omegConstraints = new Constraints(Units.degreesToRadians(500), Units.degreesToRadians(500));
 
-  
-//  private final PIDController pidControllerX = new PIDController(0.5, 0.1, 0);
-  //private final PIDController pidControllerY = new PIDController(0.2, 0.05, 0);
+  private final TrapezoidProfile.Constraints omegConstraints = new Constraints(Units.degreesToRadians(500), Units.degreesToRadians(500));
   private final ProfiledPIDController pidControllerOmega = new ProfiledPIDController(1.5, 0, 0.01, omegConstraints);
 
 
 
-  public aimAndRev(intake intake, PhotonCamera photonCamera, Swerve swerve, /*Supplier<Pose2d> poseProvider,*/ poseEstimator poseEstimator) {
+  public aimAndRev(intake intake, Swerve swerve, poseEstimator poseEstimator) {
     this.intake = intake;
-    this.photoncamera = photonCamera;
+    //this.photoncamera = photonCamera;
     this.swerve = swerve;
    // this.poseProvider = poseProvider;
     this.poseSubsystem = poseEstimator;
@@ -60,12 +56,7 @@ public class aimAndRev extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    endCommand = false;
-    super.initialize();
-   // pidControllerX.reset();
-    //pidControllerY.reset();
     pidControllerOmega.reset(poseSubsystem.field2d.getRobotPose().getRotation().getRadians());
-    
     pidControllerOmega.setTolerance(Units.degreesToRadians(1));
     pidControllerOmega.enableContinuousInput(Math.PI, -Math.PI);
     
@@ -121,8 +112,9 @@ public class aimAndRev extends Command {
                                    - (0.148 * Math.pow(targetDistance, 4))
                                    - 0.4;  
 
-    frc.robot.subsystems.intake.shooter.setControl(frc.robot.subsystems.intake.vDC.withVelocity(96));
-    frc.robot.subsystems.intake.shooterSlave.setControl(frc.robot.subsystems.intake.vDC.withVelocity(96));
+    //frc.robot.subsystems.intake.shooter.setControl(frc.robot.subsystems.intake.vDC.withVelocity(96));
+    //frc.robot.subsystems.intake.shooterSlave.setControl(frc.robot.subsystems.intake.vDC.withVelocity(96));
+    intake.setFlywheelSpeed(96);
   } else {
     endCommand = true;
   }
@@ -138,13 +130,13 @@ public class aimAndRev extends Command {
   @Override
   public void end(boolean interrupted) {
     swerve.drive(new Translation2d(), 0, true, true);
-
+    intake.disableFlywheels();
     
-    frc.robot.subsystems.intake.shooter.setControl(frc.robot.subsystems.intake.vDC.withVelocity(0));
-    frc.robot.subsystems.intake.shooterSlave.setControl(frc.robot.subsystems.intake.vDC.withVelocity(0));
+    //frc.robot.subsystems.intake.shooter.setControl(frc.robot.subsystems.intake.vDC.withVelocity(0));
+    //frc.robot.subsystems.intake.shooterSlave.setControl(frc.robot.subsystems.intake.vDC.withVelocity(0));
     
-    frc.robot.subsystems.intake.shooter.set(0);
-    frc.robot.subsystems.intake.shooterSlave.set(0);
+    //frc.robot.subsystems.intake.shooter.set(0);
+    //frc.robot.subsystems.intake.shooterSlave.set(0);
 
     Constants.wantedShoulderAngle = -2;
     new InstantCommand(() -> new shoulderDown());

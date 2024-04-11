@@ -2,44 +2,36 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.UpperAssembly;
+package frc.robot.commands.shooterTrim;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
-import frc.robot.subsystems.intake;
 
-public class shoulderDown extends Command {
-  /** Creates a new shoulderDown. */
-  private boolean endCommand;
-  public shoulderDown() {
+public class shooterTrimUp extends Command {
+  /** Creates a new shooterTrimUp. */
+  public shooterTrimUp() {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(RobotContainer.INTAKE);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {endCommand = false;}
+  public void initialize() {
+    Constants.shoulderOffset = Constants.shoulderOffset + 0.1;
+    SmartDashboard.putNumber("shoulder trim", Constants.shoulderOffset);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-   
-    if (intake.shoulder.getPosition().getValueAsDouble() == 0) {
-      Constants.wantedShoulderAngle = 0;
-      endCommand = true;
-    } else {Constants.wantedShoulderAngle = -3;}
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    Constants.wantedShoulderAngle = 0;
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return endCommand;
+    return true;
   }
 }

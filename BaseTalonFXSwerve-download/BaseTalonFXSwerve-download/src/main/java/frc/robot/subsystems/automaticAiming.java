@@ -23,6 +23,7 @@ public class automaticAiming extends SubsystemBase {
   private final intake intake;
   private final Swerve swerve;
   public static double rotationValue;
+  private static  boolean debuging = true;
 
   //private final TrapezoidProfile.Constraints omegConstraints = new Constraints(Units.feetToMeters(8), Units.feetToMeters(8));
   private final TrapezoidProfile.Constraints omegConstraints = new Constraints(Units.degreesToRadians(500), Units.degreesToRadians(500));
@@ -49,7 +50,7 @@ public class automaticAiming extends SubsystemBase {
     var wantedAngle = poseSubsystem.getAngleToSpeaker();
     
    
-    if(targetDistance <= 4 && RobotContainer.gamepad2.getRawButton(2) == false) {
+    if(targetDistance <= 4 && RobotContainer.gamepad2.getRawButton(2) == false && debuging == false) {
     Constants.targetingOn = true;
     new InstantCommand(() -> new indexerIn());
 
@@ -79,7 +80,7 @@ public class automaticAiming extends SubsystemBase {
       SmartDashboard.putNumber("dis to tar", targetDistance);
 
 
-    } else {
+    } else if (debuging == false) {
       Constants.targetingOn = false;
       //swerve.drive(new Translation2d(), 0, true, true);
       Constants.wantedShoulderAngle = -1;

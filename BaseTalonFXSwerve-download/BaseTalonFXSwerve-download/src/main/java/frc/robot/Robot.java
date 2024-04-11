@@ -45,6 +45,7 @@ public class Robot extends TimedRobot {
 
   public static double xSpeed;
   public static double ySpeed;
+  public static double omegaSpeed;
   public static Optional<Alliance> alliance = DriverStation.getAlliance();
   
 
@@ -169,9 +170,9 @@ public class Robot extends TimedRobot {
     //this gets the x and y values for the command "turnToTarget"
     xSpeed = MathUtil.applyDeadband(RobotContainer.driver.getRawAxis(1) / Constants.driveSpeed * Constants.invert, Constants.stickDeadband);
     ySpeed = MathUtil.applyDeadband(RobotContainer.driver.getRawAxis(0) / Constants.driveSpeed * Constants.invert, Constants.stickDeadband);
-
-    SmartDashboard.putBoolean("on red team", Constants.onRedTeam);
-    SmartDashboard.putString("auto mode for path", SmartDashboard.getData("Auto Mode").toString());
+    omegaSpeed = MathUtil.applyDeadband(RobotContainer.driver.getRawAxis(3) / Constants.turnSpeed, Constants.stickDeadband);
+    
+    
   }
 
   @Override

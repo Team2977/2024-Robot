@@ -24,13 +24,8 @@ public class intakeOut extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-   
       intake.rightIntake.set(-0.6);
       intake.leftIntake.set(-0.6);
-      
-   
-  
-
   }
 
   // Called once the command ends or is interrupted.
